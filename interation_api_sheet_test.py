@@ -14,7 +14,7 @@ scope = [
 # Remplace "nom_de_ta_cle.json" par le vrai nom de ton fichier
 
 creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "nathan-petitboulanger-1b097cac714e.json",
+    "token.json",
     scope,  # type: ignore
 )
 

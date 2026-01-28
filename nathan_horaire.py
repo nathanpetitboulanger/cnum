@@ -9,7 +9,7 @@ scope = [
 ]
 
 creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "nathan-petitboulanger-1b097cac714e.json",
+    "token.json",
     scope,  # type: ignore
 )
 
