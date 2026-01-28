@@ -20,13 +20,12 @@ sheet_name = "API"
 spreadsheet = client.open(sheet_name)
 sheet = spreadsheet.sheet1  # Accède au premier onglet
 
+# donne l'emploie du temps de 1j
 
 data = sheet.get_all_values()
-
 meta_data = spreadsheet.fetch_sheet_metadata()
 merges = meta_data["sheets"][0]["merges"]
 merges_lundi = [merge for merge in merges if merge["startColumnIndex"] == 1]
-
 id_col_horaire = 0
 for merge in merges_lundi:
     start_row_id = merge["startRowIndex"]
