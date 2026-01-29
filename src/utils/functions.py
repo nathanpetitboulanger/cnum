@@ -30,7 +30,6 @@ def get_cell_color(spreadsheet, sheet_numbrer: int, row: int, col: int):
         return (1, 1, 1)  # On retourne du blanc par défaut
 
 
-################### FONCTION TEXTE CELLULES FUISONNÉES ###################
 def get_text_from_any_cell(row, col, data, merges):
     """
     Récupère le texte d'une cellule, qu'elle soit fusionnée ou non.
