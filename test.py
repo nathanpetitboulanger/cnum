@@ -33,5 +33,25 @@ merge = {
     "startColumnIndex": 3,
 }
 
+merge = {
+    "sheetId": 739511890,
+    "startRowIndex": 70,
+    "endRowIndex": 72,
+    "startColumnIndex": 11,
+    "endColumnIndex": 12,
+}
 
-delta = get_time_delta_from_merge(data, merge)
+
+cours = []
+for merge in all_merges:
+    print(merge)
+    try:
+        delta = get_time_delta_from_merge(data, merge)
+        str_cours = get_text_from_merged_cell(data, merge)
+        cours.append([str_cours, delta, merge])
+    except Exception as e:
+        print(e)
+        pass
+
+
+len(cours)
