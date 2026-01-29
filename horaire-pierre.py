@@ -110,5 +110,17 @@ def get_text_from_any_cell(row, col, data, merges):
     return data[row][col]
 
 
-print(get_text_from_any_cell(2, 1, data, merges))
+################### FONCTION
+def get_text_from_merged_cell(data, merge):
+    """
+    Récupère le texte d'une cellule, qu'elle soit fusionnée ou non.
+    """
+    
+        # 1. On identifie l'ancre (le coin haut-gauche)
+        raw = merge["startRowIndex"]
+        col = merge["startColumnIndex"]
+
+    return data[raw][col]
+
+
 # %%
