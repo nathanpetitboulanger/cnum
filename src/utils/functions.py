@@ -56,3 +56,16 @@ def get_text_from_any_cell(row, col, data, merges):
     # c'est que la cellule n'est pas fusionnée.
     # On renvoie simplement sa valeur brute.
     return data[row][col]
+
+
+def get_all_merges(
+    spreadsheet,
+    sheet_number: int = 1,
+) -> list:
+    """
+    return all merged block in a sheet
+    """
+
+    metadata = spreadsheet.fetch_sheet_metadata()
+    merges = metadata["sheets"][sheet_number]["merges"]
+    return merges

@@ -18,14 +18,33 @@ client = gspread.authorize(creds)  # type: ignore
 
 sheet_name = "API"
 spreadsheet = client.open(sheet_name)
-sheet = spreadsheet.sheet1  # Accède au premier onglet
+sheet = spreadsheet.get_worksheet(1)
 
 # donne l'emploie du temps de 1j
 
 data = sheet.get_all_values()
 meta_data = spreadsheet.fetch_sheet_metadata()
-merges = meta_data["sheets"][0]["merges"]
-merges_lundi = [merge for merge in merges if merge["startColumnIndex"] == 1]
+
+merges = meta_data["sheets"][1]["merges"]
+merges_lundi = [merge for merge in merges]
+sheet_number = 1
+
+
+def get_all_merges(
+    spreadsheet,
+    sheet_number: int = 1,
+) -> list:
+    """
+    return all merged block in a sheet
+    """
+
+    metadata = spreadsheet.fetch_sheet_metadata()
+    merges = metadata["sheets"][sheet_number]["merges"]
+    return merges
+
+
+get_all_merges(spreadsheet)
+
 id_col_horaire = 0
 for merge in merges_lundi:
     start_row_id = merge["startRowIndex"]
