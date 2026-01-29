@@ -4,6 +4,8 @@ import gspread
 from IPython.display import display
 from oauth2client.service_account import ServiceAccountCredentials
 
+from datetime import datetime, timedelta
+
 # 1. Définir le périmètre (Scope)
 # On définit ici que l'on veut accéder aux feuilles et au drive
 
@@ -123,4 +125,59 @@ def get_text_from_merged_cell(data, merge):
     return data[raw][col]
 
 
+
+
+
+
+
+# récupération de la bonne sheet et isolation d'un cours en particulier à tester dans la fonction time 
+sheet_2 = spreadsheet.get_worksheet(1)
+data_2 = sheet_2.get_all_values()
+def get_all_merges(
+    sheet,
+) -> list:
+    """
+    return all merged block in a sheet
+    """
+    spreadsheet = sheet.spreadsheet
+    spreadsheet_data = spreadsheet.fetch_sheet_metadata()
+
+    for sheet_data in spreadsheet_data["sheets"]:
+        if sheet_data.get("properties").get("sheetId") == sheet.id:
+            return sheet_data.get("merges")
+        
+merges_2 = get_all_merges(sheet_2)
+display(merges_2)
+
+cours_1 = {'sheetId': 739511890,
+  'startRowIndex': 6,
+  'endRowIndex': 10,
+  'startColumnIndex': 3,
+  'endColumnIndex': 5}
+
+#fonction temps
+def get_time_merge(data, merge):
+    """
+    Retourne l'heure de début et de fin d'un merge.
+    """
+    id_col_horaire = 0
+    raw_debut = merge["startRowIndex"]
+
+    text_time_debut = data[raw_debut][id_col_horaire] 
+    print(text_time_debut)
+
+    time_debut = datetime.strptime(text_time_debut, "%H:%M").time()
+
+
+    raw_fin = merge["endRowIndex"] - 1
+    text_time_fin = data[raw_fin][id_col_horaire]
+    time_fin = datetime.strptime(text_time_fin, "%H:%M").time()
+    
+
+    return print(f"L'heure de début est {time_debut} et l'heure de fin est {time_fin}")
+
+get_time_merge(data_2, cours_1)
+
+
+    
 # %%
