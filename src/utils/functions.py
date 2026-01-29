@@ -68,3 +68,16 @@ def get_all_merges(
     metadata = spreadsheet.fetch_sheet_metadata()
     merges = metadata["sheets"][sheet_number]["merges"]
     return merges
+
+
+################### FONCTION v2 ###########################
+def get_text_from_merged_cell(data, merge):
+    """
+    Récupère le texte d'une cellule, qu'elle soit fusionnée ou non.
+    """
+    
+        # 1. On identifie l'ancre (le coin haut-gauche)
+        raw = merge["startRowIndex"]
+        col = merge["startColumnIndex"]
+
+    return data[raw][col]
