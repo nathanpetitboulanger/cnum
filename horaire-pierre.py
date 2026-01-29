@@ -82,9 +82,8 @@ display(rows)
 
 
 
-
-
-
+from src.utils.dummies import dummie_block
+dummie_block
 
 
 
@@ -98,6 +97,10 @@ def get_text_from_any_cell(row, col, data, merges):
     - data : le tableau de valeurs (get_all_values)
     - merges : la liste des fusions (extraite des meta_data)
     """
+for merge in merges:
+        # On vérifie si notre cellule est à l'intérieur de ce rectangle
+        is_in_row_range = merge["startRowIndex"] <= row < merge["endRowIndex"]
+        is_in_col_range = merge["startColumnIndex"] <= col < merge["endColumnIndex"]
 
 
 
@@ -113,9 +116,5 @@ def get_text_from_any_cell(row, col, data, merges):
 
 
 
-
-
-
-    
 
 # %%
