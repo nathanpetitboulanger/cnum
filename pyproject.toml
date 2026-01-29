@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "dateparser>=1.2.2",
     "gspread>=6.2.1",
     "ipython>=9.9.0",
     "oauth2client>=4.1.3",
