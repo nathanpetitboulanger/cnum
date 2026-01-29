@@ -48,13 +48,15 @@ row = 2
 col = 1
 
 
-def get_cell_color(metadata, row, col):
+def get_cell_color(spreadsheet, sheet_numbrer: int, row: int, col: int):
     """
     Retourne un tuple (R, G, B) entre 0 et 1 pour une cellule donnée.
     implémenté pour l'instant dans la sheet 1.
     """
     try:
-        cell = metadata["sheets"][0]["data"][0]["rowData"][row]["values"][col]
+        cell = metadata["sheets"][sheet_numbrer]["data"][0]["rowData"][row]["values"][
+            col
+        ]
         color = (
             cell.get("effectiveFormat", {})
             .get("backgroundColorStyle", {})
@@ -68,10 +70,9 @@ def get_cell_color(metadata, row, col):
         return (red, green, blue)
     except (KeyError, IndexError):
         # Si la cellule n'existe pas ou n'a aucun format
-        # return (1, 1, 1)  # On retourne du blanc par défaut
-        return None
+        return (1, 1, 1)  # On retourne du blanc par défaut
 
 
 # Utilisation :
-couleur = get_cell_color(metadata, 3, 2)
+couleur = get_cell_color(metadata, sheet_numbrer=0, row=3, col=2)
 print(f"La couleur est : {couleur}")
