@@ -28,39 +28,8 @@ merge = all_merges[3]
 
 data
 
-merge = {
-    "sheetId": 739511890,
-    "startRowIndex": 6,
-    "endRowIndex": 10,
-    "startColumnIndex": 3,
-}
-
-merge = {
-    "sheetId": 739511890,
-    "startRowIndex": 70,
-    "endRowIndex": 72,
-    "startColumnIndex": 11,
-    "endColumnIndex": 12,
-}
-
 
 delta = get_time_delta_from_merge(data, merge)
-
-
-def parse_profs(text: str) -> list[str] | None:
-    bracket_match = re.search(r"\(([^a-z]+)\)", text)
-    if bracket_match:
-        content = bracket_match.group(1)
-        initiales = re.findall(r"[A-Z]{2}", content)
-        return initiales
-    else:
-        return
-
-
-def clean_cours_name(cours: str):
-    pattern = r"\s*\([A-Z\s-]+\)"
-    cleaned_text = re.sub(pattern, "", cours).strip()
-    return cleaned_text
 
 
 df = pd.DataFrame(columns=["cours", "start", "end", "prof"])
@@ -82,3 +51,10 @@ for merge in all_merges:
     except Exception as e:
         print(e)
         pass
+
+
+df["delta"] = df["end"] - df["start"]
+df["delta"] = df["delta"].dt.total_seconds() / 3600
+
+
+df.to_csv("final.csv")

@@ -1,4 +1,5 @@
 from gspread import spreadsheet
+import re
 from datetime import datetime
 import dateparser
 import pandas as pd
@@ -111,3 +112,19 @@ def get_time_delta_from_merge(data, merge):
     end_datetime = datetime.combine(date_obj, end_time_object)
 
     return (start_datetime, end_datetime)
+
+
+def parse_profs(text: str) -> list[str] | None:
+    bracket_match = re.search(r"\(([^a-z]+)\)", text)
+    if bracket_match:
+        content = bracket_match.group(1)
+        initiales = re.findall(r"[A-Z]{2}", content)
+        return initiales
+    else:
+        return
+
+
+def clean_cours_name(cours: str):
+    pattern = r"\s*\([A-Z\s-]+\)"
+    cleaned_text = re.sub(pattern, "", cours).strip()
+    return cleaned_text
