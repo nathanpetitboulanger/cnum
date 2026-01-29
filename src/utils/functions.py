@@ -28,3 +28,31 @@ def get_cell_color(spreadsheet, sheet_numbrer: int, row: int, col: int):
     except (KeyError, IndexError):
         # Si la cellule n'existe pas ou n'a aucun format
         return (1, 1, 1)  # On retourne du blanc par défaut
+
+
+################### FONCTION TEXTE CELLULES FUISONNÉES ###################
+def get_text_from_any_cell(row, col, data, merges):
+    """
+    Récupère le texte d'une cellule, qu'elle soit fusionnée ou non.
+    """
+    # Niveau 1 : Dans la fonction (4 espaces)
+    # 1. On parcourt chaque zone fusionnée enregistrée par Google
+    for merge in merges:
+        # Niveau 2 : Dans la boucle FOR (8 espaces)
+        # On vérifie si notre cellule est à l'intérieur de ce rectangle
+        is_in_row_range = merge["startRowIndex"] <= row < merge["endRowIndex"]
+        is_in_col_range = merge["startColumnIndex"] <= col < merge["endColumnIndex"]
+
+        if is_in_row_range and is_in_col_range:
+            # Niveau 3 : Dans la condition IF (12 espaces)
+            # TROUVÉ ! C'est une cellule fusionnée.
+            # On va chercher le texte à l'ANCRE (le début du merge)
+            anchor_row = merge["startRowIndex"]
+            anchor_col = merge["startColumnIndex"]
+            return data[anchor_row][anchor_col]
+
+    # Retour au Niveau 1 (4 espaces)
+    # 2. Si on sort de la boucle sans rien avoir trouvé,
+    # c'est que la cellule n'est pas fusionnée.
+    # On renvoie simplement sa valeur brute.
+    return data[row][col]
