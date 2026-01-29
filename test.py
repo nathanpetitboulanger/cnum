@@ -18,4 +18,13 @@ client = gspread.authorize(creds)  # type: ignore
 sheet_name = "API"
 spreadsheet = client.open(sheet_name)
 
-all_merges = get_all_merges(spreadsheet)
+sheet = spreadsheet.get_worksheet(1)
+data = sheet.get_all_values()
+
+all_merges = get_all_merges(sheet)
+
+
+merge = all_merges[3]
+
+for merge in all_merges:
+    print(get_text_from_merged_cell(data, merge))

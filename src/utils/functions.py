@@ -1,3 +1,6 @@
+from gspread import spreadsheet
+
+
 def get_cell_color(spreadsheet, sheet_numbrer: int, row: int, col: int):
     """
     Retourne un tuple (R, G, B) entre 0 et 1 pour une cellule donnée.
@@ -58,26 +61,23 @@ def get_text_from_any_cell(row, col, data, merges):
 
 
 def get_all_merges(
-    spreadsheet,
-    sheet_number: int = 1,
+    sheet,
 ) -> list:
     """
     return all merged block in a sheet
     """
+    spreadsheet = sheet.spreadsheet
+    spreadsheet_data = spreadsheet.fetch_sheet_metadata()
 
-    metadata = spreadsheet.fetch_sheet_metadata()
-    merges = metadata["sheets"][sheet_number]["merges"]
-    return merges
+    for sheet_data in spreadsheet_data["sheets"]:
+        if sheet_data.get("properties").get("sheetId") == sheet.id:
+            return sheet_data.get("merges")
 
 
-################### FONCTION v2 ###########################
 def get_text_from_merged_cell(data, merge):
     """
-    Récupère le texte d'une cellule, qu'elle soit fusionnée ou non.
+    return le text d'un merge.
     """
-    
-        # 1. On identifie l'ancre (le coin haut-gauche)
-        raw = merge["startRowIndex"]
-        col = merge["startColumnIndex"]
-
+    raw = merge["startRowIndex"]
+    col = merge["startColumnIndex"]
     return data[raw][col]
