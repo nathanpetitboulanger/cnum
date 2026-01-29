@@ -13,7 +13,7 @@ scope = [
 # 2. Authentification avec ton fichier JSON
 # Remplace "nom_de_ta_cle.json" par le vrai nom de ton fichier
 creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "nathan-petitboulanger-1b097cac714e.json",
+    "token.json",
     scope,  # type: ignore
 )
 
@@ -25,7 +25,6 @@ client = gspread.authorize(creds)  # type: ignore
 sheet_name = "API"
 spreadsheet = client.open(sheet_name)
 sheet = spreadsheet.sheet1  # Accède au premier onglet
-
 
 from collections import defaultdict
 
@@ -79,4 +78,4 @@ def edt_jour(worksheet, jour="Lundi"):
 
     # 8️⃣ Convertir en dict normal (pas defaultdict)
     return dict(edt)
-
+print(sheet.get_all_values())
