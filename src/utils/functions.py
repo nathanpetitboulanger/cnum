@@ -28,3 +28,7 @@ def get_cell_color(spreadsheet, sheet_numbrer: int, row: int, col: int):
     except (KeyError, IndexError):
         # Si la cellule n'existe pas ou n'a aucun format
         return (1, 1, 1)  # On retourne du blanc par défaut
+
+
+
+
