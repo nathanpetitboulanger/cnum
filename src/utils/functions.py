@@ -86,8 +86,8 @@ def get_time_delta_from_merge(data, merge):
         actual_time_position[0] = actual_time_position[0] - 1
         row_dates = actual_time_position[0]
         actual_time = data[row_dates][col]
-        print(f"acual_time : {actual_time}")
-        print(f"row_date : {row_dates}")
+        # print(f"acual_time : {actual_time}")
+        # print(f"row_date : {row_dates}")
 
     raw_start_str = data[start_row_id][id_col_time]
     raw_end_str = data[end_row_id - 1][id_col_time]

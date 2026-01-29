@@ -1,0 +1,80 @@
+,cours,start,end,prof
+0,PAE 7 TA,2025-11-25 08:00:00,2025-11-25 12:00:00,
+1,SEABV - remise à niveau SIG,2025-11-27 08:00:00,2025-11-27 12:00:00,['ML']
+2,8h00-9h50: Anglais,2025-11-26 08:00:00,2025-11-26 10:00:00,
+3,Travail Perso,2025-11-26 10:00:00,2025-11-26 12:00:00,
+4,SEABV - remise à niveau SIG,2025-11-24 08:00:00,2025-11-24 17:30:00,['ML']
+5,Forum Agrotoulouse,2025-11-28 08:00:00,2025-11-28 17:30:00,
+6,Forum Agrotoulouse,2025-11-27 13:30:00,2025-11-27 17:30:00,
+7,PAE 8 TA,2025-11-25 13:30:00,2025-11-25 17:30:00,
+8,SEABV - remise à niveau SIG,2025-11-26 13:30:00,2025-11-26 17:30:00,['ML']
+9,SEABV - remise à niveau SIG,2025-12-05 13:30:00,2025-12-05 17:30:00,['MT']
+10,SEABV - remise à niveau SIG,2025-12-02 08:00:00,2025-12-02 12:00:00,['MT']
+11,SEABV - remise à niveau SIG,2025-12-01 13:30:00,2025-12-01 17:30:00,['MT']
+12,SEABV - remise à niveau SIG,2025-12-03 13:30:00,2025-12-03 17:30:00,['MT']
+13,"Sol / Modèles
+ Evaluation Pédologie (MG et SG)",2026-02-04 13:30:00,2026-02-04 16:30:00,"['ML', 'YG']"
+14,"terrain lycée agr (8h30-10h
+ gpes 2,4,6 avec JPS et gpes 8,10,12,14 avec MG + SG",2026-02-05 08:00:00,2026-02-05 10:00:00,
+15,Sol / Modèles,2026-02-05 09:00:00,2026-02-05 12:00:00,"['ML', 'YG']"
+16,"Sol / Modèles
+ Evaluation Pédologie (MG et SG)",2026-02-04 10:00:00,2026-02-04 12:00:00,"['ML', 'YG']"
+17,"terrain lycée agr (10h30-12h
+ gpes 2,4,6 avec MG et gpes 8,10,12,14 avec JPS + SG",2026-02-05 10:00:00,2026-02-05 12:00:00,
+18,Sol / Modèles,2026-02-05 13:30:00,2026-02-05 16:30:00,"['ML', 'YG']"
+19,"terrain lycée agr gpes 1,3,5,7 avec MG et 9,11,13 avec JPS
+  (13h30-15h",2026-02-05 13:30:00,2026-02-05 15:30:00,
+20,"terrain lycée agr gpes 1,3,5,7 avec JPS et 9,11,13 avec MG
+  (15h30-17h",2026-02-05 15:30:00,2026-02-05 17:30:00,
+21,Sol / Modèles,2026-02-03 08:00:00,2026-02-03 16:30:00,"['SG', 'LD', 'ML', 'YG']"
+22,"Traitement des données retour terrain 
+ (MG et BP SG)",2026-02-12 08:00:00,2026-02-12 12:00:00,
+23,TD en salle info pour revision BDD requetes SQL LD gpes pairs,2026-02-02 13:30:00,2026-02-02 15:30:00,['LD']
+24,Sol - gpes impairs,2026-02-02 13:30:00,2026-02-02 15:30:00,['MG']
+25,Travail Perso,2026-02-09 08:00:00,2026-02-09 10:00:00,
+26,"Terrain vallée de Save L'Isle Jourdain- Lombez- Boulogne Sur Gesse 
+ (BP et JPS et MG)",2026-02-10 08:00:00,2026-02-10 17:30:00,
+27,"Terrain vallée de Save L'Isle Jourdain- Lombez- Boulogne Sur Gesse 
+ (BP et JPS et SG)",2026-02-11 08:00:00,2026-02-11 17:30:00,
+28,PAE 18,2026-02-12 13:30:00,2026-02-12 17:30:00,
+29,Préconisations,2026-02-18 10:00:00,2026-02-18 12:00:00,['JP']
+30,Préconisations,2026-02-18 13:30:00,2026-02-18 17:30:00,['JP']
+31,Départ Terrain,2026-02-09 15:30:00,2026-02-09 17:30:00,['BD']
+32,&,2026-02-18 08:00:00,2026-02-18 10:00:00,
+33,Préconisations,2026-02-16 09:00:00,2026-02-16 17:30:00,['JP']
+34,Préconisations,2026-02-17 09:00:00,2026-02-17 17:30:00,['JP']
+35,Travail Perso,2026-01-26 08:00:00,2026-01-26 10:00:00,
+36,"SEABV_hydrologie_evaluation 
+ (SG,LB)",2026-01-29 08:00:00,2026-01-29 12:00:00,"['SG', 'LB']"
+37,"SEABV_hydrologie_evaluation
+ (SG, LB)",2026-01-29 13:30:00,2026-01-29 14:30:00,"['SG', 'LB']"
+38,"SEABV_hydrologie 
+ (SG, LB)",2026-01-27 09:00:00,2026-01-27 16:30:00,"['SG', 'LB']"
+39,"SEABV_hydrologie 
+ (SG, LB)",2026-01-28 09:00:00,2026-01-28 16:30:00,"['SG', 'LB']"
+40,"SEABV_Jalon 1
+ (SG, LB, ML)",2026-01-29 14:30:00,2026-01-29 17:30:00,"['SG', 'LB', 'ML']"
+41,Anglais,2026-02-04 08:00:00,2026-02-04 10:00:00,
+42,TD en salle info pour revision BDD requetes SQL LD gpes impairs,2026-02-02 10:00:00,2026-02-02 12:00:00,['LD']
+43,Sol - gpes pairs,2026-02-02 10:00:00,2026-02-02 12:00:00,['MG']
+44,Presentation UE MG - ML,2026-01-26 10:00:00,2026-01-26 11:00:00,
+45,"SEABV_hydrologie 
+ (SG, LB)",2026-01-26 11:00:00,2026-01-26 12:00:00,"['SG', 'LB']"
+46,"SEABV_hydrologie 
+ (SG, LB)",2026-01-26 13:30:00,2026-01-26 17:30:00,"['SG', 'LB']"
+47,"Transmission QGER -> AGREST (8h30-9h30)
+  Présentaiton semaine modélo (9h30 - 10h)",2026-02-02 09:00:00,2026-02-02 10:00:00,"['MG', 'ML']"
+48,Sol / Modèles (Fin 17h),2026-02-02 15:30:00,2026-02-02 17:30:00,"['SG', 'LD', 'ML', 'YG']"
+49,Jalon 2_Restitution Modèles,2026-02-06 09:00:00,2026-02-06 11:00:00,"['SG', 'ML', 'MG', 'JP', 'YG']"
+50,Préparation terrain,2026-02-06 11:00:00,2026-02-06 12:00:00,"['SG', 'BP', 'MG']"
+51,"Préparation terrain (SG MG, BP, BD)",2026-02-06 13:30:00,2026-02-06 15:30:00,"['SG', 'MG', 'BP', 'BD']"
+52,Travail Perso,2026-02-06 15:30:00,2026-02-06 17:30:00,
+53,"Restitution - World café
+ (BP, JPS, MG, ML, SG, LB)",2026-02-19 09:00:00,2026-02-19 12:00:00,"['BP', 'JP', 'MG', 'ML', 'SG', 'LB']"
+54,Débrief de l'UE,2026-02-19 13:30:00,2026-02-19 15:30:00,
+55,Bilan Agrest,2026-02-20 13:30:00,2026-02-20 15:30:00,
+56,Travail perso,2026-02-20 15:30:00,2026-02-20 17:30:00,
+57,Traitement des données retour terrain,2026-02-13 08:00:00,2026-02-13 12:00:00,"['BP', 'SG']"
+58,Traitement des données retour terrain,2026-02-13 13:30:00,2026-02-13 17:30:00,['SG']
+59,Jeu sérieu Érosion,2026-02-13 13:30:00,2026-02-13 15:30:00,['LD']
+60,PAE 19 (Retour aux commanditaires) et finalisation des livrables),2026-02-20 08:00:00,2026-02-20 12:00:00,
