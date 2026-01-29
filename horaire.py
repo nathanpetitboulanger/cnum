@@ -35,3 +35,43 @@ for merge in merges_lundi:
     start_h = data[start_row_id][id_col_horaire]
     end_h = data[end_row_id][id_col_horaire]
     print(f" la phase {content} commence à {start_h}h et fini à {int(end_h) + 1}h")
+
+# detection des couleurs
+params = {
+    "includeGridData": True,
+    "fields": "sheets(data(rowData(values(effectiveFormat(backgroundColorStyle)))))",
+}
+
+metadata = spreadsheet.fetch_sheet_metadata(params=params)
+
+row = 2
+col = 1
+
+
+def get_cell_color(metadata, row, col):
+    """
+    Retourne un tuple (R, G, B) entre 0 et 1 pour une cellule donnée.
+    implémenté pour l'instant dans la sheet 1.
+    """
+    try:
+        cell = metadata["sheets"][0]["data"][0]["rowData"][row]["values"][col]
+        color = (
+            cell.get("effectiveFormat", {})
+            .get("backgroundColorStyle", {})
+            .get("rgbColor", {})
+        )
+
+        red = color.get("red", 0)
+        green = color.get("green", 0)
+        blue = color.get("blue", 0)
+
+        return (red, green, blue)
+    except (KeyError, IndexError):
+        # Si la cellule n'existe pas ou n'a aucun format
+        # return (1, 1, 1)  # On retourne du blanc par défaut
+        return None
+
+
+# Utilisation :
+couleur = get_cell_color(metadata, 3, 2)
+print(f"La couleur est : {couleur}")
