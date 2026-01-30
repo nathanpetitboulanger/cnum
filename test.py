@@ -4,8 +4,8 @@ import dateparser
 import gspread
 from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
-from src.utils.functions import *
-from src.utils.dummies import *
+from utils.functions import *
+from utils.dummies import *
 
 scope = [
     "https://www.googleapis.com/auth/spreadsheets",
