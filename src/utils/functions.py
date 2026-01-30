@@ -136,8 +136,8 @@ def get_head_cell_coords_from_merge(merge):
     return row_id, col_id
 
 
-def extract_rgb_from_cell_coords(metadata, row, col):
-    sheet_data = metadata["sheets"][1]["data"][0]
+def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = 1):
+    sheet_data = metadata["sheets"][sheet_id]["data"][0]
     row_data = sheet_data.get("rowData", [])
 
     cell_values = row_data[row]["values"][col]
@@ -147,4 +147,4 @@ def extract_rgb_from_cell_coords(metadata, row, col):
 
 def extract_rgb_form_merge(metadata, merge, sheet_id: int = 1):
     row_id, col_id = get_head_cell_coords_from_merge(merge)
-    return extract_rgb_from_cell_coords(metadata, row_id, col_id)
+    return extract_rgb_from_cell_coords(metadata, row_id, col_id, sheet_id)
