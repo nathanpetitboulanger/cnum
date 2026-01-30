@@ -1,8 +1,8 @@
-from gspread import spreadsheet
 import re
 from datetime import datetime
+
 import dateparser
-import pandas as pd
+from gspread import spreadsheet
 
 
 def get_cell_color(spreadsheet, sheet_numbrer: int, row: int, col: int):
@@ -148,3 +148,28 @@ def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = 1):
 def extract_rgb_form_merge(metadata, merge, sheet_id: int = 1):
     row_id, col_id = get_head_cell_coords_from_merge(merge)
     return extract_rgb_from_cell_coords(metadata, row_id, col_id, sheet_id)
+
+
+def extract_legend():
+    params = {
+        "includeGridData": True,
+        "fields": "sheets(data(rowData(values(effectiveFormat(backgroundColorStyle)))))",
+    }
+    meta_data = spreadsheet.fetch_sheet_metadata(params=params)
+
+    col_nom = 13
+    actual_row = 0
+    col_color = 14
+    color_mapping = {}
+
+    while True:
+        col = extract_rgb_from_cell_coords(meta_data, actual_row, col_color)
+
+        if col == (1, 1, 1):
+            break
+
+        nom_cellule = data[actual_row][col_nom]
+        color_mapping[nom_cellule] = col
+        actual_row += 1
+
+    return color_mapping
