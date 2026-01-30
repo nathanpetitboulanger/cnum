@@ -26,13 +26,17 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(
 client = gspread.authorize(creds)  # type: ignore
 sheet_name = "API"
 spreadsheet = client.open(sheet_name)
-
 sheet = spreadsheet.get_worksheet(1)
 data = sheet.get_all_values()
 all_merges = get_all_merges(sheet)
 
+params = {
+    "fields": "sheets(data(rowData(values(effectiveFormat(backgroundColorStyle)))))"
+}
+metadata = spreadsheet.fetch_sheet_metadata(params=params)
 
-df = pd.DataFrame(columns=["cours", "start", "end", "prof"])
+df = pd.DataFrame(columns=["cours", "start", "end", "prof", "RGB"])
+
 
 for merge in all_merges:
     try:
@@ -40,11 +44,12 @@ for merge in all_merges:
         str_cours_raw = get_text_from_merged_cell(data, merge)
         prof = parse_profs(str_cours_raw)
         cours_str = clean_cours_name(str_cours_raw)
+        color = extract_rgb_form_merge(metadata, merge)
 
         if str_cours_raw == "":
             raise ValueError("PAS DE COURS")
 
-        row = [cours_str, delta[0], delta[1], prof]
+        row = [cours_str, delta[0], delta[1], prof, color]
 
         df.loc[len(df)] = row
 
@@ -112,7 +117,7 @@ def calcul_and_display_prof_houres():
     )
     data_to_upload = [df_bilan.columns.tolist()] + df_bilan.values.tolist()
 
-    new_sheet.update(range_name="G1", values=data_to_upload)
+    new_sheet.update(range_name="H1", values=data_to_upload)
 
 
 calcul_and_display_prof_houres()

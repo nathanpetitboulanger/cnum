@@ -24,37 +24,39 @@ spreadsheet = client.open(sheet_name)
 sheet = spreadsheet.get_worksheet(1)
 data = sheet.get_all_values()
 all_merges = get_all_merges(sheet)
-merge = all_merges[3]
 
-data
+merge = all_merges[0]
 
-
-delta = get_time_delta_from_merge(data, merge)
-
-
-df = pd.DataFrame(columns=["cours", "start", "end", "prof"])
-
-for merge in all_merges:
-    try:
-        delta = get_time_delta_from_merge(data, merge)
-        str_cours_raw = get_text_from_merged_cell(data, merge)
-        prof = parse_profs(str_cours_raw)
-        cours_str = clean_cours_name(str_cours_raw)
-
-        if str_cours_raw == "":
-            raise ValueError("PAS DE COURS")
-
-        row = [cours_str, delta[0], delta[1], prof]
-
-        df.loc[len(df)] = row
-
-    except Exception as e:
-        print(e)
-        pass
+params = {
+    "fields": "sheets(data(rowData(values(effectiveFormat(backgroundColorStyle)))))"
+}
+metadata = spreadsheet.fetch_sheet_metadata(params=params)
+sheet_data = metadata["sheets"][1]["data"][0]
+row_data = sheet_data.get("rowData", [])
 
 
-df["delta"] = df["end"] - df["start"]
-df["delta"] = df["delta"].dt.total_seconds() / 3600
+row = 6
+col = 1
 
 
-df.to_csv("final.csv")
+def get_head_cell_coords_from_merge(merge):
+    row_id = merge["startRowIndex"]
+    col_id = merge["startColumnIndex"]
+    return row_id, col_id
+
+
+def extract_rgb_from_cell_coords(metadata, row, col):
+    sheet_data = metadata["sheets"][1]["data"][0]
+    row_data = sheet_data.get("rowData", [])
+
+    cell_values = row_data[row]["values"][col]
+    rgb = cell_values["effectiveFormat"]["backgroundColorStyle"]["rgbColor"]
+    return (rgb.get("red", 0), rgb.get("green", 0), rgb.get("blue", 0))
+
+
+def extract_rgb_form_merge(metadata, merge):
+    row_id, col_id = get_head_cell_coords_from_merge(merge)
+    return extract_rgb_from_cell_coords(metadata, row_id, col_id)
+
+
+extract_rgb_form_merge(metadata, merge)

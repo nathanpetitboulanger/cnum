@@ -128,3 +128,23 @@ def clean_cours_name(cours: str):
     pattern = r"\s*\([A-Z\s-]+\)"
     cleaned_text = re.sub(pattern, "", cours).strip()
     return cleaned_text
+
+
+def get_head_cell_coords_from_merge(merge):
+    row_id = merge["startRowIndex"]
+    col_id = merge["startColumnIndex"]
+    return row_id, col_id
+
+
+def extract_rgb_from_cell_coords(metadata, row, col):
+    sheet_data = metadata["sheets"][1]["data"][0]
+    row_data = sheet_data.get("rowData", [])
+
+    cell_values = row_data[row]["values"][col]
+    rgb = cell_values["effectiveFormat"]["backgroundColorStyle"]["rgbColor"]
+    return (rgb.get("red", 0), rgb.get("green", 0), rgb.get("blue", 0))
+
+
+def extract_rgb_form_merge(metadata, merge, sheet_id: int = 1):
+    row_id, col_id = get_head_cell_coords_from_merge(merge)
+    return extract_rgb_from_cell_coords(metadata, row_id, col_id)
