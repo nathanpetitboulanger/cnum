@@ -8,6 +8,7 @@ dependencies = [
   "dateparser>=1.2.2",
   "gspread>=6.2.1",
   "gspread-dataframe>=4.0.0",
+  "gspread-formatting>=1.2.1",
   "icalendar>=6.3.2",
   "ipython>=9.9.0",
   "oauth2client>=4.1.3",

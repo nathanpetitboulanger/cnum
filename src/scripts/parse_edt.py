@@ -27,7 +27,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(
 client = gspread.authorize(creds)  # type: ignore
 sheet_name = "API"
 spreadsheet = client.open(sheet_name)
-sheet = spreadsheet.get_worksheet(1)
+sheet = spreadsheet.get_worksheet(edt_sheet_id)
 data = sheet.get_all_values()
 all_merges = get_all_merges(sheet)
 
