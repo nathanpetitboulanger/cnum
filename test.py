@@ -34,7 +34,6 @@ sheet = spreadsheet.get_worksheet(1)
 
 data = sheet.get_all_values()
 
-
 df = pd.read_csv("final.csv").drop("Unnamed: 0", axis=1)
 
 df["start"] = pd.to_datetime(df["start"])
@@ -53,6 +52,35 @@ best_idx_start_relative, best_idx_end_relative, index_row_date = (
 )
 
 print(best_idx_start_relative, best_idx_end_relative, index_row_date)
+
+
+sheet = spreadsheet.get_worksheet(4)
+sheet
+
+start_row_index = 2
+end_row_index = 10
+sheet_id = 5
+
+requests = []
+
+
+requests.append(
+    {
+        "mergeCells": {
+            "range": {
+                "sheetId": sheet.id,
+                "startRowIndex": start_row_index,
+                "endRowIndex": end_row_index,
+                "startColumnIndex": 0,
+                "endColumnIndex": 2,
+            },
+            "mergeType": "MERGE_ALL",
+        }
+    }
+)
+
+# Envoi de toutes les demandes en une seule fois
+spreadsheet.batch_update({"requests": requests})
 
 
 import gspread
