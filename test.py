@@ -9,7 +9,7 @@ from utils.functions import *
 from utils.dummies import *
 import pandas as pd
 import dateparser
-from babel.dates import format_date
+from babel.dates import format_date, format_time
 
 scope = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -35,44 +35,64 @@ sheet = spreadsheet.get_worksheet(1)
 data = sheet.get_all_values()
 
 
-
 df = pd.read_csv("final.csv").drop("Unnamed: 0", axis=1)
 
 df["start"] = pd.to_datetime(df["start"])
 
 df["end"] = pd.to_datetime(df["end"])
+df = df.sort_values("delta", ascending=False)
 
-
-
-start = df.iloc[1]["start"]
-end = df.iloc[1]["end"]
-
-
-start_date_str = format_date(start, format="full", locale="fr_FR")
-end_date_str = format_date(end, format="full", locale="fr_FR")
-
-
-start_hour_str = format_date(start, format="full", locale="fr_FR")
-end_hour_str = format_date(end, format="full", locale="fr_FR")
-
-
-
-
+start = df.iloc[0]["start"]
+end = df.iloc[0]["end"]
 
 index_sheet = get_index_sheet(sheet)
 
-index_date = index_sheet.get(end_hour_str, [None])[0]
 
-row_date = index_date[0]
+def get_best_index_from_delta(start, end, index_sheet):
+    """
+    Return cours position form start and end. the index_sheet sheet is optainable with the function get_index_sheet
+    Do not loop with get_index_sheet
+    """
 
-times_rows = data[row_date:row_date + 8]
+    start_date_str = format_date(start, format="full", locale="fr_FR")
+    end_date_str = format_date(end, format="full", locale="fr_FR")
 
-times =  [time[0] for time in times_rows]
+    start_hour_str = format_time(start, format="full", locale="fr_FR")
+    end_hour_str = format_time(end, format="full", locale="fr_FR")
+
+    index_date = index_sheet.get(end_date_str, [None])[0]
+
+    index_col_date = index_date[1]
+
+    index_row_date = index_date[0]
+
+    times_rows = data[index_row_date : index_row_date + 8]
+    times_str = [[hour.strip() for hour in time[0].split("\n")] for time in times_rows]
+    times = [
+        [datetime.strptime(t, "%H:%M").time() for t in interval]
+        for interval in times_str
+    ]
+    times = [
+        [datetime.combine(start.date(), time) for time in interval]
+        for interval in times
+    ]
+
+    best_idx_start_relative = min(
+        range(len(times)), key=lambda i: abs(times[i][0] - start)
+    )
+    best_idx_end_relative = min(range(len(times)), key=lambda i: abs(times[i][0] - end))
+
+    best_idx_start_relative = best_idx_start_relative + index_date[0]
+    best_idx_end_relative = best_idx_end_relative + index_date[0]
+
+    return best_idx_start_relative, best_idx_end_relative, index_row_date
 
 
+best_idx_start_relative, best_idx_end_relative, index_row_date = (
+    get_best_index_from_delta(start, end, index_sheet)
+)
 
-
-
+print(best_idx_start_relative, best_idx_end_relative, index_row_date)
 
 
 import gspread

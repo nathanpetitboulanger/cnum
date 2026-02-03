@@ -1,8 +1,9 @@
 import re
 from datetime import datetime
-
+from babel.dates import format_date, format_time
 import dateparser
 from gspread import spreadsheet
+from numpy import append
 
 
 def get_cell_color(spreadsheet, sheet_numbrer: int, row: int, col: int):
@@ -39,7 +40,7 @@ def get_cell_color(spreadsheet, sheet_numbrer: int, row: int, col: int):
 
 def get_all_merges(
     sheet,
-) -> list:
+) -> list:  # type: ignore
     """
     return all merged block in a sheet
     """
@@ -188,3 +189,44 @@ def get_index_sheet(sheet):
                 index_sheet[val] = []
             index_sheet[val].append((r + 1, c + 1))
     return index_sheet
+
+
+def get_best_index_from_delta(start, end, index_sheet, data):
+    """
+    Return cours position form start and end. the index_sheet sheet is optainable with the function get_index_sheet
+    Do not loop with get_index_sheet
+    Same with data
+    """
+
+    start_date_str = format_date(start, format="full", locale="fr_FR")
+    end_date_str = format_date(end, format="full", locale="fr_FR")
+
+    start_hour_str = format_time(start, format="full", locale="fr_FR")
+    end_hour_str = format_time(end, format="full", locale="fr_FR")
+
+    index_date = index_sheet.get(end_date_str, [None])[0]
+
+    index_col_date = index_date[1]
+
+    index_row_date = index_date[0]
+
+    times_rows = data[index_row_date : index_row_date + 8]
+    times_str = [[hour.strip() for hour in time[0].split("\n")] for time in times_rows]
+    times = [
+        [datetime.strptime(t, "%H:%M").time() for t in interval]
+        for interval in times_str
+    ]
+    times = [
+        [datetime.combine(start.date(), time) for time in interval]
+        for interval in times
+    ]
+
+    best_idx_start_relative = min(
+        range(len(times)), key=lambda i: abs(times[i][0] - start)
+    )
+    best_idx_end_relative = min(range(len(times)), key=lambda i: abs(times[i][0] - end))
+
+    best_idx_start_relative = best_idx_start_relative + index_date[0]
+    best_idx_end_relative = best_idx_end_relative + index_date[0]
+
+    return best_idx_start_relative, best_idx_end_relative, index_row_date
