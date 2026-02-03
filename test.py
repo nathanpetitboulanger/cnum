@@ -48,48 +48,8 @@ end = df.iloc[0]["end"]
 index_sheet = get_index_sheet(sheet)
 
 
-def get_best_index_from_delta(start, end, index_sheet):
-    """
-    Return cours position form start and end. the index_sheet sheet is optainable with the function get_index_sheet
-    Do not loop with get_index_sheet
-    """
-
-    start_date_str = format_date(start, format="full", locale="fr_FR")
-    end_date_str = format_date(end, format="full", locale="fr_FR")
-
-    start_hour_str = format_time(start, format="full", locale="fr_FR")
-    end_hour_str = format_time(end, format="full", locale="fr_FR")
-
-    index_date = index_sheet.get(end_date_str, [None])[0]
-
-    index_col_date = index_date[1]
-
-    index_row_date = index_date[0]
-
-    times_rows = data[index_row_date : index_row_date + 8]
-    times_str = [[hour.strip() for hour in time[0].split("\n")] for time in times_rows]
-    times = [
-        [datetime.strptime(t, "%H:%M").time() for t in interval]
-        for interval in times_str
-    ]
-    times = [
-        [datetime.combine(start.date(), time) for time in interval]
-        for interval in times
-    ]
-
-    best_idx_start_relative = min(
-        range(len(times)), key=lambda i: abs(times[i][0] - start)
-    )
-    best_idx_end_relative = min(range(len(times)), key=lambda i: abs(times[i][0] - end))
-
-    best_idx_start_relative = best_idx_start_relative + index_date[0]
-    best_idx_end_relative = best_idx_end_relative + index_date[0]
-
-    return best_idx_start_relative, best_idx_end_relative, index_row_date
-
-
 best_idx_start_relative, best_idx_end_relative, index_row_date = (
-    get_best_index_from_delta(start, end, index_sheet)
+    get_best_index_from_delta(start, end, index_sheet, data)
 )
 
 print(best_idx_start_relative, best_idx_end_relative, index_row_date)
