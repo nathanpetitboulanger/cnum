@@ -1,13 +1,11 @@
-import re
-from gspread_dataframe import set_with_dataframe
-import dateparser
 import gspread
-from datetime import datetime
-from oauth2client.service_account import ServiceAccountCredentials
-from utils.functions import *
-from utils.dummies import *
-from config import edt_sheet_id
 import pandas as pd
+from gspread_dataframe import set_with_dataframe
+from oauth2client.service_account import ServiceAccountCredentials
+
+from config import edt_sheet_id
+from utils.dummies import *
+from utils.functions import *
 
 """
 parse edt
@@ -36,7 +34,7 @@ params = {
 }
 metadata = spreadsheet.fetch_sheet_metadata(params=params)
 
-df = pd.DataFrame(columns=["cours", "start", "end", "prof", "RGB"])
+df = pd.DataFrame(columns=["cours", "start", "end", "prof", "RGB", "semaine"])
 
 
 for merge in all_merges:
@@ -46,11 +44,12 @@ for merge in all_merges:
         prof = parse_profs(str_cours_raw)
         cours_str = clean_cours_name(str_cours_raw)
         color = extract_rgb_form_merge(metadata, merge)
+        semaine = get_merge_semaine(merge)
 
         if str_cours_raw == "":
             raise ValueError("PAS DE COURS")
 
-        row = [cours_str, delta[0], delta[1], prof, color]
+        row = [cours_str, delta[0], delta[1], prof, color, semaine]
 
         df.loc[len(df)] = row
 

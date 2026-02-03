@@ -1,9 +1,9 @@
 import re
 from datetime import datetime
-from babel.dates import format_date, format_time
+
 import dateparser
+from babel.dates import format_date, format_time
 from gspread import spreadsheet
-from numpy import append
 
 
 def get_cell_color(spreadsheet, sheet_numbrer: int, row: int, col: int):
@@ -230,3 +230,20 @@ def get_best_index_from_delta(start, end, index_sheet, data):
     best_idx_end_relative = best_idx_end_relative + index_date[0]
 
     return best_idx_start_relative, best_idx_end_relative, index_row_date
+
+
+def get_merge_semaine(merge):
+    col_start = merge["startColumnIndex"]
+    col_end = merge["endColumnIndex"]
+
+    if (col_end - col_start) == 2:
+        return None
+
+    elif col_start in (1, 3, 6, 8, 11):
+        return "A"
+
+    elif col_start in (2, 4, 7, 9, 12):
+        return "B"
+
+    else:
+        raise ValueError("Pas de merge trouvé")
