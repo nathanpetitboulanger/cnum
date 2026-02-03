@@ -7,7 +7,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from utils.functions import *
 from utils.dummies import *
 from config import edt_sheet_id
-
+import pandas as pd
 
 """
 parse edt
