@@ -1,12 +1,15 @@
 # Tests api google sheet
 import re
 import dateparser
+
 import gspread
 from datetime import datetime
 from gspread_formatting import *
 from oauth2client.service_account import ServiceAccountCredentials
+import requests
 from utils.functions import *
 from utils.dummies import *
+from utils.draw_function import *
 import pandas as pd
 import dateparser
 from babel.dates import format_date, format_time
@@ -57,30 +60,33 @@ print(best_idx_start_relative, best_idx_end_relative, index_row_date)
 sheet = spreadsheet.get_worksheet(4)
 sheet
 
-start_row_index = 2
-end_row_index = 10
-sheet_id = 5
+start_row_index = [2, 8]
+end_row_index = [4, 12]
+start_col_idx = [1, 4]
+end_col_idx = [6, 9]
+sheet_idx = 4
+rgb_color = [(1, 1, 0), (1, 0, 1)]
 
-requests = []
+all_info = []
+for _, row in df.iterrows():
+    all_info.append(get_best_index_from_delta(row.start, row.end, index_sheet, data))
 
 
-requests.append(
-    {
-        "mergeCells": {
-            "range": {
-                "sheetId": sheet.id,
-                "startRowIndex": start_row_index,
-                "endRowIndex": end_row_index,
-                "startColumnIndex": 0,
-                "endColumnIndex": 2,
-            },
-            "mergeType": "MERGE_ALL",
-        }
-    }
+color_cells_batch(
+    spreadsheet,
+    start_row_index,
+    start_col_idx,
+    rgb_color,
+    sheet_idx,
 )
 
-# Envoi de toutes les demandes en une seule fois
-spreadsheet.batch_update({"requests": requests})
+merge_cells_batch(
+    spreadsheet, start_row_index, end_row_index, start_col_idx, end_col_idx, sheet_idx
+)
+
+
+unmerge_entire_sheet(spreadsheet, sheet_idx=4)
+reset_sheet_color(spreadsheet, sheet_idx=4)
 
 
 import gspread
