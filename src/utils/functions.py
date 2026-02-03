@@ -173,3 +173,18 @@ def extract_legend():
         actual_row += 1
 
     return color_mapping
+
+
+def get_index_sheet(sheet):
+    """
+    Return the index of the sheet once for the API rates actual_time_position
+    """
+    data = sheet.get_all_values()
+
+    index_sheet = {}
+    for r, row in enumerate(data):
+        for c, val in enumerate(row):
+            if val not in index_sheet:
+                index_sheet[val] = []
+            index_sheet[val].append((r + 1, c + 1))
+    return index_sheet

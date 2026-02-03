@@ -1,25 +1,6 @@
-import re
-import dateparser
-import gspread
-from datetime import datetime
-from gspread_formatting import *
 from oauth2client.service_account import ServiceAccountCredentials
-from utils.functions import *
-from utils.dummies import *
-
-scope = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive",
-]
-
-creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "token.json",
-    scope,  # type: ignore
-)
-
-client = gspread.authorize(creds)  # type: ignore
-sheet_name = "API"
-spreadsheet = client.open(sheet_name)
+from utils.functions import extract_rgb_from_cell_coords
+import gspread
 
 
 def get_color_cours_mapping():
@@ -28,23 +9,23 @@ def get_color_cours_mapping():
         "https://www.googleapis.com/auth/drive",
     ]
 
-    creds = serviceaccountcredentials.from_json_keyfile_name(
+    creds = ServiceAccountCredentials.from_json_keyfile_name(
         "token.json",
         scope,  # type: ignore
     )
 
     client = gspread.authorize(creds)  # type: ignore
-    sheet_name = "api"
+    sheet_name = "API"
     spreadsheet = client.open(sheet_name)
     params = {
-        "includegriddata": true,
-        "fields": "sheets(data(rowdata(values(effectiveformat(backgroundcolorstyle)))))",
+        "includeGridData": True,
+        "fields": "sheets(data(rowData(values(effectiveFormat(backgroundColorStyle)))))",
     }
     metadata = spreadsheet.fetch_sheet_metadata(params=params)
     sheet = spreadsheet.get_worksheet(1)
 
     color_cours = {}
-    cell = sheet.find("qegr")
+    cell = sheet.find("QEGR")
     data = sheet.get_all_values()
 
     row_id = cell.row - 1
