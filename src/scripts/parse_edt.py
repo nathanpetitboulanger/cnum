@@ -104,6 +104,8 @@ except gspread.exceptions.APIError:
 
 set_with_dataframe(new_sheet, df)
 
+df.to_csv("finale.csv")
+
 
 def calcul_and_display_prof_houres():
     def get_prof_total_hours(df, prof: str):

@@ -191,7 +191,7 @@ def get_index_sheet(sheet):
     return index_sheet
 
 
-def get_best_index_from_delta(start, end, index_sheet, data):
+def get_best_coords_from_delta(start, end, index_sheet, data):
     """
     Return cours position form start and end. the index_sheet sheet is optainable with the function get_index_sheet
     Do not loop with get_index_sheet
@@ -206,8 +206,7 @@ def get_best_index_from_delta(start, end, index_sheet, data):
 
     index_date = index_sheet.get(end_date_str, [None])[0]
 
-    index_col_date = index_date[1]
-
+    index_col_date = index_date[1] - 1
     index_row_date = index_date[0]
 
     times_rows = data[index_row_date : index_row_date + 8]
@@ -229,7 +228,12 @@ def get_best_index_from_delta(start, end, index_sheet, data):
     best_idx_start_relative = best_idx_start_relative + index_date[0]
     best_idx_end_relative = best_idx_end_relative + index_date[0]
 
-    return best_idx_start_relative, best_idx_end_relative, index_row_date
+    return (
+        best_idx_start_relative + 1,
+        best_idx_end_relative + 1,
+        index_col_date,
+        index_col_date + 2,
+    )
 
 
 def get_merge_semaine(merge):

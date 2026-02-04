@@ -1,48 +1,80 @@
-def merge_cells_batch(
-    spreadsheet, start_row_indexs, end_row_indexs, start_col_idx, end_col_idx, sheet_idx
-):
+print("RELOAD")
+import numpy as np
+import pandas as pd
+
+
+def merge_cells_batch(spreadsheet, cells_data, sheet_idx):
     sheet = spreadsheet.get_worksheet(sheet_idx)
     requests = []
-
-    to_merge = zip(start_row_indexs, end_row_indexs, start_col_idx, end_col_idx)
 
     for (
         start_row_index,
         end_row_index,
         start_col_idx,
         end_col_idx,
-    ) in to_merge:
-        requests.append(
-            {
-                "mergeCells": {
-                    "range": {
-                        "sheetId": sheet.id,
-                        "startRowIndex": start_row_index,
-                        "endRowIndex": end_row_index,
-                        "startColumnIndex": start_col_idx,
-                        "endColumnIndex": end_col_idx,
-                    },
-                    "mergeType": "MERGE_ALL",
+        week,
+    ) in cells_data:
+        if pd.isna(week):
+            requests.append(
+                {
+                    "mergeCells": {
+                        "range": {
+                            "sheetId": sheet.id,
+                            "startRowIndex": start_row_index - 1,
+                            "endRowIndex": end_row_index,
+                            "startColumnIndex": start_col_idx,
+                            "endColumnIndex": end_col_idx,
+                        },
+                        "mergeType": "MERGE_ALL",
+                    }
                 }
-            }
-        )
-    spreadsheet.batch_update({"requests": requests})
+            )
+        elif week == "A":
+            requests.append(
+                {
+                    "mergeCells": {
+                        "range": {
+                            "sheetId": sheet.id,
+                            "startRowIndex": start_row_index - 1,
+                            "endRowIndex": end_row_index,
+                            "startColumnIndex": start_col_idx,
+                            "endColumnIndex": end_col_idx - 1,
+                        },
+                        "mergeType": "MERGE_ALL",
+                    }
+                }
+            )
+        elif week == "B":
+            requests.append(
+                {
+                    "mergeCells": {
+                        "range": {
+                            "sheetId": sheet.id,
+                            "startRowIndex": start_row_index - 1,
+                            "endRowIndex": end_row_index,
+                            "startColumnIndex": start_col_idx + 1,
+                            "endColumnIndex": end_col_idx,
+                        },
+                        "mergeType": "MERGE_ALL",
+                    }
+                }
+            )
+        else:
+            raise Warning(f"Coundnt determine a week parsing for {week}")
+
+    return spreadsheet.batch_update({"requests": requests})
 
 
-def unmerge_cells_batch(
-    spreadsheet, start_row_indexs, end_row_indexs, start_col_idx, end_col_idx, sheet_idx
-):
+def unmerge_cells_batch(spreadsheet, cells_data, sheet_idx):
     sheet = spreadsheet.get_worksheet(sheet_idx)
     requests = []
-
-    to_merge = zip(start_row_indexs, end_row_indexs, start_col_idx, end_col_idx)
 
     for (
         start_row_index,
         end_row_index,
         start_col_idx,
         end_col_idx,
-    ) in to_merge:
+    ) in cells_data:
         requests.append(
             {
                 "unmergeCells": {
@@ -117,21 +149,19 @@ def reset_sheet_color(spreadsheet, sheet_idx):
 
 def color_cells_batch(
     spreadsheet,
-    start_row_indexs,
-    start_col_indexs,
-    rgb_color,
+    cell_data,
     sheet_idx,
 ):
     sheet = spreadsheet.get_worksheet(sheet_idx)
     requests = []
 
-    to_color = zip(
-        start_row_indexs,
-        start_col_indexs,
-        rgb_color,
-    )
+    # to_color = zip(
+    #     start_row_indexs,
+    #     start_col_indexs,
+    #     rgb_color,
+    # )
 
-    for start_row, start_col, rgb_color in to_color:
+    for start_row_index, start_col_index, rgb_color in cell_data:
         color_dict = {
             "red": rgb_color[0],
             "green": rgb_color[1],
@@ -143,10 +173,10 @@ def color_cells_batch(
                 "repeatCell": {
                     "range": {
                         "sheetId": int(sheet.id),
-                        "startRowIndex": start_row,
-                        "endRowIndex": start_row + 1,
-                        "startColumnIndex": start_col,
-                        "endColumnIndex": start_col + 1,
+                        "startRowIndex": start_row_index - 1,
+                        "endRowIndex": start_row_index,
+                        "startColumnIndex": start_col_index,
+                        "endColumnIndex": start_col_index + 1,
                     },
                     "cell": {"userEnteredFormat": {"backgroundColor": color_dict}},
                     "fields": "userEnteredFormat.backgroundColor",
@@ -155,3 +185,50 @@ def color_cells_batch(
         )
 
     return spreadsheet.batch_update({"requests": requests})
+
+
+def write_cells_batch(spreadsheet, cell_data, sheet_idx):
+    """ """
+    sheet = spreadsheet.get_worksheet(sheet_idx)
+    requests = []
+
+    for row_index, col_index, value in cell_data:
+        value_key = "numberValue" if isinstance(value, (int, float)) else "stringValue"
+
+        requests.append(
+            {
+                "updateCells": {
+                    "range": {
+                        "sheetId": int(sheet.id),
+                        "startRowIndex": row_index - 1,
+                        "endRowIndex": row_index,
+                        "startColumnIndex": col_index,
+                        "endColumnIndex": col_index + 1,
+                    },
+                    "rows": [{"values": [{"userEnteredValue": {value_key: value}}]}],
+                    "fields": "userEnteredValue",
+                }
+            }
+        )
+
+    return spreadsheet.batch_update({"requests": requests})
+
+
+def check_overlaps(cells_data):
+    overlaps = []
+    n = len(cells_data)
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            # Extraction des coordonnées pour plus de clarté
+            r1_s, r1_e, c1_s, c1_e = cells_data[i]
+            r2_s, r2_e, c2_s, c2_e = cells_data[j]
+
+            # Vérification du chevauchement vertical
+            overlap_row = max(r1_s, r2_s) < min(r1_e, r2_e)
+            overlap_col = max(c1_s, c2_s) < min(c1_e, c2_e)
+
+            if overlap_row and overlap_col:
+                overlaps.append((cells_data[i], cells_data[j]))
+
+    return overlaps

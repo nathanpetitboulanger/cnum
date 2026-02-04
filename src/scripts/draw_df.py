@@ -5,7 +5,7 @@ import ast
 import gspread
 from datetime import datetime
 from gspread_formatting import *
-from oauth2client.service_account import serviceaccountcredentials
+from oauth2client.service_account import ServiceAccountCredentials
 import requests
 from utils.draw_function import (
     merge_cells_batch,
@@ -28,13 +28,13 @@ scope = [
     "https://www.googleapis.com/auth/drive",
 ]
 
-creds = serviceaccountcredentials.from_json_keyfile_name(
+creds = ServiceAccountCredentials.from_json_keyfile_name(
     "token.json",
     scope,  # type: ignore
 )
 
 client = gspread.authorize(creds)  # type: ignore
-sheet_name = "api"
+sheet_name = "API"
 spreadsheet = client.open(sheet_name)
 
 metadata = spreadsheet.fetch_sheet_metadata()
@@ -46,13 +46,13 @@ sheet = spreadsheet.get_worksheet(1)
 
 data = sheet.get_all_values()
 
-df = pd.read_csv("finale.csv").drop("unnamed: 0", axis=1)
+df = pd.read_csv("finale.csv").drop("Unnamed: 0", axis=1)
 
 
 df["start"] = pd.to_datetime(df["start"])
 
 df["end"] = pd.to_datetime(df["end"])
-df = df.sort_values("delta", ascending=false)
+df = df.sort_values("delta", ascending=False)
 
 start = df.iloc[0]["start"]
 end = df.iloc[0]["end"]
@@ -64,7 +64,7 @@ unmerge_entire_sheet(spreadsheet, sheet_idx=4)
 reset_sheet_color(spreadsheet, sheet_idx=4)
 
 
-for _, cell in df.head(0).iterrows():
+for _, cell in df.head(15).iterrows():
     start = cell.start
     end = cell.end
     week = cell.semaine
@@ -79,7 +79,7 @@ for _, cell in df.head(0).iterrows():
     merge_cells_batch(spreadsheet, [cell_data + [week]], sheet_idx=4)
     color_cells_batch(
         spreadsheet,
-        cell_data=[[start_row_index, start_col_index, ast.literal_eval(cell.rgb)]],
+        cell_data=[[start_row_index, start_col_index, ast.literal_eval(cell.RGB)]],
         sheet_idx=4,
     )
     write_cells_batch(
@@ -87,20 +87,3 @@ for _, cell in df.head(0).iterrows():
         cell_data=[[start_row_index, start_col_index, value]],
         sheet_idx=4,
     )
-
-
-d_sheet = spreadsheet.get_worksheet(4)
-
-
-def merge_cells(start_row, end_row, start_col, end_col):
-    start = rowcol_to_a1(start_row, start_col)
-    end = rowcol_to_a1(end_row, end_col)
-    plage = f"{start}:{end}"
-    d_sheet.merge_cells(plage)
-
-
-merge_cells(1, 2, 4, 5)
-unmerge_entire_sheet(spreadsheet, sheet_idx=4)
-
-d_sheet.format("A1", {"backgroundColor": {"red": 1.0, "green": 0.0, "blue": 0.0}})
-d_sheet.format("A1", {"backgroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}})
