@@ -187,7 +187,7 @@ def get_index_sheet(sheet):
         for c, val in enumerate(row):
             if val not in index_sheet:
                 index_sheet[val] = []
-            index_sheet[val].append((r + 1, c + 1))
+            index_sheet[val].append((r, c))
     return index_sheet
 
 

@@ -1,6 +1,7 @@
 print("RELOAD")
 import numpy as np
 import pandas as pd
+from babel.dates import format_date, format_time
 
 
 def merge_cells_batch(spreadsheet, cells_data, sheet_idx):
@@ -232,3 +233,43 @@ def check_overlaps(cells_data):
                 overlaps.append((cells_data[i], cells_data[j]))
 
     return overlaps
+
+
+def get_position_from_params(start, end, week, index_sheet, data):
+    """
+    find the corresponding position for params in a edt_clean row
+    """
+    date_str = format_date(start, format="full", locale="fr_FR")
+    date_position = index_sheet[date_str][0]
+
+    times_raw = [row[0] for row in data[date_position[0] + 1 : date_position[0] + 9]]
+    times_start = [time.split("\n")[0].strip() for time in times_raw]
+    times_end = [time.split("\n")[1].strip() for time in times_raw]
+
+    mapping_time_start = {v: k + date_position[0] for k, v in enumerate(times_start)}
+    mapping_time_end = {v: k + date_position[0] for k, v in enumerate(times_end)}
+
+    hour_start_str = start.strftime("%H:%M")
+    hour_end_str = end.strftime("%H:%M")
+
+    row_idx_start = mapping_time_start[hour_start_str]
+    row_idx_end = mapping_time_end[hour_end_str] + 1
+
+    if pd.isna(week):
+        col_idx_start = date_position[1]
+        col_idx_end = date_position[1] + 2
+    elif week == "A":
+        col_idx_start = date_position[1]
+        col_idx_end = date_position[1] + 1
+    elif week == "B":
+        col_idx_start = date_position[1] + 1
+        col_idx_end = date_position[1] + 2
+    else:
+        raise ValueError("Coudnt parse week")
+
+    return [
+        row_idx_start + 1,
+        row_idx_end + 1,
+        col_idx_start,
+        col_idx_end,
+    ]
