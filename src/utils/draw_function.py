@@ -1,4 +1,3 @@
-print("RELOAD")
 import numpy as np
 import pandas as pd
 from babel.dates import format_date, format_time

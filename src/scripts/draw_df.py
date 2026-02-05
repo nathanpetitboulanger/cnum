@@ -23,6 +23,13 @@ from utils.fetch_data import get_df_from_sheet_index
 from utils.clean_sheet import clean_all
 from config import edt_sheet_index
 from utils.functions import get_index_sheet
+import time
+
+print("Start Procssing EDT")
+time.sleep(1)
+print("Loading block data position")
+time.sleep(1)
+print("Launch interface")
 
 scope = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -56,6 +63,10 @@ requests_.append(get_request_unmerge_entire_sheet(draw_sheet))
 requests_.append(get_requests_reset_sheet_color(draw_sheet))
 requests_.append(get_request_clear_all_values(draw_sheet))
 
+
+spreadsheet.batch_update({"requests": requests_})
+
+requests_ = []
 requests_.extend(
     get_all_requests_from_df(
         df,
@@ -67,3 +78,4 @@ requests_.extend(
 
 
 spreadsheet.batch_update({"requests": requests_})
+print("All process are done")

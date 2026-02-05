@@ -11,6 +11,7 @@ from utils.functions import *
 parse edt
 """
 
+print("Start parsing EDT")
 
 scope = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -54,7 +55,6 @@ for merge in all_merges:
         df.loc[len(df)] = row
 
     except Exception as e:
-        print(e)
         pass
 
 
@@ -123,3 +123,6 @@ def calcul_and_display_prof_houres():
 
 
 calcul_and_display_prof_houres()
+
+
+print("Parsing finish")
