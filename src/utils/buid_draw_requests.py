@@ -1,3 +1,7 @@
+import ast
+from utils.draw_function import get_position_from_params
+
+
 def get_merge_request(
     sheet_id,
     start_row_index,
@@ -69,3 +73,38 @@ def get_write_request(sheet_id, row, col, value):
         }
     }
     return request
+
+
+def get_all_requests_from_df(
+    df,
+    index_sheet,
+    sheet_id,
+    data,
+):
+    all_requests = []
+
+    for k in range(len(df)):
+        row_test = k
+        start = df.iloc[row_test]["start"]
+        end = df.iloc[row_test]["end"]
+        week = df.iloc[row_test]["semaine"]
+        value = df.iloc[row_test]["cours"]
+        rgb_str = df.iloc[row_test]["RGB"]
+        rgb = ast.literal_eval(rgb_str)
+
+        positions = get_position_from_params(
+            start,
+            end,
+            week,
+            index_sheet,
+            data,
+        )
+
+        all_requests.append(get_merge_request(sheet_id, *positions))
+        all_requests.append(
+            get_color_request(sheet_id, positions[0], col=positions[2], rgb=rgb)
+        )
+        all_requests.append(
+            get_write_request(sheet_id, positions[0], positions[2], value=value)
+        )
+    return all_requests

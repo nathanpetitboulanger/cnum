@@ -77,3 +77,9 @@ def unmerge_entire_sheet(spreadsheet, sheet_idx):
         spreadsheet.batch_update({"requests": requests})
     except Exception as e:
         print(f"Erreur : {e}")
+
+
+def clean_all(spreadsheet, sheet_index):
+    unmerge_entire_sheet(spreadsheet, sheet_idx=sheet_index)
+    reset_sheet_color(spreadsheet, sheet_idx=sheet_index)
+    clear_all_values(spreadsheet, sheet_idx=sheet_index)

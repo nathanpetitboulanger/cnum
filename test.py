@@ -13,7 +13,7 @@ from utils.draw_function import (
     write_cells_batch,
     get_position_from_params,
 )
-from utils.clean_sheet import reset_sheet_color, clear_all_values, unmerge_entire_sheet
+from utils.clean_sheet import clean_all
 from utils.functions import get_best_coords_from_delta, get_index_sheet
 import pandas as pd
 import dateparser
@@ -23,6 +23,7 @@ from utils.buid_draw_requests import (
     get_merge_request,
     get_color_request,
     get_write_request,
+    get_all_requests_from_df,
 )
 from gspread.utils import rowcol_to_a1
 import plotly.express as px
@@ -53,59 +54,20 @@ sheet = spreadsheet.get_worksheet(1)
 
 data = sheet.get_all_values()
 
-df = (
-    (pd.read_csv("finale.csv").drop("Unnamed: 0", axis=1).sort_values("start"))
-    .reset_index(drop=True)
-    .reset_index()
-)
-
-# df = df.query("semaine == 'B'")
-
-# px.scatter(df, ["start", "end"], "index")
-
-
-df["start"] = pd.to_datetime(df["start"])
-
-df["end"] = pd.to_datetime(df["end"])
-df = df.sort_values("delta", ascending=False)
-
-row_test = 1
 
 index_sheet = get_index_sheet(sheet)
 data = sheet.get_all_values()
 
+
 ##clean sheet
-unmerge_entire_sheet(spreadsheet, sheet_idx=4)
-reset_sheet_color(spreadsheet, sheet_idx=4)
-clear_all_values(spreadsheet, sheet_idx=4)
+clean_all(spreadsheet, 4)
 
-all_requests = []
-
-for k in range(len(df)):
-    row_test = k
-    start = df.iloc[row_test]["start"]
-    end = df.iloc[row_test]["end"]
-    week = df.iloc[row_test]["semaine"]
-    value = df.iloc[row_test]["cours"]
-    rgb_str = df.iloc[row_test]["RGB"]
-    rgb = ast.literal_eval(rgb_str)
-
-    positions = get_position_from_params(
-        start,
-        end,
-        week,
-        index_sheet,
-        data,
-    )
-
-    all_requests.append(get_merge_request(sheet_id, *positions))
-    all_requests.append(
-        get_color_request(sheet_id, positions[0], col=positions[2], rgb=rgb)
-    )
-    all_requests.append(
-        get_write_request(sheet_id, positions[0], positions[2], value=value)
-    )
-
+all_requests = get_all_requests_from_df(
+    df,
+    index_sheet,
+    sheet_id,
+    data,
+)
 
 spreadsheet.batch_update({"requests": [all_requests]})
 

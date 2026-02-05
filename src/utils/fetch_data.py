@@ -1,6 +1,7 @@
 from oauth2client.service_account import ServiceAccountCredentials
 from utils.functions import extract_rgb_from_cell_coords
 import gspread
+import pandas as pd
 
 
 def get_color_cours_mapping():
@@ -39,3 +40,10 @@ def get_color_cours_mapping():
         col_id
 
     return color_cours
+
+
+def get_df():
+    df = pd.read_csv("finale.csv").drop("Unnamed: 0", axis=1)
+    df["start"] = pd.to_datetime(df["start"])
+    df["end"] = pd.to_datetime(df["end"])
+    return df
