@@ -239,6 +239,7 @@ def get_position_from_params(start, end, week, index_sheet, data):
     """
     find the corresponding position for params in a edt_clean row
     """
+
     date_str = format_date(start, format="full", locale="fr_FR")
     date_position = index_sheet[date_str][0]
 
@@ -255,7 +256,7 @@ def get_position_from_params(start, end, week, index_sheet, data):
     row_idx_start = mapping_time_start[hour_start_str]
     row_idx_end = mapping_time_end[hour_end_str] + 1
 
-    if pd.isna(week):
+    if pd.isna(week) or week == "":
         col_idx_start = date_position[1]
         col_idx_end = date_position[1] + 2
     elif week == "A":

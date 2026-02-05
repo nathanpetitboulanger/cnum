@@ -47,3 +47,29 @@ def get_df():
     df["start"] = pd.to_datetime(df["start"])
     df["end"] = pd.to_datetime(df["end"])
     return df
+
+
+def get_df_from_sheet_index(sheet_index: int):
+    """
+    return the df of a clean_worksheet
+    """
+
+    scope = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive",
+    ]
+
+    creds = ServiceAccountCredentials.from_json_keyfile_name(
+        "token.json",
+        scope,  # type: ignore
+    )
+
+    client = gspread.authorize(creds)  # type: ignore
+    sheet_name = "API"
+    spreadsheet = client.open(sheet_name)
+    sheet = spreadsheet.get_worksheet(3)
+    data = sheet.get_all_values()
+    df = pd.DataFrame(data[1:], columns=data[0:1][0])
+    df["start"] = pd.to_datetime(df["start"])
+    df["end"] = pd.to_datetime(df["end"])
+    return df

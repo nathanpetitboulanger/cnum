@@ -14,8 +14,9 @@ import dateparser
 from babel.dates import format_date, format_time
 import numpy as np
 from gspread.utils import rowcol_to_a1
-from utils.fetch_data import get_df
+from utils.fetch_data import get_df_from_sheet_index
 from utils.clean_sheet import clean_all
+
 
 scope = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -35,7 +36,7 @@ spreadsheet = client.open(sheet_name)
 edt = spreadsheet.get_worksheet(1)
 data = edt.get_all_values()
 index_sheet = get_index_sheet(edt)
-df = get_df()
+df = get_df_from_sheet_index(sheet_index=3)
 
 draw_sheet = spreadsheet.get_worksheet(4)
 
