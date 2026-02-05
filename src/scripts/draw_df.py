@@ -21,7 +21,8 @@ import numpy as np
 from gspread.utils import rowcol_to_a1
 from utils.fetch_data import get_df_from_sheet_index
 from utils.clean_sheet import clean_all
-
+from config import edt_sheet_index
+from utils.functions import get_index_sheet
 
 scope = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -38,7 +39,7 @@ sheet_name = "API"
 spreadsheet = client.open(sheet_name)
 
 
-edt = spreadsheet.get_worksheet(1)
+edt = spreadsheet.get_worksheet(edt_sheet_index)
 data = edt.get_all_values()
 index_sheet = get_index_sheet(edt)
 

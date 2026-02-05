@@ -3,7 +3,7 @@ import pandas as pd
 from gspread_dataframe import set_with_dataframe
 from oauth2client.service_account import ServiceAccountCredentials
 
-from config import edt_sheet_id
+from config import edt_sheet_index
 from utils.dummies import *
 from utils.functions import *
 
@@ -25,7 +25,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(
 client = gspread.authorize(creds)  # type: ignore
 sheet_name = "API"
 spreadsheet = client.open(sheet_name)
-sheet = spreadsheet.get_worksheet(edt_sheet_id)
+sheet = spreadsheet.get_worksheet(edt_sheet_index)
 data = sheet.get_all_values()
 all_merges = get_all_merges(sheet)
 
@@ -119,7 +119,7 @@ def calcul_and_display_prof_houres():
     )
     data_to_upload = [df_bilan.columns.tolist()] + df_bilan.values.tolist()
 
-    new_sheet.update(range_name="H1", values=data_to_upload)
+    new_sheet.update(range_name="M1", values=data_to_upload)
 
 
 calcul_and_display_prof_houres()
