@@ -25,7 +25,7 @@ def get_merge_request(
 
 
 def get_color_request(sheet_id, row, col, rgb):
-    request = {
+    request_ = {
         "repeatCell": {
             "range": {
                 "sheetId": sheet_id,
@@ -42,7 +42,7 @@ def get_color_request(sheet_id, row, col, rgb):
             "fields": "userEnteredFormat.backgroundColor",
         }
     }
-    return request
+    return request_
 
 
 def get_write_request(sheet_id, row, col, value):
@@ -59,7 +59,7 @@ def get_write_request(sheet_id, row, col, value):
     else:
         value_key = "stringValue"
 
-    request = {
+    request_ = {
         "repeatCell": {
             "range": {
                 "sheetId": sheet_id,
@@ -72,7 +72,7 @@ def get_write_request(sheet_id, row, col, value):
             "fields": "userEnteredValue",  # On précise qu'on ne change que la valeur
         }
     }
-    return request
+    return request_
 
 
 def get_all_requests_from_df(
@@ -80,7 +80,7 @@ def get_all_requests_from_df(
     index_sheet,
     sheet_id,
     data,
-):
+) -> list:
     all_requests = []
 
     for k in range(len(df)):
@@ -108,3 +108,66 @@ def get_all_requests_from_df(
             get_write_request(sheet_id, positions[0], positions[2], value=value)
         )
     return all_requests
+
+
+def get_request_unmerge_entire_sheet(sheet):
+    total_rows = sheet.row_count
+    total_cols = sheet.col_count
+
+    requests_ = [
+        {
+            "unmergeCells": {
+                "range": {
+                    "sheetId": int(sheet.id),
+                    "startRowIndex": 0,
+                    "endRowIndex": total_rows,
+                    "startColumnIndex": 0,
+                    "endColumnIndex": total_cols,
+                }
+            }
+        }
+    ]
+    return requests_
+
+
+def get_requests_reset_sheet_color(sheet):
+    total_rows = sheet.row_count
+    total_cols = sheet.col_count
+
+    requests_ = [
+        {
+            "repeatCell": {
+                "range": {
+                    "sheetId": int(sheet.id),
+                    "startRowIndex": 0,
+                    "endRowIndex": total_rows,
+                    "startColumnIndex": 0,
+                    "endColumnIndex": total_cols,
+                },
+                "cell": {
+                    "userEnteredFormat": {
+                        "backgroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}
+                    }
+                },
+                "fields": "userEnteredFormat.backgroundColor",
+            }
+        }
+    ]
+    return requests_
+
+
+def get_request_clear_all_values(sheet):
+    """
+    Génère une requête pour supprimer TOUTES les valeurs de la feuille
+    tout en conservant le formatage (couleurs, bordures, etc.).
+    """
+    request_ = {
+        "repeatCell": {
+            "range": {
+                "sheetId": int(sheet.id),
+            },
+            "cell": {},
+            "fields": "userEnteredValue",
+        }
+    }
+    return request_
