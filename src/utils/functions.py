@@ -151,31 +151,6 @@ def extract_rgb_form_merge(metadata, merge, sheet_id: int = 1):
     return extract_rgb_from_cell_coords(metadata, row_id, col_id, sheet_id)
 
 
-def extract_legend():
-    params = {
-        "includeGridData": True,
-        "fields": "sheets(data(rowData(values(effectiveFormat(backgroundColorStyle)))))",
-    }
-    meta_data = spreadsheet.fetch_sheet_metadata(params=params)
-
-    col_nom = 13
-    actual_row = 0
-    col_color = 14
-    color_mapping = {}
-
-    while True:
-        col = extract_rgb_from_cell_coords(meta_data, actual_row, col_color)
-
-        if col == (1, 1, 1):
-            break
-
-        nom_cellule = data[actual_row][col_nom]
-        color_mapping[nom_cellule] = col
-        actual_row += 1
-
-    return color_mapping
-
-
 def get_index_sheet(sheet):
     """
     Return the index of the sheet once for the API rates actual_time_position
