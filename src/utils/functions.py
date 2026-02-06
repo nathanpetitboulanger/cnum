@@ -3,7 +3,8 @@ from datetime import datetime
 from gspread_formatting import *
 import dateparser
 from babel.dates import format_date, format_time
-from gspread import spreadsheet
+from gspread import Worksheet, spreadsheet
+from typing import Mapping
 
 
 def get_cell_color(spreadsheet, sheet_numbrer: int, row: int, col: int):
@@ -151,31 +152,6 @@ def extract_rgb_form_merge(metadata, merge, sheet_id: int = 1):
     return extract_rgb_from_cell_coords(metadata, row_id, col_id, sheet_id)
 
 
-def extract_legend():
-    params = {
-        "includeGridData": True,
-        "fields": "sheets(data(rowData(values(effectiveFormat(backgroundColorStyle)))))",
-    }
-    meta_data = spreadsheet.fetch_sheet_metadata(params=params)
-
-    col_nom = 13
-    actual_row = 0
-    col_color = 14
-    color_mapping = {}
-
-    while True:
-        col = extract_rgb_from_cell_coords(meta_data, actual_row, col_color)
-
-        if col == (1, 1, 1):
-            break
-
-        nom_cellule = data[actual_row][col_nom]
-        color_mapping[nom_cellule] = col
-        actual_row += 1
-
-    return color_mapping
-
-
 def get_index_sheet(sheet):
     """
     Return the index of the sheet once for the API rates actual_time_position
@@ -253,40 +229,6 @@ def get_merge_semaine(merge):
         raise ValueError("Pas de merge trouvé")
 
 
-def extract_legend():
-    params = {
-        "includeGridData": True,
-        "fields": "sheets(data(rowData(values(effectiveFormat(backgroundColorStyle)))))",
-    }
-    meta_data = spreadsheet.fetch_sheet_metadata(params=params)
-
-    col_nom = 13
-    actual_row = 0
-    col_color = 14
-    color_mapping = {}
-
-    while True:
-        col = extract_rgb_from_cell_coords(meta_data, actual_row, col_color)
-
-        if col == (1, 1, 1):
-            break
-
-        nom_cellule = data[actual_row][col_nom]
-        color_mapping[nom_cellule] = col
-        actual_row += 1
-
-    color_mapping_reversed = {couleur: nom for nom, couleur in color_mapping.items()}
-
-    return color_mapping_reversed
-
-
-def add_col_group_to_df_with_RGB(df):
-    cours_legend = extract_legend()
-    cours_legend_pd = pd.Series(cours_legend)
-    df["type_cours"] = df["RGB"].map(cours_legend_pd)
-    return df
-
-
 def calcul_and_display_group_hours():
     sum_hours_by_class = df.groupby("type_cours")["delta"].sum().reset_index()
     data_to_send = [
@@ -314,3 +256,6 @@ def calcul_and_display_group_hours():
 
     last_row = len(data_to_send)
     format_cell_range(new_sheet, f"P2:Q{last_row}", body_format)
+
+
+extract_name_from_code(data)
