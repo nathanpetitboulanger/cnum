@@ -44,18 +44,5 @@ sheet_name = "API"
 spreadsheet = client.open(sheet_name)
 
 metadata = spreadsheet.fetch_sheet_metadata()
-draw_sheet = spreadsheet.get_worksheet(4)
+
 edt_sheet = spreadsheet.get_worksheet(edt_sheet_index)
-
-
-df = get_df_from_sheet_index(3)
-PROF = "Séraphine Grellier"
-
-sheet_prof = draw_sheet_for_prof(
-    df,
-    spreadsheet,
-    edt_sheet,
-    PROF,
-)
-
-spreadsheet.del_worksheet(sheet_prof)

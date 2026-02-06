@@ -46,7 +46,9 @@ def get_color_request(sheet_id, row, col, rgb):
 
 
 def get_write_request(sheet_id, row, col, value):
-    """ """
+    """
+    Use it for write a value in a cell
+    """
     if isinstance(value, bool):
         value_key = "boolValue"
     elif isinstance(value, (int, float)):
@@ -81,6 +83,10 @@ def get_all_requests_from_df(
     sheet_id,
     data,
 ) -> list:
+    """
+    iterate over a df an return a list of request
+    """
+
     all_requests = []
 
     for k in range(len(df)):

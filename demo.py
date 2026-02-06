@@ -1,4 +1,3 @@
-from re import sub
 import subprocess
 from utils.fetch_data import get_df_from_sheet_index
 from main_functions.build_sheets import draw_sheet_for_prof
@@ -10,7 +9,6 @@ from config import edt_sheet_index
 subprocess.run(["uv", "run", "src/scripts/parse_edt.py"])
 
 subprocess.run(["uv", "run", "src/scripts/draw_df.py"])
-
 
 scope = [
     "https://www.googleapis.com/auth/spreadsheets",
