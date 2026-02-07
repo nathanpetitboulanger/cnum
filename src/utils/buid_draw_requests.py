@@ -177,3 +177,75 @@ def get_request_clear_all_values(sheet):
         }
     }
     return request_
+
+
+def get_request_for_reset_cells(
+    sheet,
+    row_index,
+    col_index,
+    nrows,
+    ncols,
+):
+    target_range = {
+        "sheetId": sheet.id,
+        "startRowIndex": row_index,  # Ex: ligne 67
+        "endRowIndex": row_index + nrows,
+        "startColumnIndex": col_index,
+        "endColumnIndex": col_index + ncols,
+    }
+
+    request_unmerge, request_uncolor_void = (
+        {"unmergeCells": {"range": target_range}},
+        {
+            "repeatCell": {
+                "range": target_range,
+                "cell": {
+                    "userEnteredFormat": {
+                        "backgroundColor": {"red": 1, "green": 1, "blue": 1}  # Blanc
+                    },
+                    "userEnteredValue": {},
+                },
+                "fields": "userEnteredFormat.backgroundColor,userEnteredValue",
+            }
+        },
+    )
+
+    requests_list = [request_unmerge, request_uncolor_void]
+
+    return requests_list
+
+
+def get_request_for_grey_cells(
+    sheet,
+    row_index,
+    col_index,
+    nrows,
+    ncols,
+):
+    target_range = {
+        "sheetId": sheet.id,
+        "startRowIndex": row_index,  # Ex: ligne 67
+        "endRowIndex": row_index + nrows,
+        "startColumnIndex": col_index,
+        "endColumnIndex": col_index + ncols,
+    }
+
+    request_color_grey = {
+        "repeatCell": {
+            "range": target_range,
+            "cell": {
+                "userEnteredFormat": {
+                    "backgroundColor": {
+                        "red": 0.8,
+                        "green": 0.8,
+                        "blue": 0.8,
+                    }  # Grey
+                },
+            },
+            "fields": "userEnteredFormat.backgroundColor",
+        }
+    }
+
+    requests_list = [request_color_grey]
+
+    return requests_list

@@ -2,7 +2,6 @@ import gspread
 import pandas as pd
 from gspread_dataframe import set_with_dataframe
 from oauth2client.service_account import ServiceAccountCredentials
-
 from config import edt_sheet_index
 from utils.dummies import *
 from utils.functions import *
@@ -102,7 +101,14 @@ try:
 except gspread.exceptions.APIError:
     new_sheet = spreadsheet.worksheet(new_sheet_title)
 
-set_with_dataframe(new_sheet, df)
+
+df_export = df.copy()
+df_export["prof"] = df_export["prof"].apply(
+    lambda x: ", ".join(x) if isinstance(x, list) else str(x)
+)
+
+
+set_with_dataframe(new_sheet, df_export)
 
 df.to_csv("finale.csv")
 

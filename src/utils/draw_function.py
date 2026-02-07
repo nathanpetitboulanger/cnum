@@ -124,7 +124,7 @@ def check_overlaps(cells_data):
 
 def get_position_from_params(start, end, week, index_sheet, data):
     """
-    find the corresponding position for params in a edt_clean row
+    find the corresponding position for parameters in a EDT clean row
     """
 
     date_str = format_date(start, format="full", locale="fr_FR")

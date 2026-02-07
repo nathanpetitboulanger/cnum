@@ -116,14 +116,14 @@ def get_time_delta_from_merge(data, merge):
     return (start_datetime, end_datetime)
 
 
-def parse_profs(text: str) -> list[str] | None:
+def parse_profs(text: str) -> list[str]:
     bracket_match = re.search(r"\(([^a-z]+)\)", text)
     if bracket_match:
         content = bracket_match.group(1)
         initiales = re.findall(r"[A-Z]{2}", content)
         return initiales
     else:
-        return
+        return []
 
 
 def clean_cours_name(cours: str):
