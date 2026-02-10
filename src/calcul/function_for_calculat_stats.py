@@ -3,74 +3,74 @@ import pandas as pd
 
 def get_prof_hours_summary(df):
     """
-    Prend le DF de l'EDT et retourne un résumé : Professeur | Total Heures
+    Takes the timetable DF and returns a summary: Professor | Total Hours
     """
     df = df.copy()
     df = df.loc[:, ~df.columns.duplicated()]
 
-    # 1. Nettoyage rapide des heures
+    # 1. Quick hours cleaning
     df["delta"] = pd.to_numeric(
         df["delta"].astype(str).str.replace(",", "."), errors="coerce"
     ).fillna(0)  # type: ignore
 
-    # 2. Séparation des professeurs (si plusieurs par ligne)
+    # 2. Separate professors (if multiple per row)
     df_exploded = (
         df.assign(prof=df["prof"].str.split(",")).explode("prof").query("prof != ''")
     )
     df_exploded["prof"] = df_exploded["prof"].str.strip()
 
-    # 3. Calcul de la somme par professeur
+    # 3. Calculate sum per professor
     summary = df_exploded.groupby("prof")["delta"].sum().reset_index()
-    summary.columns = ["professeur", "total_hours"]
+    summary.columns = ["professor", "total_hours"]
 
     return summary.sort_values(by="total_hours", ascending=False)
 
 
 def get_total_hours_prof_by_week(df):
     """
-    Retourne un DF du total d'heures par prof par semaine.
+    Returns a DF of total hours per professor per week.
     """
     df = df.copy()
     df = df.loc[:, ~df.columns.duplicated()]
 
-    # 1. Conversion en datetime et extraction de la semaine et du lundi
+    # 1. Convert to datetime and extract week and Monday
     df["start"] = pd.to_datetime(df["start"])
     df["week"] = df["start"].dt.strftime("%Y-W%V")
-    df["date_lundi"] = df["start"].dt.to_period("W").dt.start_time
+    df["monday_date"] = df["start"].dt.to_period("W").dt.start_time
 
-    # 2. Nettoyage des heures
+    # 2. Hours cleaning
     df["delta"] = pd.to_numeric(
         df["delta"].astype(str).str.replace(",", "."), errors="coerce"
     ).fillna(0)  # type: ignore
 
-    # 3. Séparation des professeurs
+    # 3. Separate professors
     df_exploded = (
         df.assign(prof=df["prof"].str.split(",")).explode("prof").query("prof != ''")
     )
     df_exploded["prof"] = df_exploded["prof"].str.strip()
 
-    # 4. Calcul de la somme par semaine (et date) et par professeur
+    # 4. Calculate sum per week (and date) and per professor
     summary = (
-        df_exploded.groupby(["week", "date_lundi", "prof"])["delta"].sum().reset_index()
+        df_exploded.groupby(["week", "monday_date", "prof"])["delta"].sum().reset_index()
     )
-    summary.columns = ["semaine", "date_lundi", "professeur", "total_hours"]
+    summary.columns = ["week", "monday_date", "professor", "total_hours"]
 
-    return summary.sort_values(by=["semaine", "total_hours"], ascending=[True, False])
+    return summary.sort_values(by=["week", "total_hours"], ascending=[True, False])
 
 
 def get_type_cours_hours_summary(df):
     """
-    Prend le DF de l'EDT et retourne un résumé : Type de Cours | Total Heures
+    Takes the timetable DF and returns a summary: Course Type | Total Hours
     """
     df = df.copy()
     df = df.loc[:, ~df.columns.duplicated()]
 
-    # 1. Nettoyage rapide des heures
+    # 1. Quick hours cleaning
     df["delta"] = pd.to_numeric(
         df["delta"].astype(str).str.replace(",", "."), errors="coerce"
     ).fillna(0)  # type: ignore
 
-    # 2. Séparation des types de cours (si plusieurs par ligne)
+    # 2. Separate course types (if multiple per row)
     df_exploded = (
         df.assign(type_cours=df["type_cours"].str.split(","))
         .explode("type_cours")
@@ -79,31 +79,31 @@ def get_type_cours_hours_summary(df):
 
     df_exploded["type_cours"] = df_exploded["type_cours"].str.strip()
 
-    # 3. Calcul de la somme par type de cours
+    # 3. Calculate sum per course type
     summary = df_exploded.groupby("type_cours")["delta"].sum().reset_index()
-    summary.columns = ["type_cours", "total_hours"]
+    summary.columns = ["course_type", "total_hours"]
 
     return summary.sort_values(by="total_hours", ascending=False)
 
 
 def get_total_hours_type_cours_by_week(df):
     """
-    Retourne un DF du total d'heures par type de cours par semaine.
+    Returns a DF of total hours per course type per week.
     """
     df = df.copy()
     df = df.loc[:, ~df.columns.duplicated()]
 
-    # 1. Conversion en datetime et extraction de la semaine et du lundi
+    # 1. Convert to datetime and extract week and Monday
     df["start"] = pd.to_datetime(df["start"])
     df["week"] = df["start"].dt.strftime("%Y-W%V")
-    df["date_lundi"] = df["start"].dt.to_period("W").dt.start_time
+    df["monday_date"] = df["start"].dt.to_period("W").dt.start_time
 
-    # 2. Nettoyage des heures
+    # 2. Hours cleaning
     df["delta"] = pd.to_numeric(
         df["delta"].astype(str).str.replace(",", "."), errors="coerce"
     ).fillna(0)  # type: ignore
 
-    # 3. Séparation des types de cours
+    # 3. Separate course types
     df_exploded = (
         df.assign(type_cours=df["type_cours"].str.split(","))
         .explode("type_cours")
@@ -111,64 +111,63 @@ def get_total_hours_type_cours_by_week(df):
     )
     df_exploded["type_cours"] = df_exploded["type_cours"].str.strip()
 
-    # 4. Calcul de la somme par semaine (et date) et par type de cours
+    # 4. Calculate sum per week (and date) and per course type
     summary = (
-        df_exploded.groupby(["week", "date_lundi", "type_cours"])["delta"]
+        df_exploded.groupby(["week", "monday_date", "type_cours"])["delta"]
         .sum()
         .reset_index()
     )
-    summary.columns = ["semaine", "date_lundi", "type_cours", "total_hours"]
+    summary.columns = ["week", "monday_date", "course_type", "total_hours"]
 
-    return summary.sort_values(by=["semaine", "total_hours"], ascending=[True, False])
+    return summary.sort_values(by=["week", "total_hours"], ascending=[True, False])
 
 
 def get_group_etudiant_hours_summary(df):
     """
-    Prend le DF de l'EDT et retourne un résumé : Groupe Étudiant | Total Heures
+    Takes the timetable DF and returns a summary: Student Group | Total Hours
     """
     df = df.copy()
     df = df.loc[:, ~df.columns.duplicated()]
 
-    # 1. Nettoyage rapide des heures
+    # 1. Quick hours cleaning
     df["delta"] = pd.to_numeric(
         df["delta"].astype(str).str.replace(",", "."), errors="coerce"
     ).fillna(0)  # type: ignore
 
-    # 2. Séparation des groupes (si plusieurs par ligne)
+    # 2. Separate groups (if multiple per row)
     df_exploded = (
         df.assign(groupe_etudiant=df["groupe_etudiant"].str.split(","))
         .explode("groupe_etudiant")
         .query("groupe_etudiant != ''")
     )
-    df_exploded.groupe_etudiant.unique()
 
     df_exploded["groupe_etudiant"] = df_exploded["groupe_etudiant"].str.strip()
 
-    # 3. Calcul de la somme par groupe
+    # 3. Calculate sum per group
     summary = df_exploded.groupby("groupe_etudiant")["delta"].sum().reset_index()
-    summary.columns = ["groupe_etudiant", "total_hours"]
+    summary.columns = ["student_group", "total_hours"]
 
     return summary.sort_values(by="total_hours", ascending=False)
 
 
 def get_total_hours_group_etudiant_by_week(df):
     """
-    Retourne un DF du total d'heures par groupe étudiant par semaine.
+    Returns a DF of total hours per student group per week.
     """
     df = df.copy()
     df = df.loc[:, ~df.columns.duplicated()]
 
-    # 1. Conversion en datetime et extraction de la semaine et du lundi
+    # 1. Convert to datetime and extract week and Monday
     df["start"] = pd.to_datetime(df["start"])
     df["week"] = df["start"].dt.strftime("%Y-W%V")
-    df["date_lundi"] = df["start"].dt.to_period("W").dt.start_time
+    df["monday_date"] = df["start"].dt.to_period("W").dt.start_time
 
-    # 2. Nettoyage des heures
+    # 2. Hours cleaning
     df["delta"] = pd.to_numeric(
         df["delta"].astype(str).str.replace(",", "."), errors="coerce"
     ).fillna(0)  # type: ignore
 
-    # 3. Séparation des groupes
+    # 3. Separate groups
     df_exploded = (
         df.assign(groupe_etudiant=df["groupe_etudiant"].str.split(","))
         .explode("groupe_etudiant")
@@ -176,12 +175,12 @@ def get_total_hours_group_etudiant_by_week(df):
     )
     df_exploded["groupe_etudiant"] = df_exploded["groupe_etudiant"].str.strip()
 
-    # 4. Calcul de la somme par semaine (et date) et par groupe
+    # 4. Calculate sum per week (and date) and per group
     summary = (
-        df_exploded.groupby(["week", "date_lundi", "groupe_etudiant"])["delta"]
+        df_exploded.groupby(["week", "monday_date", "groupe_etudiant"])["delta"]
         .sum()
         .reset_index()
     )
-    summary.columns = ["semaine", "date_lundi", "groupe_etudiant", "total_hours"]
+    summary.columns = ["week", "monday_date", "student_group", "total_hours"]
 
-    return summary.sort_values(by=["semaine", "total_hours"], ascending=[True, False])
+    return summary.sort_values(by=["week", "total_hours"], ascending=[True, False])

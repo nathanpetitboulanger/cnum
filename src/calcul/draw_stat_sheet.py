@@ -7,6 +7,7 @@ from gspread_formatting import (
     TextFormat,
     Color,
 )
+from concurrent.futures import ThreadPoolExecutor
 from calcul.function_for_calculat_stats import (
     get_prof_hours_summary,
     get_total_hours_prof_by_week,
@@ -18,29 +19,29 @@ from calcul.function_for_calculat_stats import (
 from utils.fetch_data import get_df_from_sheet_name, get_spreadsheet
 from utils.clean_sheet import clean_all
 
-# Configuration des positions des tables
+# Table positions configuration
 TABLE_CONFIG = {
     "prof": {
-        "title": "Récapitulatif Global par Professeur",
+        "title": "Global Professor Summary",
         "col": 1,
     },
-    "week": {"title": "Récapitulatif Hebdo Professeur", "col": 4},
-    "type": {"title": "Récapitulatif Global Type", "col": 9},
-    "week_type": {"title": "Récapitulatif Hebdo Type", "col": 12},
+    "week": {"title": "Weekly Professor Summary", "col": 4},
+    "type": {"title": "Global Type Summary", "col": 9},
+    "week_type": {"title": "Weekly Type Summary", "col": 12},
     "group": {
-        "title": "Récapitulatif Global Groupe",
+        "title": "Global Group Summary",
         "col": 17,
     },
     "week_group": {
-        "title": "Récapitulatif Hebdo Groupe",
+        "title": "Weekly Group Summary",
         "col": 20,
     },
 }
 
 
 def fetch_and_calculate_all_stats(df):
-    """Calcule tous les résumés statistiques."""
-    print("Calcul des statistiques...")
+    """Calculates all statistical summaries."""
+    print("Calculating statistics...")
     return {
         "prof": get_prof_hours_summary(df),
         "week": get_total_hours_prof_by_week(df),
@@ -52,32 +53,45 @@ def fetch_and_calculate_all_stats(df):
 
 
 def prepare_stats_sheet(spreadsheet):
-    """Récupère ou crée la feuille 'stats' et la nettoie."""
+    """Retrieves or creates the 'stats' sheet and cleans it."""
     try:
         stats_sheet = spreadsheet.worksheet("stats")
     except gspread.exceptions.WorksheetNotFound:
-        print("Création de la feuille 'stats'...")
+        print("Creating 'stats' sheet...")
         stats_sheet = spreadsheet.add_worksheet(title="stats", rows="100", cols="30")
 
-    print("Nettoyage de la feuille 'stats'...")
+    print("Cleaning 'stats' sheet...")
     clean_all(spreadsheet, stats_sheet.index)
     return stats_sheet
 
 
+def _write_single_table(stats_sheet, key, config, df):
+    """Worker function to write a single table (Title + Data)."""
+    # Title
+    stats_sheet.update_acell(f"{chr(64 + config['col'])}1", config["title"])
+    # Data
+    set_with_dataframe(stats_sheet, df, row=2, col=config["col"])
+
+
 def write_all_tables(stats_sheet, stats_dict):
-    """Écrit les titres et les DataFrames dans la feuille."""
-    print("Écriture des tableaux...")
-    for key, config in TABLE_CONFIG.items():
-        df = stats_dict[key]
-        # Titre
-        stats_sheet.update_acell(f"{chr(64 + config['col'])}1", config["title"])
-        # Données
-        set_with_dataframe(stats_sheet, df, row=2, col=config["col"])
+    """Writes titles and DataFrames to the sheet in parallel."""
+    print("Writing tables in parallel...")
+    with ThreadPoolExecutor() as executor:
+        # Launch all writes simultaneously
+        futures = [
+            executor.submit(
+                _write_single_table, stats_sheet, key, config, stats_dict[key]
+            )
+            for key, config in TABLE_CONFIG.items()
+        ]
+        # Wait for all tasks to complete
+        for future in futures:
+            future.result()
 
 
 def apply_modern_formatting(stats_sheet, stats_dict):
-    """Applique le formatage (Titres, Headers, Zebra)."""
-    print("Application du formatage et zebra striping...")
+    """Applies formatting (Titles, Headers, Zebra)."""
+    print("Applying formatting and zebra striping...")
 
     title_format = CellFormat(
         textFormat=TextFormat(
@@ -101,16 +115,16 @@ def apply_modern_formatting(stats_sheet, stats_dict):
         end_col_letter = chr(64 + end_col)
         start_col_letter = chr(64 + start_col)
 
-        # 1. Format Titre (Ligne 1)
+        # 1. Title Format (Row 1)
         format_ranges.append((f"{start_col_letter}1", title_format))
 
-        # 2. Format Header (Ligne 2)
+        # 2. Header Format (Row 2)
         format_ranges.append((f"{start_col_letter}2:{end_col_letter}2", header_format))
 
         # 3. Zebra Striping
         for i in range(len(df)):
             if i % 2 == 1:
-                row_idx = 3 + i  # Ligne 3 est la première ligne de données
+                row_idx = 3 + i  # Row 3 is the first data row
                 format_ranges.append(
                     (
                         f"{start_col_letter}{row_idx}:{end_col_letter}{row_idx}",
@@ -122,13 +136,13 @@ def apply_modern_formatting(stats_sheet, stats_dict):
 
 
 def draw_stats():
-    """Fonction principale orchestrant la mise à jour des stats."""
+    """Main function orchestrating the stats update."""
     spreadsheet = get_spreadsheet()
 
-    print("Récupération des données depuis 'edt_clean'...")
+    print("Fetching data from 'edt_clean'...")
     df = get_df_from_sheet_name("edt_clean")
     if df.empty:
-        print("Erreur : Le DataFrame est vide.")
+        print("Error: DataFrame is empty.")
         return
 
     stats_dict = fetch_and_calculate_all_stats(df)
@@ -137,8 +151,9 @@ def draw_stats():
     write_all_tables(stats_sheet, stats_dict)
     apply_modern_formatting(stats_sheet, stats_dict)
 
-    print("Terminé ! Les statistiques sont disponibles dans la feuille 'stats'.")
+    print("Done! Statistics are available in the 'stats' sheet.")
 
 
 if __name__ == "__main__":
     draw_stats()
+
