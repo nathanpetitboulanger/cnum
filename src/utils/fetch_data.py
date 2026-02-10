@@ -9,6 +9,7 @@ from config import (
     SCOPES,
     edt_sheet_index,
 )
+from pyasn1_modules.rfc5208 import sha1WithRSAEncryption
 from utils.functions import extract_rgb_from_cell_coords
 
 
@@ -93,6 +94,31 @@ def get_df_from_sheet_index(sheet_index: int):
     return df
 
 
+def get_df_from_sheet_name(sheet_name: str = "edt_clean"):
+    """
+    Returns a pandas DataFrame of a clean_worksheet by its name.
+    Automatically parses 'start' and 'end' columns as datetimes.
+    """
+    spreadsheet = get_spreadsheet()
+    sheet = spreadsheet.worksheet(sheet_name)
+    data = sheet.get_all_values()
+
+    if not data:
+        return pd.DataFrame()
+
+    # Create DataFrame using the first row as columns
+    headers = data[0]
+    rows = data[1:]
+    df = pd.DataFrame(rows, columns=headers)
+
+    # Convert date columns if they exist
+    for date_col in ["start", "end"]:
+        if date_col in df.columns:
+            df[date_col] = pd.to_datetime(df[date_col])
+
+    return df
+
+
 def extract_legend(
     meta_data: Mapping,
     sheet_param: gspread.Worksheet,
@@ -124,9 +150,12 @@ def extract_legend(
 
 
 def extract_name_from_code(data: list[list]):
-    col_code = 0
-    actual_row = 9
-    col_teacher = 1
+    """
+    need data from params sheet
+    """
+    col_code = 3
+    actual_row = 1
+    col_teacher = 4
     teacher_code = {}
 
     while True:
@@ -140,3 +169,12 @@ def extract_name_from_code(data: list[list]):
         actual_row += 1
 
     return teacher_code
+
+
+def get_mapping_dict_for_name(spreadsheet):
+    sheet = spreadsheet.worksheet("Paramètres")  # type: ignore
+    data_params = sheet.get_all_values()
+    names_codes = extract_name_from_code(data_params)
+
+    coodes_names = pd.Series(names_codes)
+    return coodes_names

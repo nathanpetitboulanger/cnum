@@ -5,6 +5,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from config import edt_sheet_index, CREDENTIALS_FILE, SCOPES, DEFAULT_SPREADSHEET_NAME
 from utils.dummies import *
 from utils.functions import *
+from utils.fetch_data import extract_name_from_code
 
 """
 parse edt
@@ -26,7 +27,7 @@ all_merges = get_all_merges(sheet)
 params = {
     "fields": "sheets(data(rowData(values(effectiveFormat(backgroundColorStyle)))))"
 }
-metadata = spreadsheet.fetch_sheet_metadata(params=params)
+metadata = spreadsheet.fetch_sheet_metadata(params=params)  # type: ignore
 
 df = pd.DataFrame(columns=["cours", "start", "end", "prof", "RGB", "semaine"])
 
@@ -55,29 +56,26 @@ df["delta"] = df["end"] - df["start"]
 df["delta"] = df["delta"].dt.total_seconds() / 3600
 
 
-# Map names
-corr_names = {
-    "BP": "Benjamin Pey",
-    "CF": "Clément Fabre",
-    "DS": "David Sheeren",
-    "JPS": "Jean",
-    "LB": "Laurie Boithias",
-    "LD": "Laurie Dunn",
-    "RLH": "Lucas Hardouin",
-    "MG": "Maritxu Guiresse",
-    "ML": "Marc Lang",
-    "RT": "Roman Teisserenc",
-    "YG": "Youen Grusson",
-    "SG": "Séraphine Grellier",
-    "BD": "Bruno Dumora",
-}
-coor_names = pd.Series(corr_names)
+def get_mapping_dict_for_name(spreadsheet):
+    sheet = spreadsheet.worksheet("Paramètres")  # type: ignore
+    data_params = sheet.get_all_values()
+    names_codes = extract_name_from_code(data_params)
+
+    coodes_names = pd.Series(names_codes)
+    return coodes_names
+
+
+corr_names = get_mapping_dict_for_name(spreadsheet)
 
 
 def transformer_initiales(liste_initiales):
+    """
+    Convertit une liste d'initiales de professeurs (ex: ['ML', 'BP'])
+    en leurs noms complets respectifs en utilisant le dictionnaire de correspondance.
+    """
     if not isinstance(liste_initiales, list):
         return []
-    return [coor_names.get(init, init) for init in liste_initiales]
+    return [corr_names.get(init, init) for init in liste_initiales]
 
 
 df["prof"] = df["prof"].apply(transformer_initiales)
@@ -105,24 +103,6 @@ df_export["prof"] = df_export["prof"].apply(
 set_with_dataframe(new_sheet, df_export)
 
 df.to_csv("finale.csv")
-
-
-def calcul_and_display_prof_houres():
-    def get_prof_total_hours(df, prof: str):
-        df_filtered = df[df["prof"].apply(lambda x: any(prof in nom for nom in x))]
-        return df_filtered["delta"].sum()
-
-    prof_time_sum = {prof: get_prof_total_hours(df, prof) for prof in coor_names.values}
-
-    df_bilan = pd.DataFrame(
-        prof_time_sum.items(), columns=["Professeur", "Total Heures"]
-    )
-    data_to_upload = [df_bilan.columns.tolist()] + df_bilan.values.tolist()
-
-    new_sheet.update(range_name="M1", values=data_to_upload)
-
-
-calcul_and_display_prof_houres()
 
 
 print("Parsing finish")

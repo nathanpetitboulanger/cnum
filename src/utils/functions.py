@@ -140,6 +140,7 @@ def get_head_cell_coords_from_merge(merge):
 
 from config import edt_sheet_index
 
+
 def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = edt_sheet_index):
     sheet_data = metadata["sheets"][sheet_id]["data"][0]
     row_data = sheet_data.get("rowData", [])
@@ -258,6 +259,3 @@ def calcul_and_display_group_hours():
 
     last_row = len(data_to_send)
     format_cell_range(new_sheet, f"P2:Q{last_row}", body_format)
-
-
-extract_name_from_code(data)

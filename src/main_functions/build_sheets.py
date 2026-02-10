@@ -123,7 +123,7 @@ def create_preview_edt_prof(
     )
 
     # 2. Delete courses to get skeleton
-    delete_cours_in_edt(spreadsheet, new_sheet)
+    grey_out_cours_in_edt(spreadsheet, new_sheet)
 
     # 3. Draw prof courses
     PROF = prof
