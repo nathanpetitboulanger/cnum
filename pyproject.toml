@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
+
 dependencies = [
+  "altair>=5.0.0",             # OK : Les versions récentes de Streamlit gèrent la v5
   "babel>=2.17.0",
   "dateparser>=1.2.2",
   "gspread>=6.2.1",
@@ -14,8 +16,10 @@ dependencies = [
   "ipykernel>=7.1.0",
   "ipython>=9.9.0",
   "oauth2client>=4.1.3",
-  "pandas>=3.0.0",
+  "pandas>=2.2.0,<3.0.0",      # LE COMPROMIS : On bloque juste avant la v3
   "plotly>=6.5.2",
+  "setuptools>=82.0.0",
+  "streamlit>=1.40.0",         # Très important pour la compatibilité Altair 5
 ]
 
 [build-system]

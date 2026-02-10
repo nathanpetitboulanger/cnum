@@ -5,7 +5,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from config import edt_sheet_index, CREDENTIALS_FILE, SCOPES, DEFAULT_SPREADSHEET_NAME
 from utils.dummies import *
 from utils.functions import *
-from utils.fetch_data import extract_name_from_code
+from utils.fetch_data import extract_name_from_code, get_mapping_dict_for_group_color
 
 """
 parse edt
@@ -20,7 +20,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(
 
 client = gspread.authorize(creds)  # type: ignore
 spreadsheet = client.open(DEFAULT_SPREADSHEET_NAME)
-sheet = spreadsheet.get_worksheet(edt_sheet_index)
+sheet = spreadsheet.worksheet("EDT")
 data = sheet.get_all_values()
 all_merges = get_all_merges(sheet)
 
@@ -33,7 +33,6 @@ df = pd.DataFrame(
     columns=["cours", "start", "end", "prof", "RGB", "semaine", "salle", "type_cours"]
 )
 
-str_cours_raw
 
 for merge in all_merges:
     try:
@@ -61,6 +60,12 @@ df["start"] = pd.to_datetime(df["start"])
 
 df["delta"] = df["end"] - df["start"]
 df["delta"] = df["delta"].dt.total_seconds() / 3600
+
+
+color_mapping = get_mapping_dict_for_group_color(spreadsheet)
+
+
+df["groupe_etudiant"] = df["RGB"].map(color_mapping)  # type: ignore
 
 
 def get_mapping_dict_for_name(spreadsheet):

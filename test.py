@@ -39,9 +39,15 @@ from utils.fetch_data import (
     get_df_from_sheet_index,
     get_df_from_sheet_name,
     get_mapping_dict_for_name,
+    get_mapping_dict_for_group_color,
+    extract_legend,
 )
 from utils.detect_cell_positions import get_dates_positions_from_data
-
+from calcul.function_for_calculat_stats import (
+    get_prof_hours_summary,
+    get_total_hours_prof_by_week,
+    get_type_cours_hours_summary,
+)
 
 pio.renderers.default = "browser"
 
@@ -52,97 +58,12 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(
 client = gspread.authorize(creds)  # type: ignore
 
 spreadsheet = client.open(DEFAULT_SPREADSHEET_NAME)
-metadata = spreadsheet.fetch_sheet_metadata()
+meta_data = spreadsheet.fetch_sheet_metadata()
+data = spreadsheet.worksheet("Paramètres").get_all_values()
 
 
-df = get_df_from_sheet_name()
-
-stats_sheet = spreadsheet.worksheet("stats")
-
-
-def get_prof_hours_summary(df):
-    """
-    Prend le DF de l'EDT et retourne un résumé : Professeur | Total Heures
-    """
-    df = df.copy()
-    df = df.loc[:, ~df.columns.duplicated()]
-
-    # 1. Nettoyage rapide des heures
-    df["delta"] = pd.to_numeric(
-        df["delta"].astype(str).str.replace(",", "."), errors="coerce"
-    ).fillna(0)  # type: ignore
-
-    # 2. Séparation des professeurs (si plusieurs par ligne)
-    df_exploded = (
-        df.assign(prof=df["prof"].str.split(",")).explode("prof").query("prof != ''")
-    )
-    df_exploded["prof"] = df_exploded["prof"].str.strip()
-
-    # 3. Calcul de la somme par professeur
-    summary = df_exploded.groupby("prof")["delta"].sum().reset_index()
-    summary.columns = ["professeur", "total_hours"]
-
-    return summary.sort_values(by="total_hours", ascending=False)
-
-
-def get_total_hours_prof_by_week(df):
-    """
-    Retourne un DF du total d'heures par prof par semaine.
-    """
-    df = df.copy()
-    df = df.loc[:, ~df.columns.duplicated()]
-
-    # 1. Conversion en datetime et extraction de la semaine et du lundi
-    df["start"] = pd.to_datetime(df["start"])
-    df["week"] = df["start"].dt.strftime("%Y-W%V")
-    df["date_lundi"] = df["start"].dt.to_period("W").dt.start_time
-
-    # 2. Nettoyage des heures
-    df["delta"] = pd.to_numeric(
-        df["delta"].astype(str).str.replace(",", "."), errors="coerce"
-    ).fillna(0)  # type: ignore
-
-    # 3. Séparation des professeurs
-    df_exploded = (
-        df.assign(prof=df["prof"].str.split(",")).explode("prof").query("prof != ''")
-    )
-    df_exploded["prof"] = df_exploded["prof"].str.strip()
-
-    # 4. Calcul de la somme par semaine (et date) et par professeur
-    summary = (
-        df_exploded.groupby(["week", "date_lundi", "prof"])["delta"].sum().reset_index()
-    )
-    summary.columns = ["semaine", "date_lundi", "professeur", "total_hours"]
-
-    return summary.sort_values(by=["semaine", "total_hours"], ascending=[True, False])
-
-
-def get_spe_hours_summary(df):
-    """
-    Prend le DF de l'EDT et retourne un résumé : Cours | Total Heures
-    """
-    df = df.copy()
-    df = df.loc[:, ~df.columns.duplicated()]
-
-    # 1. Nettoyage rapide des heures
-    df["delta"] = pd.to_numeric(
-        df["delta"].astype(str).str.replace(",", "."), errors="coerce"
-    ).fillna(0)  # type: ignore
-
-    # 2. Séparation des professeurs (si plusieurs par ligne)
-    df_exploded = (
-        df.assign(prof=df["type_cours"].str.split(","))
-        .explode("type_cours")
-        .query("prof != ''")
-    )
-
-    df_exploded["type_cours"] = df_exploded["type_cours"].str.strip()
-
-    # 3. Calcul de la somme par professeur
-    summary = df_exploded.groupby("type_cours")["delta"].sum().reset_index()
-    summary.columns = ["professeur", "total_hours"]
-
-    return summary.sort_values(by="total_hours", ascending=False)
+df = get_df_from_sheet_name("edt_clean")
+stats_sheet = spreadsheet.worksheet("")
 
 
 summary_df = get_prof_hours_summary(df)

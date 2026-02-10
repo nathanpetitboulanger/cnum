@@ -19,7 +19,7 @@ import dateparser
 from babel.dates import format_date, format_time
 import numpy as np
 from gspread.utils import rowcol_to_a1
-from utils.fetch_data import get_df_from_sheet_index
+from utils.fetch_data import get_df_from_sheet_index, get_df_from_sheet_name
 from utils.clean_sheet import clean_all
 from config import (
     edt_sheet_index,
@@ -45,15 +45,15 @@ client = gspread.authorize(creds)  # type: ignore
 spreadsheet = client.open(DEFAULT_SPREADSHEET_NAME)
 
 
-edt = spreadsheet.get_worksheet(edt_sheet_index)
+edt = spreadsheet.worksheet("EDT")
 data = edt.get_all_values()
 index_sheet = get_index_sheet(edt)
 
-df = get_df_from_sheet_index(sheet_index=3)
+df = get_df_from_sheet_name("edt_clean")
 df = df.query("cours != ''")
 
 
-draw_sheet = spreadsheet.get_worksheet(4)
+draw_sheet = spreadsheet.worksheet("drawing")
 
 
 requests_ = []

@@ -28,22 +28,19 @@ def get_spreadsheet(name=DEFAULT_SPREADSHEET_NAME):
     return client.open(name)
 
 
-def get_color_cours_mapping():
+def get_color_cours_mapping(spreadsheet):
     """
     Returns a dictionary mapping course names to their RGB color.
     Iterates from the 'QEGR' cell downwards until an empty cell is found.
     """
-    spreadsheet = get_spreadsheet()
 
-    # Fetch formatting metadata for all cells
     params = {
         "includeGridData": True,
         "fields": "sheets(data(rowData(values(effectiveFormat(backgroundColorStyle)))))",
     }
     metadata = spreadsheet.fetch_sheet_metadata(params=params)
 
-    # Use the worksheet specified in config
-    sheet = spreadsheet.get_worksheet(edt_sheet_index)
+    sheet = spreadsheet.worksheet("EDT")
     data = sheet.get_all_values()
 
     try:
@@ -75,7 +72,7 @@ def get_df_from_sheet_index(sheet_index: int):
     Automatically parses 'start' and 'end' columns as datetimes.
     """
     spreadsheet = get_spreadsheet()
-    sheet = spreadsheet.get_worksheet(sheet_index)
+    sheet = spreadsheet.worksheet("EDT")
     data = sheet.get_all_values()
 
     if not data:
@@ -132,7 +129,9 @@ def extract_legend(
 
     while True:
         try:
-            color = extract_rgb_from_cell_coords(meta_data, actual_row, col_color, 0)
+            color = extract_rgb_from_cell_coords(
+                meta_data, actual_row, col_color, sheet_id=0
+            )
 
         except KeyError:
             color = (1, 1, 1)
@@ -143,6 +142,7 @@ def extract_legend(
         nom_cellule = data[actual_row][col_nom]
         color_mapping[nom_cellule] = color
         actual_row += 1
+        print(actual_row)
 
     color_mapping_reversed = {couleur: nom for nom, couleur in color_mapping.items()}
 
@@ -172,9 +172,74 @@ def extract_name_from_code(data: list[list]):
 
 
 def get_mapping_dict_for_name(spreadsheet):
+    """
+    return the mapping dict in Paramètres sheet
+    """
     sheet = spreadsheet.worksheet("Paramètres")  # type: ignore
     data_params = sheet.get_all_values()
     names_codes = extract_name_from_code(data_params)
 
     coodes_names = pd.Series(names_codes)
     return coodes_names
+
+
+def get_mapping_dict_for_group_color(spreadsheet):
+    """
+    Returns a dictionary mapping group names to their RGB color in the 'Paramètres' sheet.
+    Detects the 'Groupe' cell and iterates downwards.
+    """
+    sheet = spreadsheet.worksheet("Paramètres")
+    data_params = sheet.get_all_values()
+
+    # 1. Fetch metadata for colors
+    params = {
+        "includeGridData": True,
+        "fields": "sheets(properties(title,sheetId),data(rowData(values(effectiveFormat(backgroundColorStyle)))))",
+    }
+    metadata = spreadsheet.fetch_sheet_metadata(params=params)
+
+    # 2. Find the correct sheet metadata index
+    sheet_meta_idx = None
+    for idx, s in enumerate(metadata["sheets"]):
+        if s["properties"]["title"] == "Paramètres":
+            sheet_meta_idx = idx
+            break
+
+    if sheet_meta_idx is None:
+        return {}
+
+    # 3. Find 'Groupe' position in data
+    row_groupe = -1
+    col_groupe = -1
+    for r, row in enumerate(data_params):
+        for c, val in enumerate(row):
+            if val == "Groupes":
+                row_groupe = r
+                col_groupe = c
+                break
+        if row_groupe != -1:
+            break
+
+    if row_groupe == -1:
+        print("Warning: Cell 'Groupes' not found in 'Paramètres'.")
+        return {}
+
+    # 4. Iterate downwards
+    mapping = {}
+    actual_row = row_groupe + 1
+    col_color = col_groupe + 1
+
+    while (
+        actual_row < len(data_params)
+        and data_params[actual_row][col_groupe].strip() != ""
+    ):
+        group_name = data_params[actual_row][col_groupe].strip()
+        color = extract_rgb_from_cell_coords(
+            metadata, actual_row, col_color, sheet_id=sheet_meta_idx
+        )
+        mapping[group_name] = color
+        actual_row += 1
+
+    mapping = {k: v for v, k in mapping.items()}  # type: ignore
+
+    return mapping

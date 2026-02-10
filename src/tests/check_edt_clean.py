@@ -19,7 +19,7 @@ def check_overlap():
 
     client = gspread.authorize(creds)  # type: ignore
     spreadsheet = client.open(DEFAULT_SPREADSHEET_NAME)
-    sheet = spreadsheet.get_worksheet(3)
+    sheet = spreadsheet.worksheet("edt_clean")
     data = sheet.get_all_values()
 
     df = pd.DataFrame(columns=data[0], data=data[1:])
