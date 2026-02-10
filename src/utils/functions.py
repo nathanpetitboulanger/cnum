@@ -138,7 +138,9 @@ def get_head_cell_coords_from_merge(merge):
     return row_id, col_id
 
 
-def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = 1):
+from config import edt_sheet_index
+
+def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = edt_sheet_index):
     sheet_data = metadata["sheets"][sheet_id]["data"][0]
     row_data = sheet_data.get("rowData", [])
 
@@ -147,7 +149,7 @@ def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = 1):
     return (rgb.get("red", 0), rgb.get("green", 0), rgb.get("blue", 0))
 
 
-def extract_rgb_form_merge(metadata, merge, sheet_id: int = 1):
+def extract_rgb_form_merge(metadata, merge, sheet_id: int = edt_sheet_index):
     row_id, col_id = get_head_cell_coords_from_merge(merge)
     return extract_rgb_from_cell_coords(metadata, row_id, col_id, sheet_id)
 

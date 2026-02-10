@@ -4,6 +4,7 @@ import gspread
 import pandas as pd
 from gspread_dataframe import set_with_dataframe
 from oauth2client.service_account import ServiceAccountCredentials
+from config import CREDENTIALS_FILE, SCOPES, DEFAULT_SPREADSHEET_NAME
 
 
 def check_overlap():
@@ -11,19 +12,13 @@ def check_overlap():
     Description
     """
 
-    scope = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive",
-    ]
-
     creds = ServiceAccountCredentials.from_json_keyfile_name(
-        "token.json",
-        scope,  # type: ignore
+        CREDENTIALS_FILE,
+        SCOPES,  # type: ignore
     )
 
     client = gspread.authorize(creds)  # type: ignore
-    sheet_name = "API"
-    spreadsheet = client.open(sheet_name)
+    spreadsheet = client.open(DEFAULT_SPREADSHEET_NAME)
     sheet = spreadsheet.get_worksheet(3)
     data = sheet.get_all_values()
 

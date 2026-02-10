@@ -2,7 +2,7 @@ import gspread
 import pandas as pd
 from gspread_dataframe import set_with_dataframe
 from oauth2client.service_account import ServiceAccountCredentials
-from config import edt_sheet_index
+from config import edt_sheet_index, CREDENTIALS_FILE, SCOPES, DEFAULT_SPREADSHEET_NAME
 from utils.dummies import *
 from utils.functions import *
 
@@ -12,19 +12,13 @@ parse edt
 
 print("Start parsing EDT")
 
-scope = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive",
-]
-
 creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "token.json",
-    scope,  # type: ignore
+    CREDENTIALS_FILE,
+    SCOPES,  # type: ignore
 )
 
 client = gspread.authorize(creds)  # type: ignore
-sheet_name = "API"
-spreadsheet = client.open(sheet_name)
+spreadsheet = client.open(DEFAULT_SPREADSHEET_NAME)
 sheet = spreadsheet.get_worksheet(edt_sheet_index)
 data = sheet.get_all_values()
 all_merges = get_all_merges(sheet)

@@ -21,7 +21,12 @@ import numpy as np
 from gspread.utils import rowcol_to_a1
 from utils.fetch_data import get_df_from_sheet_index
 from utils.clean_sheet import clean_all
-from config import edt_sheet_index
+from config import (
+    edt_sheet_index,
+    CREDENTIALS_FILE,
+    SCOPES,
+    DEFAULT_SPREADSHEET_NAME,
+)
 from utils.functions import get_index_sheet
 import time
 
@@ -31,19 +36,13 @@ print("Loading block data position")
 time.sleep(1)
 print("Launch interface")
 
-scope = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive",
-]
-
 creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "token.json",
-    scope,  # type: ignore
+    CREDENTIALS_FILE,
+    SCOPES,  # type: ignore
 )
 
 client = gspread.authorize(creds)  # type: ignore
-sheet_name = "API"
-spreadsheet = client.open(sheet_name)
+spreadsheet = client.open(DEFAULT_SPREADSHEET_NAME)
 
 
 edt = spreadsheet.get_worksheet(edt_sheet_index)

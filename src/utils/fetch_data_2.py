@@ -1,7 +1,6 @@
 import gspread
 import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
-from typing import Mapping
 
 from config import (
     CREDENTIALS_FILE,
@@ -91,52 +90,3 @@ def get_df_from_sheet_index(sheet_index: int):
             df[date_col] = pd.to_datetime(df[date_col])
 
     return df
-
-
-def extract_legend(
-    meta_data: Mapping,
-    sheet_param: gspread.Worksheet,
-):
-    data = sheet_param.get_all_values()
-    col_nom = 0
-    actual_row = 2
-    col_color = 1
-
-    color_mapping = {}
-
-    while True:
-        try:
-            color = extract_rgb_from_cell_coords(meta_data, actual_row, col_color, 0)
-
-        except KeyError:
-            color = (1, 1, 1)
-
-        if color == (1, 1, 1):
-            break
-
-        nom_cellule = data[actual_row][col_nom]
-        color_mapping[nom_cellule] = color
-        actual_row += 1
-
-    color_mapping_reversed = {couleur: nom for nom, couleur in color_mapping.items()}
-
-    return color_mapping_reversed
-
-
-def extract_name_from_code(data: list[list]):
-    col_code = 0
-    actual_row = 9
-    col_teacher = 1
-    teacher_code = {}
-
-    while True:
-        name = data[actual_row][col_teacher]
-
-        if name is None or str(name).strip() == "":
-            break
-
-        name_cell = data[actual_row][col_code]
-        teacher_code[name_cell] = name
-        actual_row += 1
-
-    return teacher_code

@@ -1,7 +1,7 @@
 from icalendar import Calendar, Event
 import pandas as pd
 
-df = pd.read_csv("final.csv")
+df = pd.read_csv("finale.csv")
 df["start"] = pd.to_datetime(df["start"])
 df["end"] = pd.to_datetime(df["end"])
 

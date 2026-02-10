@@ -28,7 +28,12 @@ from utils.buid_draw_requests import (
 )
 from gspread.utils import rowcol_to_a1
 import plotly.express as px
-from config import edt_sheet_index
+from config import (
+    edt_sheet_index,
+    CREDENTIALS_FILE,
+    SCOPES,
+    DEFAULT_SPREADSHEET_NAME,
+)
 import plotly.io as pio
 from utils.fetch_data import get_df_from_sheet_index
 from utils.detect_cell_positions import get_dates_positions_from_data
@@ -36,19 +41,13 @@ from utils.detect_cell_positions import get_dates_positions_from_data
 
 pio.renderers.default = "browser"
 
-scope = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive",
-]
-
 creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "token.json",
-    scope,  # type: ignore
+    CREDENTIALS_FILE,
+    SCOPES,  # type: ignore
 )
 
 client = gspread.authorize(creds)  # type: ignore
-sheet_name = "API"
-spreadsheet = client.open(sheet_name)
+spreadsheet = client.open(DEFAULT_SPREADSHEET_NAME)
 
 metadata = spreadsheet.fetch_sheet_metadata()
 

@@ -3,26 +3,25 @@ from utils.fetch_data import get_df_from_sheet_index
 from main_functions.build_sheets import draw_sheet_for_prof
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from config import edt_sheet_index
+from config import (
+    edt_sheet_index,
+    CREDENTIALS_FILE,
+    SCOPES,
+    DEFAULT_SPREADSHEET_NAME,
+)
 
 
 subprocess.run(["uv", "run", "src/scripts/parse_edt.py"])
 
 subprocess.run(["uv", "run", "src/scripts/draw_df.py"])
 
-scope = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive",
-]
-
 creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "token.json",
-    scope,  # type: ignore
+    CREDENTIALS_FILE,
+    SCOPES,  # type: ignore
 )
 
 client = gspread.authorize(creds)  # type: ignore
-sheet_name = "API"
-spreadsheet = client.open(sheet_name)
+spreadsheet = client.open(DEFAULT_SPREADSHEET_NAME)
 edt_sheet = spreadsheet.get_worksheet(edt_sheet_index)
 
 df = get_df_from_sheet_index(3)
