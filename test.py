@@ -78,9 +78,32 @@ def get_prof_hours_summary(df):
 
     # 3. Calcul de la somme par professeur
     summary = df_exploded.groupby("prof")["delta"].sum().reset_index()
-    summary.columns = ["professeur, total_hours"]
+    summary.columns = ["professeur", "total_hours"]
 
-    return summary.sort_values(by="Total Heures", ascending=False)
+    return summary.sort_values(by="total_hours", ascending=False)
+
+
+def get_spe_hours_summary(df):
+    """
+    Prend le DF de l'EDT et retourne un résumé : Cours | Total Heures
+    """
+    df = df.copy()
+    df = df.loc[:, ~df.columns.duplicated()]
+
+    # 1. Nettoyage rapide des heures
+    df["delta"] = pd.to_numeric(
+        df["delta"].astype(str).str.replace(",", "."), errors="coerce"
+    ).fillna(0)  # type: ignore
+
+    # 2. Séparation des professeurs (si plusieurs par ligne)
+    df_exploded = df.assign(prof=df["type_cours"].str.split(",")).explode("type_cours")
+    df_exploded["type_cours"] = df_exploded["type_cours"].str.strip()
+
+    # 3. Calcul de la somme par professeur
+    summary = df_exploded.groupby("type_cours")["delta"].sum().reset_index()
+    summary.columns = ["professeur", "total_hours"]
+
+    return summary.sort_values(by="total_hours", ascending=False)
 
 
 summary_df = get_prof_hours_summary(df)

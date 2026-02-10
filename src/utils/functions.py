@@ -1,4 +1,6 @@
 import re
+from config import edt_sheet_index
+
 from datetime import datetime
 from gspread_formatting import *
 import dateparser
@@ -136,9 +138,6 @@ def get_head_cell_coords_from_merge(merge):
     row_id = merge["startRowIndex"]
     col_id = merge["startColumnIndex"]
     return row_id, col_id
-
-
-from config import edt_sheet_index
 
 
 def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = edt_sheet_index):
