@@ -258,3 +258,35 @@ def calcul_and_display_group_hours():
 
     last_row = len(data_to_send)
     format_cell_range(new_sheet, f"P2:Q{last_row}", body_format)
+
+
+def parse_room(text: str) -> str | None:
+    """
+    Extrait le nom de la salle situé entre crochets et ne conserve
+    que les caractères en majuscules (et chiffres).
+    """
+    bracket_match = re.search(r"\[([^\]]+)\]", text)
+
+    if bracket_match:
+        content = bracket_match.group(1)
+        room_parts = re.findall(r"[A-Z0-9]+", content)
+
+        return "".join(room_parts) if room_parts else None
+
+    return None
+
+
+def parse_type_cours(text: str) -> str | None:
+    """
+    Extrait le type de cours (CM, TD, TP, etc.) situé entre guillemets
+    et ne conserve que les caractères en majuscules.
+    """
+    quote_match = re.search(r"\"([^\"]+)\"", text)
+
+    if quote_match:
+        content = quote_match.group(1)
+        type_parts = re.findall(r"[A-Z]+", content)
+
+        return "".join(type_parts) if type_parts else None
+
+    return None

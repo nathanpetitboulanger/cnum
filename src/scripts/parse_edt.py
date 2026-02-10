@@ -29,8 +29,11 @@ params = {
 }
 metadata = spreadsheet.fetch_sheet_metadata(params=params)  # type: ignore
 
-df = pd.DataFrame(columns=["cours", "start", "end", "prof", "RGB", "semaine"])
+df = pd.DataFrame(
+    columns=["cours", "start", "end", "prof", "RGB", "semaine", "salle", "type_cours"]
+)
 
+str_cours_raw
 
 for merge in all_merges:
     try:
@@ -40,17 +43,21 @@ for merge in all_merges:
         cours_str = clean_cours_name(str_cours_raw)
         color = extract_rgb_form_merge(metadata, merge)
         semaine = get_merge_semaine(merge)
+        salle = parse_room(str_cours_raw)
+        type_cours = parse_type_cours(str_cours_raw)
 
         if str_cours_raw == "":
             raise ValueError("PAS DE COURS")
 
-        row = [cours_str, delta[0], delta[1], prof, color, semaine]
+        row = [cours_str, delta[0], delta[1], prof, color, semaine, salle, type_cours]
 
         df.loc[len(df)] = row
 
     except Exception as e:
         pass
 
+df["end"] = pd.to_datetime(df["end"])
+df["start"] = pd.to_datetime(df["start"])
 
 df["delta"] = df["end"] - df["start"]
 df["delta"] = df["delta"].dt.total_seconds() / 3600
