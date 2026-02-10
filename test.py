@@ -60,31 +60,28 @@ df = get_df_from_sheet_name()
 stats_sheet = spreadsheet.worksheet("stats")
 
 
-def calcul_and_display_prof_houres(df):
+def get_prof_hours_summary(df):
     """
-    use df, the dataframe of edt_clean for display get_dates_positions_from_data
+    Prend le DF de l'EDT et retourne un résumé : Professeur | Total Heures
     """
+    df = df.copy()
+    df = df.loc[:, ~df.columns.duplicated()]
 
-    coors_names = get_mapping_dict_for_name(spreadsheet)
+    # 1. Nettoyage rapide des heures
+    df["delta"] = pd.to_numeric(
+        df["delta"].astype(str).str.replace(",", "."), errors="coerce"
+    ).fillna(0)  # type: ignore
 
-    def get_prof_total_hours(df, prof: str):
-        df_filtered = df[df["prof"].apply(lambda x: any(prof in nom for nom in x))]
-        return df_filtered["delta"].sum()
+    # 2. Séparation des professeurs (si plusieurs par ligne)
+    df_exploded = df.assign(prof=df["prof"].str.split(",")).explode("prof")
+    df_exploded["prof"] = df_exploded["prof"].str.strip()
 
-    prof_time_sum = {
-        prof: get_prof_total_hours(
-            df,
-            prof,
-        )
-        for prof in coors_names.values
-    }
+    # 3. Calcul de la somme par professeur
+    summary = df_exploded.groupby("prof")["delta"].sum().reset_index()
+    summary.columns = ["professeur, total_hours"]
 
-    df_bilan = pd.DataFrame(
-        prof_time_sum.items(), columns=["Professeur", "Total Heures"]
-    )
-    data_to_upload = [df_bilan.columns.tolist()] + df_bilan.values.tolist()
-
-    stats_sheet.update(range_name="A1", values=data_to_upload)
+    return summary.sort_values(by="Total Heures", ascending=False)
 
 
-calcul_and_display_prof_houres(df)
+summary_df = get_prof_hours_summary(df)
+print(summary_df)
