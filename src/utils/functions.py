@@ -40,7 +40,7 @@ def get_cell_color(spreadsheet, sheet_numbrer: int, row: int, col: int):
 
 def get_all_merges(
     sheet,
-) -> list:  # type: ignore
+) -> olist:  # type: ignore
     """
     return all merged block in a sheet
     """
