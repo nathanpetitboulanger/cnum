@@ -1,7 +1,7 @@
 import streamlit as st
 import subprocess
 
-st.title("CNUM - ENSAT (Simple Interface)")
+st.title("App de pilotage du backend de l'EDT")
 
 
 def run_cmd(cmd):
@@ -10,7 +10,7 @@ def run_cmd(cmd):
     st.success("Done!")
 
 
-if st.button("🔄 Lancer tout le processus (demo.py)"):
+if st.button("Lancer tout le processus (demo.py)"):
     run_cmd(["uv", "run", "src/scripts/parse_edt.py"])
     run_cmd(["uv", "run", "src/scripts/draw_df.py"])
     run_cmd(["uv", "run", "src/calcul/draw_stat_sheet.py"])
@@ -38,7 +38,7 @@ if st.button("5. EDT Séraphine Grellier"):
     )
 
 
-prof_nom = st.text_input("Nom du professeur :", "Marc Lang")
+prof_nom = st.text_input("Insérer le nom du professeur :", "Marc Lang")
 
 if st.button(f"Générer l'EDT pour {prof_nom}"):
     run_cmd(["uv", "run", "src/scripts/display_prof_edt.py", "--prof", prof_nom])

@@ -135,4 +135,3 @@ def draw_stats():
 
 if __name__ == "__main__":
     draw_stats()
-
