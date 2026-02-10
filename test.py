@@ -73,7 +73,9 @@ def get_prof_hours_summary(df):
     ).fillna(0)  # type: ignore
 
     # 2. Séparation des professeurs (si plusieurs par ligne)
-    df_exploded = df.assign(prof=df["prof"].str.split(",")).explode("prof")
+    df_exploded = (
+        df.assign(prof=df["prof"].str.split(",")).explode("prof").query("prof != ''")
+    )
     df_exploded["prof"] = df_exploded["prof"].str.strip()
 
     # 3. Calcul de la somme par professeur
@@ -81,6 +83,38 @@ def get_prof_hours_summary(df):
     summary.columns = ["professeur", "total_hours"]
 
     return summary.sort_values(by="total_hours", ascending=False)
+
+
+def get_total_hours_prof_by_week(df):
+    """
+    Retourne un DF du total d'heures par prof par semaine.
+    """
+    df = df.copy()
+    df = df.loc[:, ~df.columns.duplicated()]
+
+    # 1. Conversion en datetime et extraction de la semaine et du lundi
+    df["start"] = pd.to_datetime(df["start"])
+    df["week"] = df["start"].dt.strftime("%Y-W%V")
+    df["date_lundi"] = df["start"].dt.to_period("W").dt.start_time
+
+    # 2. Nettoyage des heures
+    df["delta"] = pd.to_numeric(
+        df["delta"].astype(str).str.replace(",", "."), errors="coerce"
+    ).fillna(0)  # type: ignore
+
+    # 3. Séparation des professeurs
+    df_exploded = (
+        df.assign(prof=df["prof"].str.split(",")).explode("prof").query("prof != ''")
+    )
+    df_exploded["prof"] = df_exploded["prof"].str.strip()
+
+    # 4. Calcul de la somme par semaine (et date) et par professeur
+    summary = (
+        df_exploded.groupby(["week", "date_lundi", "prof"])["delta"].sum().reset_index()
+    )
+    summary.columns = ["semaine", "date_lundi", "professeur", "total_hours"]
+
+    return summary.sort_values(by=["semaine", "total_hours"], ascending=[True, False])
 
 
 def get_spe_hours_summary(df):
@@ -96,7 +130,12 @@ def get_spe_hours_summary(df):
     ).fillna(0)  # type: ignore
 
     # 2. Séparation des professeurs (si plusieurs par ligne)
-    df_exploded = df.assign(prof=df["type_cours"].str.split(",")).explode("type_cours")
+    df_exploded = (
+        df.assign(prof=df["type_cours"].str.split(","))
+        .explode("type_cours")
+        .query("prof != ''")
+    )
+
     df_exploded["type_cours"] = df_exploded["type_cours"].str.strip()
 
     # 3. Calcul de la somme par professeur
@@ -107,4 +146,9 @@ def get_spe_hours_summary(df):
 
 
 summary_df = get_prof_hours_summary(df)
+print("--- Résumé Global ---")
 print(summary_df)
+
+summary_week_df = get_total_hours_prof_by_week(df)
+print("\n--- Résumé par Semaine ---")
+print(summary_week_df)
