@@ -50,7 +50,7 @@ def get_write_request(sheet_id, row, col, value):
     Use it for write a value in a cell
     """
     if isinstance(value, bool):
-        value_key = "boolValue"
+        alue_key = "boolValue"
     elif isinstance(value, (int, float)):
         value_key = "numberValue"
     elif isinstance(value, str):

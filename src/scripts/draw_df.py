@@ -1,80 +1,40 @@
-# tests api google sheet
-import re
-import dateparser
-import ast
+import argparse
 import gspread
-from datetime import datetime
-from gspread_formatting import *
 from oauth2client.service_account import ServiceAccountCredentials
-import requests
-from utils.buid_draw_requests import (
-    get_all_requests_from_df,
-    get_request_unmerge_entire_sheet,
-    get_requests_reset_sheet_color,
-    get_request_clear_all_values,
-)
-from utils.functions import get_best_coords_from_delta, get_index_sheet
-import pandas as pd
-import dateparser
-from babel.dates import format_date, format_time
-import numpy as np
-from gspread.utils import rowcol_to_a1
-from utils.fetch_data import get_df_from_sheet_index, get_df_from_sheet_name
-from utils.clean_sheet import clean_all
 from config import (
-    edt_sheet_index,
     CREDENTIALS_FILE,
     SCOPES,
     DEFAULT_SPREADSHEET_NAME,
 )
-from utils.functions import get_index_sheet
-import time
-
-print("Start Procssing EDT")
-time.sleep(1)
-print("Loading block data position")
-time.sleep(1)
-print("Launch interface")
-
-creds = ServiceAccountCredentials.from_json_keyfile_name(
-    CREDENTIALS_FILE,
-    SCOPES,  # type: ignore
-)
-
-client = gspread.authorize(creds)  # type: ignore
-spreadsheet = client.open(DEFAULT_SPREADSHEET_NAME)
+from utils.fetch_data import get_df_from_sheet_name
+from main_functions.build_sheets import create_preview_edt_full
 
 
-edt = spreadsheet.worksheet("EDT")
-data = edt.get_all_values()
-index_sheet = get_index_sheet(edt)
+def main():
+    print("Connecting to Google Sheets for full EDT drawing")
 
-df = get_df_from_sheet_name("edt_clean")
-df = df.query("cours != ''")
-
-
-draw_sheet = spreadsheet.worksheet("drawing")
-
-
-requests_ = []
-
-requests_.append(get_request_unmerge_entire_sheet(draw_sheet))
-requests_.append(get_requests_reset_sheet_color(draw_sheet))
-requests_.append(get_request_clear_all_values(draw_sheet))
-
-
-spreadsheet.batch_update({"requests": requests_})
-
-requests_ = []
-requests_.extend(
-    get_all_requests_from_df(
-        df,
-        index_sheet,
-        draw_sheet.id,
-        data,
+    creds = ServiceAccountCredentials.from_json_keyfile_name(
+        CREDENTIALS_FILE,
+        SCOPES,  # type: ignore
     )
-)
+
+    client = gspread.authorize(creds)  # type: ignore
+    spreadsheet = client.open(DEFAULT_SPREADSHEET_NAME)
+    edt_sheet = spreadsheet.worksheet("EDT")
+
+    print("Fetching data from 'edt_clean'...")
+    df = get_df_from_sheet_name("edt_clean")
+    df = df.query("cours != ''")
+
+    print("Creating full preview with skeleton on 'drawing' sheet...")
+    sheet_draw = create_preview_edt_full(
+        spreadsheet,
+        edt_sheet,
+        df,
+    )
+
+    print(f"Successfully created/updated drawing sheet: {sheet_draw.title}")
 
 
-spreadsheet.batch_update({"requests": requests_})
-print("All process are done")
+if __name__ == "__main__":
+    main()

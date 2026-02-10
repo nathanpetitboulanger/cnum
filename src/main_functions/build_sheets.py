@@ -65,7 +65,10 @@ def delete_cours_in_edt(
     spreadsheet: gspread.Spreadsheet,
     sheet: gspread.Worksheet,
 ):
-    """ """
+    """
+    deletes cours in a edt
+    """
+
     data = sheet.get_all_values()
     dates_positions = get_dates_positions_from_data(data)
 
@@ -134,6 +137,42 @@ def create_preview_edt_prof(
 
     requests_ = get_all_requests_from_df(
         df_filtred,
+        index_edt,
+        new_sheet.id,
+        data_edt,
+    )
+    spreadsheet.batch_update({"requests": requests_})
+
+    return new_sheet
+
+
+def create_preview_edt_full(
+    spreadsheet: gspread.Spreadsheet,
+    edt_sheet: gspread.Worksheet,
+    df: DataFrame,
+):
+    # 1. Duplicate EDT sheet
+    try:
+        old_sheet = spreadsheet.worksheet("drawing")
+        spreadsheet.del_worksheet(old_sheet)
+    except gspread.WorksheetNotFound:
+        pass
+
+    new_sheet = spreadsheet.duplicate_sheet(
+        edt_sheet.id,
+        new_sheet_name="drawing",
+        insert_sheet_index=100,
+    )
+
+    # 2. Delete courses to get skeleton
+    delete_cours_in_edt(spreadsheet, new_sheet)
+
+    # 3. Draw courses
+    index_edt = get_index_sheet(edt_sheet)
+    data_edt = edt_sheet.get_all_values()
+
+    requests_ = get_all_requests_from_df(
+        df,
         index_edt,
         new_sheet.id,
         data_edt,
