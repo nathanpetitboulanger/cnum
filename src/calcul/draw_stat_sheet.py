@@ -11,7 +11,9 @@ from calcul.function_for_calculat_stats import (
     get_prof_hours_summary,
     get_total_hours_prof_by_week,
     get_type_cours_hours_summary,
+    get_total_hours_type_cours_by_week,
     get_group_etudiant_hours_summary,
+    get_total_hours_group_etudiant_by_week,
 )
 from utils.fetch_data import get_df_from_sheet_name, get_spreadsheet
 from utils.clean_sheet import clean_all
@@ -21,14 +23,17 @@ TABLE_CONFIG = {
     "prof": {
         "title": "Récapitulatif Global par Professeur",
         "col": 1,
-        "col_letter": "B",
     },
-    "week": {"title": "Récapitulatif Hebdomadaire", "col": 5, "col_letter": "H"},
-    "type": {"title": "Récapitulatif par Type de Cours", "col": 11, "col_letter": "L"},
+    "week": {"title": "Récapitulatif Hebdo Professeur", "col": 4},
+    "type": {"title": "Récapitulatif Global Type", "col": 9},
+    "week_type": {"title": "Récapitulatif Hebdo Type", "col": 12},
     "group": {
-        "title": "Récapitulatif par Groupe Étudiant",
-        "col": 15,
-        "col_letter": "P",
+        "title": "Récapitulatif Global Groupe",
+        "col": 17,
+    },
+    "week_group": {
+        "title": "Récapitulatif Hebdo Groupe",
+        "col": 20,
     },
 }
 
@@ -40,7 +45,9 @@ def fetch_and_calculate_all_stats(df):
         "prof": get_prof_hours_summary(df),
         "week": get_total_hours_prof_by_week(df),
         "type": get_type_cours_hours_summary(df),
+        "week_type": get_total_hours_type_cours_by_week(df),
         "group": get_group_etudiant_hours_summary(df),
+        "week_group": get_total_hours_group_etudiant_by_week(df),
     }
 
 
