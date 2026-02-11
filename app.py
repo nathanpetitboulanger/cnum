@@ -37,6 +37,9 @@ if st.button("5. EDT Séraphine Grellier"):
         ["uv", "run", "src/scripts/display_prof_edt.py", "--prof", "Séraphine Grellier"]
     )
 
+if st.button("6. Write drawing on EDT"):
+    run_cmd(["uv", "run", "src/scripts/apply_drawing.py"])
+
 
 prof_nom = st.text_input("Insérer le nom du professeur :", "Marc Lang")
 

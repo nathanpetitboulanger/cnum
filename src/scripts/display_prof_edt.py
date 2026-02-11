@@ -8,7 +8,7 @@ from config import (
     DEFAULT_SPREADSHEET_NAME,
 )
 from utils.fetch_data import get_df_from_sheet_index, get_df_from_sheet_name
-from main_functions.build_sheets import create_preview_edt_prof
+from global_draw_functions.build_sheets import create_preview_edt_prof
 
 default_prof = "Marc Lang"
 

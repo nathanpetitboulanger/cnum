@@ -30,7 +30,7 @@ params = {
 metadata = spreadsheet.fetch_sheet_metadata(params=params)  # type: ignore
 
 df = pd.DataFrame(
-    columns=["cours", "start", "end", "prof", "RGB", "semaine", "salle", "type_cours"]
+    columns=["cours", "start", "end", "prof", "RGB", "semaine", "salle", "type_cours"]  # type: ignore
 )
 
 

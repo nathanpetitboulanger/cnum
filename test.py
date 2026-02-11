@@ -9,7 +9,7 @@ from gspread_formatting import *
 from oauth2client.service_account import ServiceAccountCredentials
 from pandas.core.tools.datetimes import should_cache
 import requests
-from main_functions.build_sheets import (
+from global_draw_functions.build_sheets import (
     draw_sheet_from_df,
 )
 from utils import fetch_data

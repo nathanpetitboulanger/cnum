@@ -7,7 +7,7 @@ from config import (
     DEFAULT_SPREADSHEET_NAME,
 )
 from utils.fetch_data import get_df_from_sheet_name
-from main_functions.build_sheets import create_preview_edt_full
+from global_draw_functions.build_sheets import create_preview_edt_full
 
 
 def main():

@@ -18,7 +18,7 @@ graph TD
     CSV --> Stats[src/calcul/draw_stat_sheet.py]
     CSV --> ICal[src/scripts/ical_conversion.py]
     CSV --> Visu[src/scripts/draw_df.py]
-    CSV --> TeacherSheets[src/main_functions/build_sheets.py]
+    CSV --> TeacherSheets[src/global_draw_functions/build_sheets.py]
     CSV --> ProfEDT[src/scripts/display_prof_edt.py]
 
     %% Sorties

@@ -52,7 +52,7 @@ uv run demo.py
 - `src/scripts/` : Scripts principaux pour le parsing et la conversion.
 - `src/calcul/` : Logique de calcul des statistiques.
 - `src/utils/` : Fonctions utilitaires pour l'interaction avec Google Sheets et la manipulation de données.
-- `src/main_functions/` : Fonctions de haut niveau pour la construction des feuilles.
+- `src/global_draw_functions/` : Fonctions de haut niveau pour la construction des feuilles.
 - `tests/` : Suite de tests unitaires pour vérifier l'extraction et les calculs.
 
 ## 🧪 Tests
