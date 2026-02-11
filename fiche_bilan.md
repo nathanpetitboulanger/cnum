@@ -21,7 +21,7 @@ Page web du dépot GitHub : <https://github.com/nathanpetitboulanger/cnum>
 Page web du projet :
 <https://cnum.toile-libre.org/2026/EDT/projetedt.html>
 
-#### A) Bilan sur le produit
+## A) Bilan sur le produit
 
 1. Confrontez ici le produit que vous avez réalisé au cahier des
     charges. Dans quelle mesure les fonctions sont-elles opérationnelles
@@ -39,13 +39,13 @@ secondes pour un semestre.
 **Synthèse :** Le produit transforme bien un dessin Excel en base de
 données exploitable pour le calcul des heures.
 
-1. Quelle note pensez-vous recevoir de la part de votre commanditaire,
+2. Quelle note pensez-vous recevoir de la part de votre commanditaire,
     en expliquant pourquoi ?
 
 16/20. L'outil répond au besoin du gain de temps et de l'automatisation.
 Il sera utilisé par le commanditaire.
 
-#### B) Bilan sur les méthodes
+## B) Bilan sur les méthodes
 
 1. Confrontez ici les méthodes proposées dans la fiche projet
     (techniques et organisationnelles) à ce qui a été fait en pratique.
@@ -66,7 +66,7 @@ cellules fusionnées multiples.
 **Synthèse :** Les méthodes étaient adaptées, mais la phase de tests a
 pris plus de temps que les 4h prévues par personne.
 
-1. Si vous aviez à réaliser de nouveau ce projet, mais maintenant
+2. Si vous aviez à réaliser de nouveau ce projet, mais maintenant
     éclairé de l'expérience que vous avez gagnée, que feriez vous
     différemment, en expliquant pourquoi ?
 
@@ -74,7 +74,7 @@ Nous passerions plus de temps sur la phase de modélisation (T1) au
 début. Anticiper tous les cas particuliers de formatage dès le départ
 évite de réécrire le code du moteur de lecture plus tard.
 
-#### C) Bilan sur les apprentissages
+## C) Bilan sur les apprentissages
 
 1. (individuel) Indiquez ce que la réalisation de ce projet vous a
     permis d'apprendre (en terme de savoir, savoir-faire, savoir-être).
@@ -83,24 +83,24 @@ début. Anticiper tous les cas particuliers de formatage dès le départ
 
 Utiliser une API google sheets en Python, gérer des fichiers Ical.
 
-*Nathan Petitboulanger*
+**Nathan Petitboulanger :**
 
 Acquisition d'une expertise solide en matière de gestion de version décentralisée avec GIT, essentielle pour la collaboration agile et l'intégrité du code. Parallèlement, j'ai développé une habileté certaine à interagir et à piloter des processus complexes via GEMINI-CLI, en tirant parti de ses fonctionnalités avancées pour accélérer le cycle de développement et l'automatisation des tâches.
 
-*Pierre Tauzin*
+**Pierre Tauzin :**
 
 Utilisation générale de python, découverte de l'API google sheet, de git, utilisation des commandes bash, et du logiciel Neovim
 
-1. (individuel) Quelles sont les suites en terme d'apprentissage que
+2. (individuel) Quelles sont les suites en terme d'apprentissage que
     vous envisagez, en expliquant pourquoi ?
 
-Mathis Nguyen-Duc : Approfondir le code HTML ou Java
+**Mathis Nguyen-Duc** : Approfondir le code HTML ou Java
 
-Pierre Tauzin : Approfondir l'utilisation de python, de git et de bash
+**Pierre Tauzin** : Approfondir l'utilisation de python, de git et de bash
 
-Nathan Petitboulanger : Dans une optique de diversification de mes compétences et d'expansion vers des horizons technologiques innovants, je compte m'immerger dans l'apprentissage approfondi du JavaScript. Cette démarche vise à me doter des outils nécessaires pour concevoir et implémenter des interfaces web dynamiques et des expériences utilisateur enrichies, consolidant ainsi ma capacité à livrer des solutions full-stack performantes et interactives.
+**Nathan Petitboulanger** : Dans une optique de diversification de mes compétences et d'expansion vers des horizons technologiques innovantes, je compte m'immerger dans l'apprentissage approfondi du JavaScript. Cette démarche vise à me doter des outils nécessaires pour concevoir et implémenter des interfaces web dynamiques et des expériences utilisateur enrichies, consolidant ainsi ma capacité à livrer des solutions full-stack performantes et interactives.
 
-#### D) Bilan sur les compétences
+## D) Bilan sur les compétences
 
 > "*Une compétence est un savoir-agir complexe qui s'appuie sur la
 > mobilisation et la combinaison efficaces d'un ensemble de ressources
@@ -114,18 +114,17 @@ Nathan Petitboulanger : Dans une optique de diversification de mes compétences 
     comment ces ressources ont du être combinées pour répondre à la
     demande et argumentez dans quelle mesure la tâche était complexe.
 
--Documentation de la bibliothèque Gspread , tutoriels API Google et
-l\'IA Gemini
+*   Documentation de la bibliothèque Gspread
+*   Tutoriels API Google
+*   IA Gemini
+    *   Gemini nous a aidé à comprendre des fonctions spécifiques et à corriger des bugs de Regex.
 
--Gemini nous a aidé à comprendre des fonctions spécifiques et à corriger
-des bugs de Regex.
-
-1. (individuel) Effectuez le lien explicite avec le référentiel de
+2. (individuel) Effectuez le lien explicite avec le référentiel de
     compétence ENSAT, en indiquant de façon argumentée sur quel
     compétence ce projet vous a permis de progresser et quel
     apprentissage critique il vous permettrait de valider.
 
-Mathis Nguyen-Duc :
+**Mathis Nguyen-Duc** :
 
 Concevoir et mettre en oeuvre une solution numérique. Le projet m'a
 donné la capacité à automatiser un flux de données complexe pour aider à
