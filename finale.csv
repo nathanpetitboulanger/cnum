@@ -1,5 +1,6 @@
 cours,start,end,prof,RGB,semaine,salle,type_cours,delta,groupe_etudiant
-"PAE 7 ""TA""",2025-11-25 08:00:00,2025-11-25 12:00:00,[],"(0.8352941, 0.6509804, 0.7411765)",,,TA,4.0,
+"PAE 7 ""TA""
+(BP)",2025-11-25 08:00:00,2025-11-25 12:00:00,['Benjamin Pey'],"(0.8352941, 0.6509804, 0.7411765)",,,TA,4.0,
 SEABV - remise à niveau SIG,2025-12-02 08:00:00,2025-12-02 12:00:00,[],"(0, 1, 0)",,,,4.0,QEGR
 SEABV - remise à niveau SIG,2025-12-01 13:30:00,2025-12-01 17:30:00,[],"(0, 1, 0)",,,,4.0,QEGR
 "SEABV_hydrologie 

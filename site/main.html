@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CNUM - ENSAT Timetable Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(56, 189, 248, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: monospace;
+            position: relative;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0) translateX(-50%);}
+            40% {transform: translateY(-10px) translateX(-50%);}
+            60% {transform: translateY(-5px) translateX(-50%);}
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
+        <div id="hero-bg" class="absolute inset-0 -z-10">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[128px]"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[128px]"></div>
+        </div>
+
+        <div class="max-w-4xl text-center">
+            <h1 id="hero-title" class="text-6xl md:text-8xl font-extrabold mb-6 opacity-0">
+                <span class="gradient-text">CNUM</span>
+            </h1>
+            <p id="hero-subtitle" class="text-xl md:text-2xl text-slate-400 mb-10 opacity-0">
+                L'outil ultime pour automatiser et transformer les emplois du temps ENSAT.
+            </p>
+            <div id="hero-cta" class="flex flex-wrap justify-center gap-4 opacity-0">
+                <a href="#features" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-semibold transition-all">
+                    Découvrir
+                </a>
+                <a href="#workflow" class="px-8 py-3 glass hover:bg-white/10 rounded-full font-semibold transition-all">
+                    Comment ça marche ?
+                </a>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">
+            <i data-lucide="chevron-down" class="text-slate-500 w-8 h-8"></i>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 px-4 max-w-7xl mx-auto">
+        <h2 class="text-4xl font-bold text-center mb-16">Fonctionnalités Clés</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <div class="feature-card glass p-8 rounded-2xl opacity-0 translate-y-10">
+                <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6">
+                    <i data-lucide="zap" class="text-blue-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">Parsing Automatisé</h3>
+                <p class="text-slate-400">Extraction intelligente depuis Google Sheets avec gestion des cellules fusionnées.</p>
+            </div>
+
+            <div class="feature-card glass p-8 rounded-2xl opacity-0 translate-y-10">
+                <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-6">
+                    <i data-lucide="filter" class="text-green-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">Nettoyage de Données</h3>
+                <p class="text-slate-400">Normalisation des noms d'enseignants et des titres de cours automatiquement.</p>
+            </div>
+
+            <div class="feature-card glass p-8 rounded-2xl opacity-0 translate-y-10">
+                <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-6">
+                    <i data-lucide="bar-chart-3" class="text-purple-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">Analyses & Stats</h3>
+                <p class="text-slate-400">Calcul automatique des volumes horaires par professeur et par type d'enseignement.</p>
+            </div>
+
+            <div class="feature-card glass p-8 rounded-2xl opacity-0 translate-y-10">
+                <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center mb-6">
+                    <i data-lucide="calendar" class="text-orange-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">Export iCal</h3>
+                <p class="text-slate-400">Générez des fichiers .ics pour synchroniser vos calendriers numériques.</p>
+            </div>
+
+            <div class="feature-card glass p-8 rounded-2xl opacity-0 translate-y-10">
+                <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center mb-6">
+                    <i data-lucide="users" class="text-red-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">Vues Individuelles</h3>
+                <p class="text-slate-400">Création automatique de feuilles de calcul dédiées pour chaque enseignant.</p>
+            </div>
+
+            <div class="feature-card glass p-8 rounded-2xl opacity-0 translate-y-10">
+                <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mb-6">
+                    <i data-lucide="terminal" class="text-cyan-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">CLI First</h3>
+                <p class="text-slate-400">Conçu pour être utilisé en ligne de commande avec 'uv' pour une gestion fluide.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section id="workflow" class="py-24 px-4 bg-slate-900/50">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-16">Architecture du Flux</h2>
+            <div class="relative">
+                <div class="absolute left-1/2 -translate-x-1/2 h-full w-0.5 bg-slate-700 hidden md:block"></div>
+                
+                <div class="workflow-step mb-16 relative flex flex-col md:flex-row items-center justify-between opacity-0">
+                    <div class="md:w-5/12 text-right hidden md:block">
+                        <h4 class="text-xl font-bold text-blue-400">Extraction</h4>
+                        <p class="text-slate-400">Lecture directe depuis Google Sheets.</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center z-10 my-4 md:my-0">
+                        <i data-lucide="download" class="text-white w-6 h-6"></i>
+                    </div>
+                    <div class="md:w-5/12 text-left">
+                        <h4 class="text-xl font-bold text-blue-400 md:hidden">Extraction</h4>
+                        <p class="text-slate-400 md:hidden">Lecture directe depuis Google Sheets.</p>
+                        <div class="glass p-4 rounded-xl mt-2">
+                            <code>parse_edt.py</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="workflow-step mb-16 relative flex flex-col md:flex-row-reverse items-center justify-between opacity-0">
+                    <div class="md:w-5/12 text-left hidden md:block">
+                        <h4 class="text-xl font-bold text-green-400">Normalisation</h4>
+                        <p class="text-slate-400">Traitement et stockage en CSV local.</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center z-10 my-4 md:my-0">
+                        <i data-lucide="database" class="text-white w-6 h-6"></i>
+                    </div>
+                    <div class="md:w-5/12 text-right">
+                        <h4 class="text-xl font-bold text-green-400 md:hidden">Normalisation</h4>
+                        <p class="text-slate-400 md:hidden">Traitement et stockage en CSV local.</p>
+                        <div class="glass p-4 rounded-xl mt-2">
+                            <code>finale.csv</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="workflow-step relative flex flex-col md:flex-row items-center justify-between opacity-0">
+                    <div class="md:w-5/12 text-right hidden md:block">
+                        <h4 class="text-xl font-bold text-purple-400">Sorties</h4>
+                        <p class="text-slate-400">Stats, iCal, Plots et Feuilles Profs.</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center z-10 my-4 md:my-0">
+                        <i data-lucide="send" class="text-white w-6 h-6"></i>
+                    </div>
+                    <div class="md:w-5/12 text-left">
+                        <h4 class="text-xl font-bold text-purple-400 md:hidden">Sorties</h4>
+                        <p class="text-slate-400 md:hidden">Stats, iCal, Plots et Feuilles Profs.</p>
+                        <div class="glass p-4 rounded-xl mt-2">
+                            <code>mon_edt.ics</code>, <code>draw_df.py</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Section -->
+    <section class="py-24 px-4 max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold mb-8 text-center">Démarrage Rapide</h2>
+        <div class="code-block group">
+            <button class="absolute right-4 top-4 text-slate-500 hover:text-white transition-colors" onclick="copyCode()">
+                <i data-lucide="copy" class="w-5 h-5"></i>
+            </button>
+            <pre class="text-blue-300"># Installation</pre>
+            <pre class="text-slate-300">uv sync</pre>
+            <br>
+            <pre class="text-blue-300"># Lancer le workflow complet</pre>
+            <pre class="text-slate-300">uv run demo.py</pre>
+            <br>
+            <pre class="text-blue-300"># Exporter en iCal</pre>
+            <pre class="text-slate-300">uv run src/scripts/ical_conversion.py</pre>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 border-t border-slate-800 text-center">
+        <p class="text-slate-500">© 2026 CNUM - ENSAT Project. Construit avec passion.</p>
+    </footer>
+
+    <script>
+        // Initialiser Lucide
+        lucide.createIcons();
+
+        // Animations GSAP
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero Animations
+        window.addEventListener('load', () => {
+            const tl = gsap.timeline();
+            tl.to("#hero-title", { opacity: 1, y: 0, duration: 1, ease: "power4.out" })
+              .to("#hero-subtitle", { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "-=0.6")
+              .to("#hero-cta", { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "-=0.6");
+            
+            gsap.to("#hero-bg div", {
+                x: "random(-20, 20)",
+                y: "random(-20, 20)",
+                duration: 5,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+        });
+
+        // Scroll Animations for Features
+        gsap.utils.toArray(".feature-card").forEach((card, i) => {
+            gsap.to(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 85%",
+                    toggleActions: "play none none none"
+                },
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                delay: i % 3 * 0.1
+            });
+        });
+
+        // Scroll Animations for Workflow
+        gsap.utils.toArray(".workflow-step").forEach((step) => {
+            gsap.to(step, {
+                scrollTrigger: {
+                    trigger: step,
+                    start: "top 80%",
+                },
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power3.out"
+            });
+        });
+
+        function copyCode() {
+            const code = `uv sync
+uv run demo.py
+uv run src/scripts/ical_conversion.py`;
+            navigator.clipboard.writeText(code);
+            alert("Code copié !");
+        }
+
+        // Mouse hover interaction for cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>
