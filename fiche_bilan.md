@@ -131,17 +131,11 @@ Concevoir et mettre en oeuvre une solution numérique. Le projet m'a
 donné la capacité à automatiser un flux de données complexe pour aider à
 la décision logistique.
 
-Nathan Petitboulanger
-
-<<<<<<< HEAD
-**Communiquer** des connaissance, **Concevoir** un project numérique.
-**Organiser** une code base. Mettre au point une architecture
-
-Pierre Tauzin :
-
-**Communiquer** des connaissance, **Concevoir** un project numérique.
-**Organiser** une code base. Mettre au point une architecture
-=======
+**Nathan Petitboulanger**
 
 Ce projet fut un catalyseur pour le développement et la validation de compétences fondamentales. J'ai significativement progressé dans ma capacité à **communiquer** des concepts techniques complexes de manière claire et percutante, favorisant une compréhension partagée au sein de l'équipe et avec les parties prenantes. Sur le plan de la **conception** numérique, j'ai affûté mon acuité à transformer des besoins fonctionnels en solutions robustes et évolutives, en intégrant les meilleures pratiques du génie logiciel. L'**organisation** d'une codebase structurée et maintenable est devenue une seconde nature, assurant la pérennité et la facilité d'intervention sur le projet. Enfin, l'élaboration et la mise en œuvre d'une **architecture** logicielle cohérente et performante m'ont permis de bâtir un socle technique solide, gage de la scalabilité et de la résilience du produit final.
->>>>>>> d69b59e (add stuf in fiche bilan)
+
+**Pierre Tauzin** :
+
+**Communiquer** des connaissance, **Concevoir** un project numérique.
+**Organiser** une code base. Mettre au point une architecture
