@@ -116,9 +116,6 @@ def get_df_from_sheet_name(sheet_name: str = "edt_clean"):
     return df
 
 
-df = get_df_from_sheet_name()
-
-
 def extract_legend(
     meta_data: Mapping,
     sheet_param: gspread.Worksheet,

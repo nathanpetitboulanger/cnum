@@ -57,10 +57,8 @@ def parse_merges_to_df(data, all_merges, metadata):
                 continue
 
             date_pattern = r"\d{4}"
-            print(str_cours_raw)
             if re.search(date_pattern, str_cours_raw):
-                print(f"Date {str_cours_raw} out")
-                raise ValueError("Date")
+                raise ValueError("Date exlue")
 
             prof_initials = parse_profs(str_cours_raw)
             cours_str = clean_cours_name(str_cours_raw)
