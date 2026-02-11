@@ -9,103 +9,95 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
         
+        :root {
+            --accent: #0ea5e9;
+            --accent-glow: rgba(14, 165, 233, 0.2);
+            --grid-color: rgba(14, 165, 233, 0.05);
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #020617;
             color: #f8fafc;
             overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 100%);
+        }
+
+        .tech-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse at center, black, transparent 80%);
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 0, 0, 0.05) 51%,
+                transparent 51%
+            );
+            background-size: 100% 4px;
+            opacity: 0.1;
         }
 
         .gradient-text {
-            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+            background: linear-gradient(to right, #fff 20%, #0ea5e9 50%, #6366f1 80%);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: shine 8s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
         }
 
         .glass {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
 
         .feature-card {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .feature-card:hover {
-            transform: translateY(-8px);
-            background: rgba(30, 41, 59, 0.8);
-            border-color: rgba(56, 189, 248, 0.4);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        .code-block {
-            background: #0f172a;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            font-family: 'Fira Code', monospace;
-            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-        }
-
-        .nav-link {
-            position: relative;
-            color: #94a3b8;
-            transition: color 0.3s ease;
-        }
-
-        .nav-link:hover {
-            color: #f8fafc;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #38bdf8;
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .scroll-indicator {
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-10px);}
-            60% {transform: translateY(-5px);}
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #020617;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1e293b;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #334155;
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(30, 41, 59, 0.5);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px -20px var(--accent-glow);
         }
 
         .diagram-container {
             position: relative;
             width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            padding-top: 56.25%; /* 16:9 */
+            border-radius: 24px;
             overflow: hidden;
-            border-radius: 16px;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .diagram-container iframe {
@@ -116,364 +108,348 @@
             height: 100%;
             border: 0;
         }
+
+        .nav-link {
+            position: relative;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover { color: #fff; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { 
+            background: #1e293b; 
+            border-radius: 5px; 
+            border: 2px solid #020617;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: 0.15;
+        }
     </style>
 </head>
-<body class="selection:bg-blue-500/30">
+<body class="selection:bg-sky-500/30">
+    <div class="tech-bg"></div>
+    <div class="scanlines"></div>
 
     <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 glass border-b border-white/5 py-4">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <i data-lucide="calendar" class="text-white w-5 h-5"></i>
+    <nav class="fixed top-0 w-full z-[100] glass border-b border-white/5 py-5 transition-all duration-500" id="navbar">
+        <div class="max-w-7xl mx-auto px-8 flex justify-between items-center">
+            <div class="flex items-center gap-3 group cursor-pointer">
+                <div class="w-10 h-10 bg-sky-600 rounded-xl flex items-center justify-center transition-transform group-hover:rotate-12">
+                    <i data-lucide="layout" class="text-white w-6 h-6"></i>
                 </div>
-                <span class="text-xl font-bold tracking-tight">CNUM</span>
+                <span class="text-2xl font-extrabold tracking-tight">CNUM<span class="text-sky-500">.</span></span>
             </div>
-            <div class="hidden md:flex items-center gap-8">
-                <a href="#features" class="nav-link">Fonctionnalités</a>
-                <a href="#workflow" class="nav-link">Workflow</a>
-                <a href="#architecture" class="nav-link">Architecture</a>
-                <a href="#install" class="nav-link px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full transition-all text-sm font-semibold">Démarrer</a>
+            <div class="hidden md:flex items-center gap-10">
+                <a href="#context" class="nav-link text-sm font-semibold tracking-wide">CONTEXTE</a>
+                <a href="#features" class="nav-link text-sm font-semibold tracking-wide">OBJECTIFS</a>
+                <a href="#architecture" class="nav-link text-sm font-semibold tracking-wide">SYSTÈME</a>
+                <a href="#install" class="px-6 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-full transition-all text-sm font-bold shadow-lg shadow-sky-600/20 active:scale-95">DÉMARRER</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center px-6 pt-20 overflow-hidden">
-        <div id="hero-bg" class="absolute inset-0 -z-10">
-            <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px]"></div>
-            <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px]"></div>
-        </div>
+    <section class="relative min-h-screen flex items-center justify-center px-8 pt-32 overflow-hidden">
+        <div class="glow-orb w-[600px] h-[600px] bg-sky-600 top-[-10%] left-[-10%]"></div>
+        <div class="glow-orb w-[600px] h-[600px] bg-indigo-600 bottom-[-10%] right-[-10%]"></div>
 
-        <div class="max-w-5xl text-center">
-            <div id="hero-badge" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-8 opacity-0">
-                <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                </span>
-                Propulsé par Python & UV
+        <div class="max-w-6xl text-center z-10">
+            <div id="hero-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-bold mb-10 opacity-0 tracking-widest uppercase">
+                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                ENSAT • PROJET CNUM 2026
             </div>
-            <h1 id="hero-title" class="text-6xl md:text-8xl font-black mb-8 leading-tight opacity-0">
-                L'Emploi du Temps <br>
-                <span class="gradient-text">Réinventé</span>
+            <h1 id="hero-title" class="text-6xl md:text-[7rem] font-[900] mb-10 leading-[0.85] opacity-0 tracking-tighter">
+                CNUM : Automatisation de l’Emploi du temps <span class="gradient-text">SEABV</span>
             </h1>
-            <p id="hero-subtitle" class="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed opacity-0">
-                Automatisez l'extraction, l'analyse et la synchronisation de vos calendriers ENSAT. 
-                Passez du chaos visuel à une donnée structurée en quelques secondes.
+            <p id="hero-subtitle" class="text-xl md:text-2xl text-slate-400 mb-16 max-w-3xl mx-auto leading-relaxed opacity-0 font-medium">
+                De la complexité du tableur à la fluidité de la donnée. Une architecture robuste conçue pour la logistique de l'UE SEABV.
             </p>
-            <div id="hero-cta" class="flex flex-wrap justify-center gap-6 opacity-0">
-                <a href="#install" class="group px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-blue-600/20">
-                    Débuter maintenant
-                    <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
-                </a>
-                <a href="https://github.com/nathanpetitboulanger/cnum" target="_blank" class="px-8 py-4 glass hover:bg-white/5 rounded-xl font-bold transition-all flex items-center gap-2">
-                    <i data-lucide="github" class="w-5 h-5"></i>
-                    Voir sur GitHub
-                </a>
-            </div>
-        </div>
-
-        <div class="absolute bottom-12 left-1/2 -translate-x-1/2 scroll-indicator">
-            <i data-lucide="mouse" class="text-slate-500 w-6 h-6"></i>
-        </div>
-    </section>
-
-    <!-- Stats Preview -->
-    <section class="py-20 px-6 max-w-7xl mx-auto -mt-20">
-        <div id="stats-grid" class="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div class="p-8 rounded-2xl glass text-center opacity-0">
-                <div class="text-3xl font-bold text-blue-400 mb-1">&lt; 10s</div>
-                <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Vitesse</div>
-            </div>
-            <div class="p-8 rounded-2xl glass text-center opacity-0">
-                <div class="text-3xl font-bold text-blue-400 mb-1">98%</div>
-                <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Précision</div>
-            </div>
-            <div class="p-8 rounded-2xl glass text-center opacity-0">
-                <div class="text-3xl font-bold text-blue-400 mb-1">iCal</div>
-                <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Export</div>
-            </div>
-            <div class="p-8 rounded-2xl glass text-center opacity-0">
-                <div class="text-3xl font-bold text-blue-400 mb-1">100%</div>
-                <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Automatique</div>
+            <div id="hero-cta" class="flex flex-col items-center gap-6 opacity-0">
+                <div class="flex items-center gap-6 p-2 bg-white/5 rounded-2xl border border-white/5 backdrop-blur-sm">
+                    <div class="flex -space-x-4 pl-2">
+                        <div class="w-12 h-12 rounded-full border-4 border-[#020617] bg-sky-600 flex items-center justify-center text-white text-sm font-bold shadow-xl">PT</div>
+                        <div class="w-12 h-12 rounded-full border-4 border-[#020617] bg-emerald-600 flex items-center justify-center text-white text-sm font-bold shadow-xl">NP</div>
+                        <div class="w-12 h-12 rounded-full border-4 border-[#020617] bg-purple-600 flex items-center justify-center text-white text-sm font-bold shadow-xl">MN</div>
+                    </div>
+                    <div class="pr-6 py-2 text-left">
+                        <div class="text-white font-bold text-sm">Équipe de Développement</div>
+                        <div class="text-slate-500 text-xs font-semibold uppercase tracking-wider italic">P. Tauzin • N. Petitboulanger • M. Nguyen-Duc</div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-32 px-6 max-w-7xl mx-auto">
-        <div class="text-center mb-24">
-            <h2 class="text-4xl md:text-5xl font-bold mb-6">Tout ce dont vous avez besoin</h2>
-            <p class="text-slate-400 max-w-2xl mx-auto text-lg">Une suite complète d'outils pour transformer vos feuilles de calcul en calendriers dynamiques.</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            
-            <div class="feature-card glass p-8 rounded-3xl opacity-0">
-                <div class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-8">
-                    <i data-lucide="search" class="text-blue-400 w-7 h-7"></i>
+    <!-- Context Section -->
+    <section id="context" class="py-40 px-8 max-w-7xl mx-auto relative">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+            <div class="context-content opacity-0">
+                <div class="w-16 h-1 bg-sky-500 mb-8 rounded-full"></div>
+                <h2 class="text-5xl md:text-6xl font-extrabold mb-10 leading-tight">Le défi de <br><span class="text-sky-500">70+ étudiants</span></h2>
+                <div class="space-y-8 text-slate-400 text-xl leading-relaxed font-medium">
+                    <p>
+                        L'UE <span class="text-white font-bold tracking-tight">SEABV (QEGR et AGREST)</span> demande une logistique massive. La gestion manuelle devenait un goulot d'étranglement critique.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+                        <div class="glass p-6 rounded-2xl border-l-4 border-sky-500 group hover:bg-sky-500/5 transition-colors">
+                            <i data-lucide="user" class="text-sky-500 mb-3 w-6 h-6"></i>
+                            <div class="text-white font-extrabold text-lg mb-1">Marc Lang</div>
+                            <div class="text-slate-500 text-sm font-bold uppercase tracking-wider">Commanditaire</div>
+                        </div>
+                        <div class="glass p-6 rounded-2xl border-l-4 border-emerald-500 group hover:bg-emerald-500/5 transition-colors">
+                            <i data-lucide="user-check" class="text-emerald-500 mb-3 w-6 h-6"></i>
+                            <div class="text-white font-extrabold text-lg mb-1">Yousra Hamrouni</div>
+                            <div class="text-slate-500 text-sm font-bold uppercase tracking-wider">Conseillère</div>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-2xl font-bold mb-4">Parsing Intelligent</h3>
-                <p class="text-slate-400 leading-relaxed">Algorithmes avancés pour interpréter les cellules fusionnées et les codes couleurs des emplois du temps complexes.</p>
             </div>
-
-            <div class="feature-card glass p-8 rounded-3xl opacity-0">
-                <div class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-8">
-                    <i data-lucide="sparkles" class="text-emerald-400 w-7 h-7"></i>
+            <div class="context-visual relative opacity-0">
+                <div class="absolute inset-0 bg-sky-500/20 blur-[100px] rounded-full"></div>
+                <div class="glass p-10 rounded-[40px] relative z-10 border border-white/10 overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-right from-transparent via-sky-500 to-transparent opacity-50"></div>
+                    <h4 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                        <i data-lucide="alert-circle" class="text-sky-500"></i>
+                        Impact Critique
+                    </h4>
+                    <p class="text-slate-400 text-lg italic leading-relaxed font-medium">
+                        "Nous transformons un simple 'dessin' Excel en une infrastructure de données fiable, éliminant les erreurs humaines et libérant des dizaines d'heures de gestion logistique."
+                    </p>
+                    <div class="mt-8 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-sky-500/10 flex items-center justify-center">
+                            <i data-lucide="cpu" class="text-sky-500 w-6 h-6"></i>
+                        </div>
+                        <div class="text-sm font-bold text-slate-300">Flux 100% Automatisé</div>
+                    </div>
                 </div>
-                <h3 class="text-2xl font-bold mb-4">Normalisation IA</h3>
-                <p class="text-slate-400 leading-relaxed">Mapping automatique des initiales vers les noms complets et nettoyage des titres de cours pour une base de données propre.</p>
             </div>
-
-            <div class="feature-card glass p-8 rounded-3xl opacity-0">
-                <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-8">
-                    <i data-lucide="line-chart" class="text-purple-400 w-7 h-7"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-4">Analyses Précises</h3>
-                <p class="text-slate-400 leading-relaxed">Génération de rapports détaillés sur les volumes horaires par enseignant, groupe et type de formation.</p>
-            </div>
-
-            <div class="feature-card glass p-8 rounded-3xl opacity-0">
-                <div class="w-14 h-14 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-8">
-                    <i data-lucide="refresh-cw" class="text-orange-400 w-7 h-7"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-4">Sync Multi-plateforme</h3>
-                <p class="text-slate-400 leading-relaxed">Export vers iCal compatible Google Calendar, Outlook et Apple. Vos cours vous suivent partout.</p>
-            </div>
-
-            <div class="feature-card glass p-8 rounded-3xl opacity-0">
-                <div class="w-14 h-14 bg-rose-500/10 rounded-2xl flex items-center justify-center mb-8">
-                    <i data-lucide="layers" class="text-rose-400 w-7 h-7"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-4">Vues Personnalisées</h3>
-                <p class="text-slate-400 leading-relaxed">Créez automatiquement des feuilles de calcul individuelles pour chaque intervenant en un clic.</p>
-            </div>
-
-            <div class="feature-card glass p-8 rounded-3xl opacity-0">
-                <div class="w-14 h-14 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-8">
-                    <i data-lucide="terminal" class="text-cyan-400 w-7 h-7"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-4">Expérience Développeur</h3>
-                <p class="text-slate-400 leading-relaxed">Une CLI robuste construite avec Python 3.12 et uv pour une installation et une exécution ultra-fluides.</p>
-            </div>
-
         </div>
     </section>
 
-    <!-- Workflow Section -->
-    <section id="workflow" class="py-32 px-6 bg-slate-900/30">
-        <div class="max-w-5xl mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-24">Le Flux de Données</h2>
-            
-            <div class="space-y-12">
-                <div class="workflow-item glass p-8 rounded-2xl flex flex-col md:flex-row gap-8 items-start opacity-0">
-                    <div class="w-12 h-12 bg-blue-600 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-xl">1</div>
-                    <div>
-                        <h4 class="text-2xl font-bold mb-2">Ingestion Google Sheets</h4>
-                        <p class="text-slate-400 mb-4">Le script se connecte à l'API Google Sheets et extrait les données brutes, gérant les fusions de cellules complexes.</p>
-                        <div class="inline-flex gap-2 text-xs font-mono text-blue-400 bg-blue-400/10 px-3 py-1 rounded-md">
-                            src/scripts/parse_edt.py
-                        </div>
-                    </div>
+    <!-- Figures Gallery -->
+    <section class="py-32 px-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="gallery-item glass p-4 rounded-[32px] opacity-0 group hover:scale-[1.02] transition-transform duration-500">
+                <div class="aspect-[16/10] bg-[#0f172a] rounded-[24px] mb-8 relative overflow-hidden border border-white/5">
+                    <img src="assets/edt.png" alt="Emploi du temps graphique" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                    <div class="absolute inset-0 bg-sky-600/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                 </div>
+                <div class="px-6 pb-6 text-center">
+                    <span class="text-sky-500 text-xs font-bold tracking-widest uppercase mb-2 block">Figure 1</span>
+                    <h5 class="text-xl font-bold mb-2 text-white">Interface Graphique</h5>
+                    <p class="text-slate-500 font-medium">Optimisée pour la consultation rapide étudiants/profs.</p>
+                </div>
+            </div>
+            <div class="gallery-item glass p-4 rounded-[32px] opacity-0 group hover:scale-[1.02] transition-transform duration-500">
+                <div class="aspect-[16/10] bg-[#0f172a] rounded-[24px] mb-8 relative overflow-hidden border border-white/5">
+                    <img src="assets/edt_clean.png" alt="Structure de données" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                    <div class="absolute inset-0 bg-emerald-600/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                </div>
+                <div class="px-6 pb-6 text-center">
+                    <span class="text-emerald-500 text-xs font-bold tracking-widest uppercase mb-2 block">Figure 2</span>
+                    <h5 class="text-xl font-bold mb-2 text-white">Structure de Données</h5>
+                    <p class="text-slate-500 font-medium">Source de vérité pour toutes les synchronisations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                <div class="workflow-item glass p-8 rounded-2xl flex flex-col md:flex-row gap-8 items-start opacity-0">
-                    <div class="w-12 h-12 bg-emerald-600 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-xl">2</div>
-                    <div>
-                        <h4 class="text-2xl font-bold mb-2">Pivot de Données (CSV)</h4>
-                        <p class="text-slate-400 mb-4">Conversion en un format structuré local (`finale.csv`) qui sert de source unique de vérité pour tous les modules.</p>
-                        <div class="inline-flex gap-2 text-xs font-mono text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-md">
-                            finale.csv
-                        </div>
-                    </div>
+    <!-- Objectives Section -->
+    <section id="features" class="py-40 px-8 max-w-7xl mx-auto">
+        <div class="text-center mb-32">
+            <h2 class="text-5xl md:text-7xl font-[900] mb-8 tracking-tight">Objectifs du <span class="text-sky-500">Projet</span></h2>
+            <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium opacity-80 italic">Une vision technique au service de l'ergonomie.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div class="feature-card glass p-12 rounded-[40px] opacity-0">
+                <div class="w-14 h-14 bg-sky-500 rounded-2xl flex items-center justify-center mb-10 shadow-2xl shadow-sky-500/20">
+                    <i data-lucide="refresh-ccw" class="text-white w-7 h-7"></i>
                 </div>
-
-                <div class="workflow-item glass p-8 rounded-2xl flex flex-col md:flex-row gap-8 items-start opacity-0">
-                    <div class="w-12 h-12 bg-purple-600 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-xl">3</div>
-                    <div>
-                        <h4 class="text-2xl font-bold mb-2">Orchestration & Sorties</h4>
-                        <p class="text-slate-400 mb-4">Génération simultanée des fichiers iCal, des statistiques détaillées et des feuilles individuelles.</p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-xs font-mono text-purple-400 bg-purple-400/10 px-3 py-1 rounded-md">ical_conversion.py</span>
-                            <span class="text-xs font-mono text-purple-400 bg-purple-400/10 px-3 py-1 rounded-md">draw_stat_sheet.py</span>
-                        </div>
-                    </div>
+                <h3 class="text-2xl font-extrabold mb-5 text-white">Sync Temps Réel</h3>
+                <p class="text-slate-400 leading-relaxed font-medium">Synchronisation bidirectionnelle parfaite entre le format graphique et la liste structurée.</p>
+            </div>
+            <div class="feature-card glass p-12 rounded-[40px] opacity-0">
+                <div class="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center mb-10 shadow-2xl shadow-emerald-500/20">
+                    <i data-lucide="calendar" class="text-white w-7 h-7"></i>
                 </div>
+                <h3 class="text-2xl font-extrabold mb-5 text-white">Intégration iCal</h3>
+                <p class="text-slate-400 leading-relaxed font-medium">Export instantané vers Google Calendar et Apple Agenda pour une consultation mobile.</p>
+            </div>
+            <div class="feature-card glass p-12 rounded-[40px] opacity-0">
+                <div class="w-14 h-14 bg-indigo-500 rounded-2xl flex items-center justify-center mb-10 shadow-2xl shadow-indigo-500/20">
+                    <i data-lucide="layers" class="text-white w-7 h-7"></i>
+                </div>
+                <h3 class="text-2xl font-extrabold mb-5 text-white">Filtres Avancés</h3>
+                <p class="text-slate-400 leading-relaxed font-medium">Ségrégation intelligente par intervenant ou spécialité (AGREST / QEGR).</p>
             </div>
         </div>
     </section>
 
     <!-- Architecture Section -->
-    <section id="architecture" class="py-32 px-6 max-w-7xl mx-auto">
-        <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold mb-6 italic">Visualisez le Système</h2>
-            <p class="text-slate-400">Diagramme d'architecture interactif exporté depuis Diagrams.net.</p>
-        </div>
-        
-        <div class="architecture-box glass p-4 rounded-3xl opacity-0">
-            <div class="diagram-container">
-                <!-- Embedding the draw.io diagram directly -->
-                <iframe src="../cnum_flowchart.drawio.html" title="CNUM Architecture Diagram"></iframe>
+    <section id="architecture" class="py-40 px-8 bg-black/40 relative overflow-hidden">
+        <div class="max-w-6xl mx-auto z-10 relative">
+            <div class="text-center mb-24">
+                <h2 class="text-5xl font-black mb-6 italic tracking-tight">Système d'Information <span class="text-sky-500">Interactif</span></h2>
+                <p class="text-slate-400 text-lg font-medium">Flow chart du project.</p>
             </div>
-            <div class="mt-4 flex justify-between items-center px-4 text-xs text-slate-500 italic">
-                <span><i data-lucide="info" class="inline w-3 h-3 mr-1"></i> Utilisez la molette pour zoomer, cliquez et glissez pour naviguer.</span>
-                <a href="../cnum_flowchart.drawio.html" target="_blank" class="hover:text-blue-400 transition-colors">Ouvrir en plein écran</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Installation Section -->
-    <section id="install" class="py-32 px-6 max-w-4xl mx-auto">
-        <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold mb-6">Prêt à automatiser ?</h2>
-            <p class="text-slate-400">Suivez ces étapes simples pour déployer CNUM dans votre environnement.</p>
-        </div>
-
-        <div id="install-code" class="space-y-8 opacity-0">
-            <div>
-                <h4 class="text-sm font-semibold uppercase tracking-widest text-slate-500 mb-4">1. Installation des dépendances</h4>
-                <div class="code-block relative group">
-                    <button class="absolute right-4 top-4 text-slate-500 hover:text-white transition-colors" onclick="copyCode('uv sync')">
-                        <i data-lucide="copy" class="w-5 h-5"></i>
-                    </button>
-                    <pre class="text-blue-300"># Assurez-vous d'avoir 'uv' installé</pre>
-                    <pre class="text-slate-300">uv sync</pre>
+            
+            <div class="architecture-box glass p-6 rounded-[48px] opacity-0 shadow-2xl relative">
+                <div class="absolute -inset-1 bg-gradient-to-r from-sky-500/20 to-indigo-500/20 blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                <div class="diagram-container relative">
+                    <iframe src="assets/cnum_flowchart.drawio.html" title="CNUM Architecture Diagram"></iframe>
                 </div>
-            </div>
-
-            <div>
-                <h4 class="text-sm font-semibold uppercase tracking-widest text-slate-500 mb-4">2. Configuration des clés</h4>
-                <p class="text-sm text-slate-400 mb-4 italic">Placez votre `token.json` (Google Service Account) à la racine du projet.</p>
-            </div>
-
-            <div>
-                <h4 class="text-sm font-semibold uppercase tracking-widest text-slate-500 mb-4">3. Exécution du Workflow</h4>
-                <div class="code-block relative group">
-                    <button class="absolute right-4 top-4 text-slate-500 hover:text-white transition-colors" onclick="copyCode('uv run demo.py')">
-                        <i data-lucide="copy" class="w-5 h-5"></i>
-                    </button>
-                    <pre class="text-blue-300"># Lancer le parsing et la génération globale</pre>
-                    <pre class="text-slate-300">uv run demo.py</pre>
+                <div class="mt-8 flex justify-between items-center px-6 text-sm text-slate-500 font-bold tracking-wide">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="mouse-pointer-2" class="w-4 h-4 text-sky-500"></i>
+                        SCHÉMA INTERACTIF • PAN & ZOOM ACTIVÉS
+                    </span>
+                    <a href="../cnum_flowchart.drawio.html" target="_blank" class="text-sky-500 hover:text-sky-400 underline underline-offset-8 transition-colors">PLEIN ÉCRAN</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Footer -->
-    <section class="py-32 px-6">
-        <div class="max-w-5xl mx-auto glass rounded-[40px] p-12 md:p-24 text-center relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] -mr-32 -mt-32"></div>
-            <h2 class="text-4xl md:text-6xl font-black mb-8">Libérez-vous du temps.</h2>
-            <p class="text-xl text-slate-400 mb-12 max-w-2xl mx-auto italic">"Le meilleur outil est celui qui se fait oublier."</p>
-            <div class="flex justify-center gap-6">
-                <a href="#install" class="px-10 py-5 bg-white text-black rounded-2xl font-black hover:bg-slate-200 transition-all text-lg">
-                    Démarrer
-                </a>
+    <!-- Installation -->
+    <section id="install" class="py-40 px-8 max-w-4xl mx-auto">
+        <div class="text-center mb-20">
+            <h2 class="text-5xl font-extrabold mb-6">Déployer <span class="text-sky-500">L'EDT AUTOMATIQUE</span></h2>
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-slate-400 font-mono text-sm">
+                git clone https://github.com/nathanpetitboulanger/cnum
+            </div>
+        </div>
+
+        <div id="install-steps" class="space-y-8 opacity-0">
+            <div class="glass p-10 rounded-[32px] border border-white/5 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-sky-500"></div>
+                <button class="absolute right-8 top-8 text-slate-500 hover:text-sky-500 transition-colors active:scale-90" onclick="copyCode('uv sync && uv run app.py')">
+                    <i data-lucide="copy" class="w-6 h-6"></i>
+                </button>
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-10 h-10 rounded-lg bg-sky-500/10 flex items-center justify-center">
+                        <i data-lucide="terminal" class="text-sky-500 w-5 h-5"></i>
+                    </div>
+                    <span class="text-sm font-black uppercase tracking-widest text-slate-500">Quick Setup</span>
+                </div>
+                <div class="font-mono text-lg space-y-2">
+                    <div class="flex items-center gap-3">
+                        <span class="text-slate-600">$</span>
+                        <span class="text-sky-400">uv</span>
+                        <span class="text-slate-300">sync</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-slate-600">$</span>
+                        <span class="text-sky-400">uv</span>
+                        <span class="text-slate-300">run streamlit run app.py</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer Info -->
-    <footer class="py-12 px-6 border-t border-white/5 text-center text-slate-500">
-        <div class="flex justify-center gap-6 mb-8">
-            <a href="#" class="hover:text-blue-400 transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
-            <a href="https://github.com/nathanpetitboulanger/cnum" class="hover:text-blue-400 transition-colors"><i data-lucide="github" class="w-5 h-5"></i></a>
-            <a href="#" class="hover:text-blue-400 transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+    <!-- Footer -->
+    <footer class="py-32 px-8 border-t border-white/5 text-center bg-black/20">
+        <div class="flex justify-center gap-8 mb-16 opacity-50">
+            <a href="https://github.com/nathanpetitboulanger/cnum" class="hover:text-sky-500 transition-all hover:scale-125"><i data-lucide="github" class="w-7 h-7"></i></a>
+            <a href="#" class="hover:text-sky-500 transition-all hover:scale-125"><i data-lucide="mail" class="w-7 h-7"></i></a>
         </div>
-        <p class="text-sm">© 2026 CNUM Project. Développé pour l'ENSAT. <br> Licence MIT.</p>
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-left">
+                <p class="text-lg font-black text-white mb-1">PROJET CNUM 2026</p>
+                <p class="text-sm font-bold text-slate-600 tracking-widest uppercase">Automatisation SEABV</p>
+            </div>
+            <div class="text-slate-500 text-sm font-medium leading-relaxed max-w-xs text-right md:text-right">
+                Développé à l'ENSAT. <br>
+                Propulsé par Python & Gemini-CLI. <br>
+                Licence MIT.
+            </div>
+        </div>
     </footer>
 
     <script>
-        // Initialize Lucide icons
         lucide.createIcons();
-
-        // GSAP Animations
         gsap.registerPlugin(ScrollTrigger);
 
-        // Hero Sequence
+        // Navbar blur on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('py-4');
+                nav.classList.remove('py-5');
+            } else {
+                nav.classList.add('py-5');
+                nav.classList.remove('py-4');
+            }
+        });
+
         window.addEventListener('load', () => {
             const tl = gsap.timeline();
-            tl.to("#hero-badge", { opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.7)" })
-              .to("#hero-title", { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "-=0.4")
-              .to("#hero-subtitle", { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "-=0.6")
-              .to("#hero-cta", { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "-=0.6")
-              .from("#stats-grid div", { 
-                  opacity: 0, 
-                  y: 40, 
-                  duration: 0.8, 
-                  stagger: 0.2, 
-                  ease: "power3.out" 
-              }, "-=0.2");
-            
-            // Background drift
-            gsap.to("#hero-bg div", {
-                x: "random(-40, 40)",
-                y: "random(-40, 40)",
-                duration: 8,
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut"
+            tl.to("#hero-badge", { opacity: 1, y: 0, duration: 0.8, ease: "back.out(2)" })
+              .to("#hero-title", { opacity: 1, y: 0, duration: 1.2, ease: "expo.out" }, "-=0.5")
+              .to("#hero-subtitle", { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, "-=0.8")
+              .to("#hero-cta", { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, "-=0.8");
+
+            // Reveals
+            gsap.to(".context-content", {
+                scrollTrigger: { trigger: ".context-content", start: "top 80%" },
+                opacity: 1, y: 0, duration: 1, ease: "power3.out"
+            });
+            gsap.to(".context-visual", {
+                scrollTrigger: { trigger: ".context-visual", start: "top 80%" },
+                opacity: 1, scale: 1, duration: 1.2, ease: "expo.out"
+            });
+
+            gsap.utils.toArray(".gallery-item").forEach((item, i) => {
+                gsap.to(item, {
+                    scrollTrigger: { trigger: item, start: "top 90%" },
+                    opacity: 1, y: 0, duration: 1, delay: i * 0.2
+                });
+            });
+
+            gsap.utils.toArray(".feature-card").forEach((card, i) => {
+                gsap.to(card, {
+                    scrollTrigger: { trigger: card, start: "top 85%" },
+                    opacity: 1, y: 0, duration: 1, delay: (i % 3) * 0.1
+                });
+            });
+
+            gsap.to(".architecture-box", {
+                scrollTrigger: { trigger: ".architecture-box", start: "top 75%" },
+                opacity: 1, y: 0, duration: 1.5, ease: "expo.out"
+            });
+
+            gsap.to("#install-steps", {
+                scrollTrigger: { trigger: "#install-steps", start: "top 90%" },
+                opacity: 1, y: 0, duration: 1
             });
         });
 
-        // Features reveal
-        gsap.utils.toArray(".feature-card").forEach((card, i) => {
-            gsap.to(card, {
-                scrollTrigger: {
-                    trigger: card,
-                    start: "top 85%",
-                },
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                delay: i % 3 * 0.1,
-                ease: "power3.out"
-            });
-        });
-
-        // Workflow items
-        gsap.utils.toArray(".workflow-item").forEach((item) => {
-            gsap.to(item, {
-                scrollTrigger: {
-                    trigger: item,
-                    start: "top 80%",
-                },
-                opacity: 1,
-                x: 0,
-                duration: 1,
-                ease: "power3.out"
-            });
-        });
-
-        // Architecture section
-        gsap.to(".architecture-box", {
-            scrollTrigger: {
-                trigger: ".architecture-box",
-                start: "top 75%",
-            },
-            opacity: 1,
-            scale: 1,
-            duration: 1.2,
-            ease: "expo.out"
-        });
-
-        // Install section
-        gsap.to("#install-code", {
-            scrollTrigger: {
-                trigger: "#install-code",
-                start: "top 80%",
-            },
-            opacity: 1,
-            y: 0,
-            duration: 1
-        });
-
-        // Utility: Copy to clipboard
         function copyCode(text) {
             navigator.clipboard.writeText(text);
-            // Simple toast simulation
             const btn = event.currentTarget;
             const originalIcon = btn.innerHTML;
-            btn.innerHTML = '<i data-lucide="check" class="w-5 h-5 text-emerald-400"></i>';
+            btn.innerHTML = '<i data-lucide="check" class="w-6 h-6 text-emerald-500"></i>';
             lucide.createIcons();
             setTimeout(() => {
                 btn.innerHTML = originalIcon;
