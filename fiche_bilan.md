@@ -3,7 +3,7 @@
 - *sauf indication contraire, les parties sont à renseigner de façon
     collective pour chaque groupe projet. Pour les parties à renseigner
     de façon individuelle, rédigez une sous-partie par participant*
-- *effectuez les analyses de façon tout d'abord précise et détaillée
+- *effectuez les analyses dejfaçon tout d'abord précise et détaillée
     ensuite suivie d'une synthèse*
 - *vous n'êtes **pas** dans ce bilan évalué sur l'atteinte des
     objectifs (partie A), le choix des méthodes et l'identification des
@@ -39,7 +39,7 @@ secondes pour un semestre.
 **Synthèse :** Le produit transforme bien un dessin Excel en base de
 données exploitable pour le calcul des heures.
 
-2. Quelle note pensez-vous recevoir de la part de votre commanditaire,
+1. Quelle note pensez-vous recevoir de la part de votre commanditaire,
     en expliquant pourquoi ?
 
 16/20. L'outil répond au besoin du gain de temps et de l'automatisation.
@@ -66,7 +66,7 @@ cellules fusionnées multiples.
 **Synthèse :** Les méthodes étaient adaptées, mais la phase de tests a
 pris plus de temps que les 4h prévues par personne.
 
-2. Si vous aviez à réaliser de nouveau ce projet, mais maintenant
+1. Si vous aviez à réaliser de nouveau ce projet, mais maintenant
     éclairé de l'expérience que vous avez gagnée, que feriez vous
     différemment, en expliquant pourquoi ?
 
@@ -91,7 +91,7 @@ Acquisition d'une expertise solide en matière de gestion de version décentrali
 
 Utilisation générale de python, découverte de l'API google sheet, de git, utilisation des commandes bash, et du logiciel Neovim
 
-2. (individuel) Quelles sont les suites en terme d'apprentissage que
+1. (individuel) Quelles sont les suites en terme d'apprentissage que
     vous envisagez, en expliquant pourquoi ?
 
 **Mathis Nguyen-Duc** : Approfondir le code HTML ou Java
@@ -114,12 +114,12 @@ Utilisation générale de python, découverte de l'API google sheet, de git, uti
     comment ces ressources ont du être combinées pour répondre à la
     demande et argumentez dans quelle mesure la tâche était complexe.
 
-*   Documentation de la bibliothèque Gspread
-*   Tutoriels API Google
-*   IA Gemini
-    *   Gemini nous a aidé à comprendre des fonctions spécifiques et à corriger des bugs de Regex.
+- Documentation de la bibliothèque Gspread
+- Tutoriels API Google
+- IA Gemini
+  - Gemini nous a aidé à comprendre des fonctions spécifiques et à corriger des bugs de Regex.
 
-2. (individuel) Effectuez le lien explicite avec le référentiel de
+1. (individuel) Effectuez le lien explicite avec le référentiel de
     compétence ENSAT, en indiquant de façon argumentée sur quel
     compétence ce projet vous a permis de progresser et quel
     apprentissage critique il vous permettrait de valider.
@@ -130,7 +130,7 @@ Concevoir et mettre en oeuvre une solution numérique. Le projet m'a
 donné la capacité à automatiser un flux de données complexe pour aider à
 la décision logistique.
 
-**Nathan Petitboulanger**
+**Nathan Petitboulanger** :
 
 Ce projet fut un catalyseur pour le développement et la validation de compétences fondamentales. J'ai significativement progressé dans ma capacité à **communiquer** des concepts techniques complexes de manière claire et percutante, favorisant une compréhension partagée au sein de l'équipe et avec les parties prenantes. Sur le plan de la **conception** numérique, j'ai affûté mon acuité à transformer des besoins fonctionnels en solutions robustes et évolutives, en intégrant les meilleures pratiques du génie logiciel. L'**organisation** d'une codebase structurée et maintenable est devenue une seconde nature, assurant la pérennité et la facilité d'intervention sur le projet. Enfin, l'élaboration et la mise en œuvre d'une **architecture** logicielle cohérente et performante m'ont permis de bâtir un socle technique solide, gage de la scalabilité et de la résilience du produit final.
 

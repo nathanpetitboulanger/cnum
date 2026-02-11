@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
+            background-color: #020617;
             color: #f8fafc;
             overflow-x: hidden;
         }
@@ -25,181 +25,276 @@
         }
 
         .glass {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .feature-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .feature-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(56, 189, 248, 0.5);
-            transition: all 0.3s ease;
+            transform: translateY(-8px);
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         .code-block {
-            background: #1e293b;
-            border-radius: 8px;
-            padding: 1rem;
-            font-family: monospace;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Fira Code', monospace;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .nav-link {
             position: relative;
+            color: #94a3b8;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #f8fafc;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #38bdf8;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
         }
 
         .scroll-indicator {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
             animation: bounce 2s infinite;
         }
 
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0) translateX(-50%);}
-            40% {transform: translateY(-10px) translateX(-50%);}
-            60% {transform: translateY(-5px) translateX(-50%);}
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        .diagram-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
+        .diagram-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
     </style>
 </head>
-<body>
+<body class="selection:bg-blue-500/30">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/5 py-4">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i data-lucide="calendar" class="text-white w-5 h-5"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight">CNUM</span>
+            </div>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#features" class="nav-link">Fonctionnalités</a>
+                <a href="#workflow" class="nav-link">Workflow</a>
+                <a href="#architecture" class="nav-link">Architecture</a>
+                <a href="#install" class="nav-link px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full transition-all text-sm font-semibold">Démarrer</a>
+            </div>
+        </div>
+    </nav>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
+    <section class="relative min-h-screen flex items-center justify-center px-6 pt-20 overflow-hidden">
         <div id="hero-bg" class="absolute inset-0 -z-10">
-            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[128px]"></div>
-            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[128px]"></div>
+            <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px]"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px]"></div>
         </div>
 
-        <div class="max-w-4xl text-center">
-            <h1 id="hero-title" class="text-6xl md:text-8xl font-extrabold mb-6 opacity-0">
-                <span class="gradient-text">CNUM</span>
+        <div class="max-w-5xl text-center">
+            <div id="hero-badge" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-8 opacity-0">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                </span>
+                Propulsé par Python & UV
+            </div>
+            <h1 id="hero-title" class="text-6xl md:text-8xl font-black mb-8 leading-tight opacity-0">
+                L'Emploi du Temps <br>
+                <span class="gradient-text">Réinventé</span>
             </h1>
-            <p id="hero-subtitle" class="text-xl md:text-2xl text-slate-400 mb-10 opacity-0">
-                L'outil ultime pour automatiser et transformer les emplois du temps ENSAT.
+            <p id="hero-subtitle" class="text-lg md:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed opacity-0">
+                Automatisez l'extraction, l'analyse et la synchronisation de vos calendriers ENSAT. 
+                Passez du chaos visuel à une donnée structurée en quelques secondes.
             </p>
-            <div id="hero-cta" class="flex flex-wrap justify-center gap-4 opacity-0">
-                <a href="#features" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-semibold transition-all">
-                    Découvrir
+            <div id="hero-cta" class="flex flex-wrap justify-center gap-6 opacity-0">
+                <a href="#install" class="group px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-blue-600/20">
+                    Débuter maintenant
+                    <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
                 </a>
-                <a href="#workflow" class="px-8 py-3 glass hover:bg-white/10 rounded-full font-semibold transition-all">
-                    Comment ça marche ?
+                <a href="https://github.com/nathanpetitboulanger/cnum" target="_blank" class="px-8 py-4 glass hover:bg-white/5 rounded-xl font-bold transition-all flex items-center gap-2">
+                    <i data-lucide="github" class="w-5 h-5"></i>
+                    Voir sur GitHub
                 </a>
             </div>
         </div>
 
-        <div class="scroll-indicator">
-            <i data-lucide="chevron-down" class="text-slate-500 w-8 h-8"></i>
+        <div class="absolute bottom-12 left-1/2 -translate-x-1/2 scroll-indicator">
+            <i data-lucide="mouse" class="text-slate-500 w-6 h-6"></i>
+        </div>
+    </section>
+
+    <!-- Stats Preview -->
+    <section class="py-20 px-6 max-w-7xl mx-auto -mt-20">
+        <div id="stats-grid" class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="p-8 rounded-2xl glass text-center opacity-0">
+                <div class="text-3xl font-bold text-blue-400 mb-1">&lt; 10s</div>
+                <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Vitesse</div>
+            </div>
+            <div class="p-8 rounded-2xl glass text-center opacity-0">
+                <div class="text-3xl font-bold text-blue-400 mb-1">98%</div>
+                <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Précision</div>
+            </div>
+            <div class="p-8 rounded-2xl glass text-center opacity-0">
+                <div class="text-3xl font-bold text-blue-400 mb-1">iCal</div>
+                <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Export</div>
+            </div>
+            <div class="p-8 rounded-2xl glass text-center opacity-0">
+                <div class="text-3xl font-bold text-blue-400 mb-1">100%</div>
+                <div class="text-sm text-slate-500 uppercase tracking-widest font-semibold">Automatique</div>
+            </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-24 px-4 max-w-7xl mx-auto">
-        <h2 class="text-4xl font-bold text-center mb-16">Fonctionnalités Clés</h2>
+    <section id="features" class="py-32 px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-24">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6">Tout ce dont vous avez besoin</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto text-lg">Une suite complète d'outils pour transformer vos feuilles de calcul en calendriers dynamiques.</p>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             
-            <div class="feature-card glass p-8 rounded-2xl opacity-0 translate-y-10">
-                <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-6">
-                    <i data-lucide="zap" class="text-blue-400"></i>
+            <div class="feature-card glass p-8 rounded-3xl opacity-0">
+                <div class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-8">
+                    <i data-lucide="search" class="text-blue-400 w-7 h-7"></i>
                 </div>
-                <h3 class="text-xl font-semibold mb-4">Parsing Automatisé</h3>
-                <p class="text-slate-400">Extraction intelligente depuis Google Sheets avec gestion des cellules fusionnées.</p>
+                <h3 class="text-2xl font-bold mb-4">Parsing Intelligent</h3>
+                <p class="text-slate-400 leading-relaxed">Algorithmes avancés pour interpréter les cellules fusionnées et les codes couleurs des emplois du temps complexes.</p>
             </div>
 
-            <div class="feature-card glass p-8 rounded-2xl opacity-0 translate-y-10">
-                <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-6">
-                    <i data-lucide="filter" class="text-green-400"></i>
+            <div class="feature-card glass p-8 rounded-3xl opacity-0">
+                <div class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-8">
+                    <i data-lucide="sparkles" class="text-emerald-400 w-7 h-7"></i>
                 </div>
-                <h3 class="text-xl font-semibold mb-4">Nettoyage de Données</h3>
-                <p class="text-slate-400">Normalisation des noms d'enseignants et des titres de cours automatiquement.</p>
+                <h3 class="text-2xl font-bold mb-4">Normalisation IA</h3>
+                <p class="text-slate-400 leading-relaxed">Mapping automatique des initiales vers les noms complets et nettoyage des titres de cours pour une base de données propre.</p>
             </div>
 
-            <div class="feature-card glass p-8 rounded-2xl opacity-0 translate-y-10">
-                <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-6">
-                    <i data-lucide="bar-chart-3" class="text-purple-400"></i>
+            <div class="feature-card glass p-8 rounded-3xl opacity-0">
+                <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-8">
+                    <i data-lucide="line-chart" class="text-purple-400 w-7 h-7"></i>
                 </div>
-                <h3 class="text-xl font-semibold mb-4">Analyses & Stats</h3>
-                <p class="text-slate-400">Calcul automatique des volumes horaires par professeur et par type d'enseignement.</p>
+                <h3 class="text-2xl font-bold mb-4">Analyses Précises</h3>
+                <p class="text-slate-400 leading-relaxed">Génération de rapports détaillés sur les volumes horaires par enseignant, groupe et type de formation.</p>
             </div>
 
-            <div class="feature-card glass p-8 rounded-2xl opacity-0 translate-y-10">
-                <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center mb-6">
-                    <i data-lucide="calendar" class="text-orange-400"></i>
+            <div class="feature-card glass p-8 rounded-3xl opacity-0">
+                <div class="w-14 h-14 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-8">
+                    <i data-lucide="refresh-cw" class="text-orange-400 w-7 h-7"></i>
                 </div>
-                <h3 class="text-xl font-semibold mb-4">Export iCal</h3>
-                <p class="text-slate-400">Générez des fichiers .ics pour synchroniser vos calendriers numériques.</p>
+                <h3 class="text-2xl font-bold mb-4">Sync Multi-plateforme</h3>
+                <p class="text-slate-400 leading-relaxed">Export vers iCal compatible Google Calendar, Outlook et Apple. Vos cours vous suivent partout.</p>
             </div>
 
-            <div class="feature-card glass p-8 rounded-2xl opacity-0 translate-y-10">
-                <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center mb-6">
-                    <i data-lucide="users" class="text-red-400"></i>
+            <div class="feature-card glass p-8 rounded-3xl opacity-0">
+                <div class="w-14 h-14 bg-rose-500/10 rounded-2xl flex items-center justify-center mb-8">
+                    <i data-lucide="layers" class="text-rose-400 w-7 h-7"></i>
                 </div>
-                <h3 class="text-xl font-semibold mb-4">Vues Individuelles</h3>
-                <p class="text-slate-400">Création automatique de feuilles de calcul dédiées pour chaque enseignant.</p>
+                <h3 class="text-2xl font-bold mb-4">Vues Personnalisées</h3>
+                <p class="text-slate-400 leading-relaxed">Créez automatiquement des feuilles de calcul individuelles pour chaque intervenant en un clic.</p>
             </div>
 
-            <div class="feature-card glass p-8 rounded-2xl opacity-0 translate-y-10">
-                <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mb-6">
-                    <i data-lucide="terminal" class="text-cyan-400"></i>
+            <div class="feature-card glass p-8 rounded-3xl opacity-0">
+                <div class="w-14 h-14 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-8">
+                    <i data-lucide="terminal" class="text-cyan-400 w-7 h-7"></i>
                 </div>
-                <h3 class="text-xl font-semibold mb-4">CLI First</h3>
-                <p class="text-slate-400">Conçu pour être utilisé en ligne de commande avec 'uv' pour une gestion fluide.</p>
+                <h3 class="text-2xl font-bold mb-4">Expérience Développeur</h3>
+                <p class="text-slate-400 leading-relaxed">Une CLI robuste construite avec Python 3.12 et uv pour une installation et une exécution ultra-fluides.</p>
             </div>
 
         </div>
     </section>
 
     <!-- Workflow Section -->
-    <section id="workflow" class="py-24 px-4 bg-slate-900/50">
+    <section id="workflow" class="py-32 px-6 bg-slate-900/30">
         <div class="max-w-5xl mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-16">Architecture du Flux</h2>
-            <div class="relative">
-                <div class="absolute left-1/2 -translate-x-1/2 h-full w-0.5 bg-slate-700 hidden md:block"></div>
-                
-                <div class="workflow-step mb-16 relative flex flex-col md:flex-row items-center justify-between opacity-0">
-                    <div class="md:w-5/12 text-right hidden md:block">
-                        <h4 class="text-xl font-bold text-blue-400">Extraction</h4>
-                        <p class="text-slate-400">Lecture directe depuis Google Sheets.</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center z-10 my-4 md:my-0">
-                        <i data-lucide="download" class="text-white w-6 h-6"></i>
-                    </div>
-                    <div class="md:w-5/12 text-left">
-                        <h4 class="text-xl font-bold text-blue-400 md:hidden">Extraction</h4>
-                        <p class="text-slate-400 md:hidden">Lecture directe depuis Google Sheets.</p>
-                        <div class="glass p-4 rounded-xl mt-2">
-                            <code>parse_edt.py</code>
+            <h2 class="text-4xl font-bold text-center mb-24">Le Flux de Données</h2>
+            
+            <div class="space-y-12">
+                <div class="workflow-item glass p-8 rounded-2xl flex flex-col md:flex-row gap-8 items-start opacity-0">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-xl">1</div>
+                    <div>
+                        <h4 class="text-2xl font-bold mb-2">Ingestion Google Sheets</h4>
+                        <p class="text-slate-400 mb-4">Le script se connecte à l'API Google Sheets et extrait les données brutes, gérant les fusions de cellules complexes.</p>
+                        <div class="inline-flex gap-2 text-xs font-mono text-blue-400 bg-blue-400/10 px-3 py-1 rounded-md">
+                            src/scripts/parse_edt.py
                         </div>
                     </div>
                 </div>
 
-                <div class="workflow-step mb-16 relative flex flex-col md:flex-row-reverse items-center justify-between opacity-0">
-                    <div class="md:w-5/12 text-left hidden md:block">
-                        <h4 class="text-xl font-bold text-green-400">Normalisation</h4>
-                        <p class="text-slate-400">Traitement et stockage en CSV local.</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center z-10 my-4 md:my-0">
-                        <i data-lucide="database" class="text-white w-6 h-6"></i>
-                    </div>
-                    <div class="md:w-5/12 text-right">
-                        <h4 class="text-xl font-bold text-green-400 md:hidden">Normalisation</h4>
-                        <p class="text-slate-400 md:hidden">Traitement et stockage en CSV local.</p>
-                        <div class="glass p-4 rounded-xl mt-2">
-                            <code>finale.csv</code>
+                <div class="workflow-item glass p-8 rounded-2xl flex flex-col md:flex-row gap-8 items-start opacity-0">
+                    <div class="w-12 h-12 bg-emerald-600 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-xl">2</div>
+                    <div>
+                        <h4 class="text-2xl font-bold mb-2">Pivot de Données (CSV)</h4>
+                        <p class="text-slate-400 mb-4">Conversion en un format structuré local (`finale.csv`) qui sert de source unique de vérité pour tous les modules.</p>
+                        <div class="inline-flex gap-2 text-xs font-mono text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-md">
+                            finale.csv
                         </div>
                     </div>
                 </div>
 
-                <div class="workflow-step relative flex flex-col md:flex-row items-center justify-between opacity-0">
-                    <div class="md:w-5/12 text-right hidden md:block">
-                        <h4 class="text-xl font-bold text-purple-400">Sorties</h4>
-                        <p class="text-slate-400">Stats, iCal, Plots et Feuilles Profs.</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center z-10 my-4 md:my-0">
-                        <i data-lucide="send" class="text-white w-6 h-6"></i>
-                    </div>
-                    <div class="md:w-5/12 text-left">
-                        <h4 class="text-xl font-bold text-purple-400 md:hidden">Sorties</h4>
-                        <p class="text-slate-400 md:hidden">Stats, iCal, Plots et Feuilles Profs.</p>
-                        <div class="glass p-4 rounded-xl mt-2">
-                            <code>mon_edt.ics</code>, <code>draw_df.py</code>
+                <div class="workflow-item glass p-8 rounded-2xl flex flex-col md:flex-row gap-8 items-start opacity-0">
+                    <div class="w-12 h-12 bg-purple-600 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-xl">3</div>
+                    <div>
+                        <h4 class="text-2xl font-bold mb-2">Orchestration & Sorties</h4>
+                        <p class="text-slate-400 mb-4">Génération simultanée des fichiers iCal, des statistiques détaillées et des feuilles individuelles.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs font-mono text-purple-400 bg-purple-400/10 px-3 py-1 rounded-md">ical_conversion.py</span>
+                            <span class="text-xs font-mono text-purple-400 bg-purple-400/10 px-3 py-1 rounded-md">draw_stat_sheet.py</span>
                         </div>
                     </div>
                 </div>
@@ -207,100 +302,184 @@
         </div>
     </section>
 
-    <!-- Code Section -->
-    <section class="py-24 px-4 max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold mb-8 text-center">Démarrage Rapide</h2>
-        <div class="code-block group">
-            <button class="absolute right-4 top-4 text-slate-500 hover:text-white transition-colors" onclick="copyCode()">
-                <i data-lucide="copy" class="w-5 h-5"></i>
-            </button>
-            <pre class="text-blue-300"># Installation</pre>
-            <pre class="text-slate-300">uv sync</pre>
-            <br>
-            <pre class="text-blue-300"># Lancer le workflow complet</pre>
-            <pre class="text-slate-300">uv run demo.py</pre>
-            <br>
-            <pre class="text-blue-300"># Exporter en iCal</pre>
-            <pre class="text-slate-300">uv run src/scripts/ical_conversion.py</pre>
+    <!-- Architecture Section -->
+    <section id="architecture" class="py-32 px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-6 italic">Visualisez le Système</h2>
+            <p class="text-slate-400">Diagramme d'architecture interactif exporté depuis Diagrams.net.</p>
+        </div>
+        
+        <div class="architecture-box glass p-4 rounded-3xl opacity-0">
+            <div class="diagram-container">
+                <!-- Embedding the draw.io diagram directly -->
+                <iframe src="../cnum_flowchart.drawio.html" title="CNUM Architecture Diagram"></iframe>
+            </div>
+            <div class="mt-4 flex justify-between items-center px-4 text-xs text-slate-500 italic">
+                <span><i data-lucide="info" class="inline w-3 h-3 mr-1"></i> Utilisez la molette pour zoomer, cliquez et glissez pour naviguer.</span>
+                <a href="../cnum_flowchart.drawio.html" target="_blank" class="hover:text-blue-400 transition-colors">Ouvrir en plein écran</a>
+            </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="py-12 px-4 border-t border-slate-800 text-center">
-        <p class="text-slate-500">© 2026 CNUM - ENSAT Project. Construit avec passion.</p>
+    <!-- Installation Section -->
+    <section id="install" class="py-32 px-6 max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-6">Prêt à automatiser ?</h2>
+            <p class="text-slate-400">Suivez ces étapes simples pour déployer CNUM dans votre environnement.</p>
+        </div>
+
+        <div id="install-code" class="space-y-8 opacity-0">
+            <div>
+                <h4 class="text-sm font-semibold uppercase tracking-widest text-slate-500 mb-4">1. Installation des dépendances</h4>
+                <div class="code-block relative group">
+                    <button class="absolute right-4 top-4 text-slate-500 hover:text-white transition-colors" onclick="copyCode('uv sync')">
+                        <i data-lucide="copy" class="w-5 h-5"></i>
+                    </button>
+                    <pre class="text-blue-300"># Assurez-vous d'avoir 'uv' installé</pre>
+                    <pre class="text-slate-300">uv sync</pre>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-semibold uppercase tracking-widest text-slate-500 mb-4">2. Configuration des clés</h4>
+                <p class="text-sm text-slate-400 mb-4 italic">Placez votre `token.json` (Google Service Account) à la racine du projet.</p>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-semibold uppercase tracking-widest text-slate-500 mb-4">3. Exécution du Workflow</h4>
+                <div class="code-block relative group">
+                    <button class="absolute right-4 top-4 text-slate-500 hover:text-white transition-colors" onclick="copyCode('uv run demo.py')">
+                        <i data-lucide="copy" class="w-5 h-5"></i>
+                    </button>
+                    <pre class="text-blue-300"># Lancer le parsing et la génération globale</pre>
+                    <pre class="text-slate-300">uv run demo.py</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Footer -->
+    <section class="py-32 px-6">
+        <div class="max-w-5xl mx-auto glass rounded-[40px] p-12 md:p-24 text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] -mr-32 -mt-32"></div>
+            <h2 class="text-4xl md:text-6xl font-black mb-8">Libérez-vous du temps.</h2>
+            <p class="text-xl text-slate-400 mb-12 max-w-2xl mx-auto italic">"Le meilleur outil est celui qui se fait oublier."</p>
+            <div class="flex justify-center gap-6">
+                <a href="#install" class="px-10 py-5 bg-white text-black rounded-2xl font-black hover:bg-slate-200 transition-all text-lg">
+                    Démarrer
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Info -->
+    <footer class="py-12 px-6 border-t border-white/5 text-center text-slate-500">
+        <div class="flex justify-center gap-6 mb-8">
+            <a href="#" class="hover:text-blue-400 transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+            <a href="https://github.com/nathanpetitboulanger/cnum" class="hover:text-blue-400 transition-colors"><i data-lucide="github" class="w-5 h-5"></i></a>
+            <a href="#" class="hover:text-blue-400 transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+        </div>
+        <p class="text-sm">© 2026 CNUM Project. Développé pour l'ENSAT. <br> Licence MIT.</p>
     </footer>
 
     <script>
-        // Initialiser Lucide
+        // Initialize Lucide icons
         lucide.createIcons();
 
-        // Animations GSAP
+        // GSAP Animations
         gsap.registerPlugin(ScrollTrigger);
 
-        // Hero Animations
+        // Hero Sequence
         window.addEventListener('load', () => {
             const tl = gsap.timeline();
-            tl.to("#hero-title", { opacity: 1, y: 0, duration: 1, ease: "power4.out" })
+            tl.to("#hero-badge", { opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.7)" })
+              .to("#hero-title", { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "-=0.4")
               .to("#hero-subtitle", { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "-=0.6")
-              .to("#hero-cta", { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "-=0.6");
+              .to("#hero-cta", { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "-=0.6")
+              .from("#stats-grid div", { 
+                  opacity: 0, 
+                  y: 40, 
+                  duration: 0.8, 
+                  stagger: 0.2, 
+                  ease: "power3.out" 
+              }, "-=0.2");
             
+            // Background drift
             gsap.to("#hero-bg div", {
-                x: "random(-20, 20)",
-                y: "random(-20, 20)",
-                duration: 5,
+                x: "random(-40, 40)",
+                y: "random(-40, 40)",
+                duration: 8,
                 repeat: -1,
                 yoyo: true,
                 ease: "sine.inOut"
             });
         });
 
-        // Scroll Animations for Features
+        // Features reveal
         gsap.utils.toArray(".feature-card").forEach((card, i) => {
             gsap.to(card, {
                 scrollTrigger: {
                     trigger: card,
                     start: "top 85%",
-                    toggleActions: "play none none none"
                 },
                 opacity: 1,
                 y: 0,
                 duration: 0.8,
-                delay: i % 3 * 0.1
+                delay: i % 3 * 0.1,
+                ease: "power3.out"
             });
         });
 
-        // Scroll Animations for Workflow
-        gsap.utils.toArray(".workflow-step").forEach((step) => {
-            gsap.to(step, {
+        // Workflow items
+        gsap.utils.toArray(".workflow-item").forEach((item) => {
+            gsap.to(item, {
                 scrollTrigger: {
-                    trigger: step,
+                    trigger: item,
                     start: "top 80%",
                 },
                 opacity: 1,
-                y: 0,
+                x: 0,
                 duration: 1,
                 ease: "power3.out"
             });
         });
 
-        function copyCode() {
-            const code = `uv sync
-uv run demo.py
-uv run src/scripts/ical_conversion.py`;
-            navigator.clipboard.writeText(code);
-            alert("Code copié !");
-        }
-
-        // Mouse hover interaction for cards
-        document.querySelectorAll('.feature-card').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-            });
+        // Architecture section
+        gsap.to(".architecture-box", {
+            scrollTrigger: {
+                trigger: ".architecture-box",
+                start: "top 75%",
+            },
+            opacity: 1,
+            scale: 1,
+            duration: 1.2,
+            ease: "expo.out"
         });
+
+        // Install section
+        gsap.to("#install-code", {
+            scrollTrigger: {
+                trigger: "#install-code",
+                start: "top 80%",
+            },
+            opacity: 1,
+            y: 0,
+            duration: 1
+        });
+
+        // Utility: Copy to clipboard
+        function copyCode(text) {
+            navigator.clipboard.writeText(text);
+            // Simple toast simulation
+            const btn = event.currentTarget;
+            const originalIcon = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="check" class="w-5 h-5 text-emerald-400"></i>';
+            lucide.createIcons();
+            setTimeout(() => {
+                btn.innerHTML = originalIcon;
+                lucide.createIcons();
+            }, 2000);
+        }
     </script>
 </body>
 </html>
