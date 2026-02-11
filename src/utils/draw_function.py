@@ -126,6 +126,7 @@ def get_position_from_params(start, end, week, index_sheet, data):
     """
     find the corresponding position for parameters in a EDT clean row
     """
+    print(start, end, week, index_sheet)
 
     date_str = format_date(start, format="full", locale="fr_FR")
     date_position = index_sheet[date_str][0]

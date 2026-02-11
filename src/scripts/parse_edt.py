@@ -1,3 +1,4 @@
+import re
 import gspread
 from gspread_formatting import *
 import pandas as pd
@@ -55,8 +56,13 @@ def parse_merges_to_df(data, all_merges, metadata):
             if str_cours_raw == "":
                 continue
 
+            date_pattern = r"\d{4}"
+            print(str_cours_raw)
+            if re.search(date_pattern, str_cours_raw):
+                print(f"Date {str_cours_raw} out")
+                raise ValueError("Date")
+
             prof_initials = parse_profs(str_cours_raw)
-            print(prof_initials)
             cours_str = clean_cours_name(str_cours_raw)
             color = extract_rgb_form_merge(metadata, merge)
             semaine = get_merge_semaine(merge)
@@ -77,6 +83,7 @@ def parse_merges_to_df(data, all_merges, metadata):
             )
         except Exception as e:
             print(e)
+            pass
 
     df = pd.DataFrame(
         rows,
@@ -94,13 +101,13 @@ def parse_merges_to_df(data, all_merges, metadata):
     return df
 
 
-spredsheet = connect_to_gsheets()
-
-data, all_merges, metadata = fetch_raw_data(spredsheet)
-
-df = parse_merges_to_df(data, all_merges, metadata)
-
-df.prof
+# spredsheet = connect_to_gsheets()
+#
+# data, all_merges, metadata = fetch_raw_data(spredsheet)
+#
+# df = parse_merges_to_df(data, all_merges, metadata)
+#
+# df.prof
 
 
 def process_dataframe(df, spreadsheet):
@@ -204,3 +211,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    df = pd.read_csv("finale.csv")
+    df.query("prof.str.contains('Marc')")

@@ -26,7 +26,9 @@ def main():
     df = get_df_from_sheet_name("edt_clean")
     df = df.query("cours != ''")
 
-    print("Creating full preview with skeleton on 'drawing' sheet...")
+    print(
+        "Creating fulstart, end, week, index_sheetl preview with skeleton on 'drawing' sheet..."
+    )
     sheet_draw = create_preview_edt_full(
         spreadsheet,
         edt_sheet,

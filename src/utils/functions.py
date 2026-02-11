@@ -47,21 +47,28 @@ def get_all_merges(
     """
     return all merged block in a sheet
     """
-    spreadsheet = sheet.spreadsheet
-    spreadsheet_data = spreadsheet.fetch_sheet_metadata()
+    try:
+        spreadsheet = sheet.spreadsheet
+        spreadsheet_data = spreadsheet.fetch_sheet_metadata()
 
-    for sheet_data in spreadsheet_data["sheets"]:
-        if sheet_data.get("properties").get("sheetId") == sheet.id:
-            return sheet_data.get("merges")
+        for sheet_data in spreadsheet_data.get("sheets", []):
+            if sheet_data.get("properties", {}).get("sheetId") == sheet.id:
+                return sheet_data.get("merges") or []
+    except Exception:
+        pass
+    return []
 
 
 def get_text_from_merged_cell(data, merge):
     """
     return le text d'un merge.
     """
-    raw = merge["startRowIndex"]
-    col = merge["startColumnIndex"]
-    return data[raw][col]
+    try:
+        raw = merge["startRowIndex"]
+        col = merge["startColumnIndex"]
+        return data[raw][col]
+    except (KeyError, IndexError):
+        return ""
 
 
 merge = {
@@ -74,64 +81,84 @@ merge = {
 
 
 def get_time_delta_from_merge(data, merge):
-    id_col_time = 0
-    time_format = "%H:%M"
+    try:
+        id_col_time = 0
+        time_format = "%H:%M"
 
-    start_row_id = merge["startRowIndex"]
-    end_row_id = merge["endRowIndex"]
-    start_col_id = merge["startColumnIndex"]
+        start_row_id = merge["startRowIndex"]
+        end_row_id = merge["endRowIndex"]
+        start_col_id = merge["startColumnIndex"]
 
-    ## Récupération id dates
+        ## Récupération id dates
 
-    row_dates = start_row_id
-    col = id_col_time
-    actual_time_position = [row_dates, col]
-    actual_time = "date"
-    while actual_time != "":
-        actual_time_position[0] = actual_time_position[0] - 1
-        row_dates = actual_time_position[0]
-        actual_time = data[row_dates][col]
-        # print(f"acual_time : {actual_time}")
-        # print(f"row_date : {row_dates}")
+        row_dates = start_row_id
+        col = id_col_time
+        actual_time_position = [row_dates, col]
+        actual_time = "date"
+        while actual_time != "" and actual_time_position[0] > 0:
+            actual_time_position[0] = actual_time_position[0] - 1
+            row_dates = actual_time_position[0]
+            actual_time = data[row_dates][col]
 
-    raw_start_str = data[start_row_id][id_col_time]
-    raw_end_str = data[end_row_id - 1][id_col_time]
+        raw_start_str = data[start_row_id][id_col_time]
+        raw_end_str = data[end_row_id - 1][id_col_time]
 
-    time_start = [time.strip() for time in raw_start_str.split("\n")][0]
-    time_end = [time.strip() for time in raw_end_str.split("\n")][1]
+        time_start_parts = [time.strip() for time in raw_start_str.split("\n")]
+        time_end_parts = [time.strip() for time in raw_end_str.split("\n")]
 
-    start_time_object = datetime.strptime(time_start, time_format).time()
-    end_time_object = datetime.strptime(time_end, time_format).time()
+        if len(time_start_parts) < 1 or len(time_end_parts) < 2:
+            return (None, None)
 
-    ##### GET DATE ON LEFT #####
-    col_to_move_left = [2, 4, 7, 9, 12]
-    if start_col_id in col_to_move_left:
-        start_col_id -= 1
+        time_start = time_start_parts[0]
+        time_end = time_end_parts[1]
 
-    date_str = data[row_dates][start_col_id]
+        start_time_object = datetime.strptime(time_start, time_format).time()
+        end_time_object = datetime.strptime(time_end, time_format).time()
 
-    date_obj = dateparser.parse(date_str).date()  # type: ignore
+        ##### GET DATE ON LEFT #####
+        col_to_move_left = [2, 4, 7, 9, 12]
+        if start_col_id in col_to_move_left:
+            start_col_id -= 1
 
-    start_datetime = datetime.combine(date_obj, start_time_object)
-    end_datetime = datetime.combine(date_obj, end_time_object)
+        date_str = data[row_dates][start_col_id]
 
-    return (start_datetime, end_datetime)
+        parsed_date = dateparser.parse(date_str)
+        if parsed_date is None:
+            return (None, None)
+        date_obj = parsed_date.date()
+
+        start_datetime = datetime.combine(date_obj, start_time_object)
+        end_datetime = datetime.combine(date_obj, end_time_object)
+
+        return (start_datetime, end_datetime)
+    except Exception:
+        return (None, None)
 
 
 def parse_profs(text: str) -> list[str]:
-    bracket_match = re.search(r"\(([^a-z]+)\)", text)
-    if bracket_match:
-        content = bracket_match.group(1)
-        initiales = re.findall(r"[A-Z]{2}", content)
-        return initiales
-    else:
-        return []
+    try:
+        if not isinstance(text, str):
+            return []
+        bracket_match = re.search(r"\(([^a-z]+)\)", text)
+        if bracket_match:
+            content = bracket_match.group(1)
+            initiales = re.findall(r"[A-Z]{2,5}", content)
+            return initiales
+    except Exception:
+        pass
+    return []
 
 
 def clean_cours_name(cours: str):
-    pattern = r"\s*\([A-Z\s-]+\)"
-    cleaned_text = re.sub(pattern, "", cours).strip()
-    return cleaned_text
+    return cours
+    try:
+        if not isinstance(cours, str):
+            return ""
+        pattern = r"\s*\([A-Z\s-]+\)"
+        cleaned_text = re.sub(pattern, "", cours).strip()
+        return cleaned_text
+    except Exception:
+        return str(cours) if cours is not None else ""
 
 
 def get_head_cell_coords_from_merge(merge):
@@ -141,17 +168,31 @@ def get_head_cell_coords_from_merge(merge):
 
 
 def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = edt_sheet_index):
-    sheet_data = metadata["sheets"][sheet_id]["data"][0]
-    row_data = sheet_data.get("rowData", [])
-
-    cell_values = row_data[row]["values"][col]
-    rgb = cell_values["effectiveFormat"]["backgroundColorStyle"]["rgbColor"]
-    return (rgb.get("red", 0), rgb.get("green", 0), rgb.get("blue", 0))
+    try:
+        sheet_data = metadata["sheets"][sheet_id]["data"][0]
+        row_data = sheet_data.get("rowData", [])
+        if row < len(row_data):
+            values = row_data[row].get("values", [])
+            if col < len(values):
+                cell_values = values[col]
+                rgb = (
+                    cell_values.get("effectiveFormat", {})
+                    .get("backgroundColorStyle", {})
+                    .get("rgbColor", {})
+                )
+                return (rgb.get("red", 0), rgb.get("green", 0), rgb.get("blue", 0))
+    except (KeyError, IndexError) as e:
+        print(e)
+        pass
 
 
 def extract_rgb_form_merge(metadata, merge, sheet_id: int = edt_sheet_index):
-    row_id, col_id = get_head_cell_coords_from_merge(merge)
-    return extract_rgb_from_cell_coords(metadata, row_id, col_id, sheet_id)
+    try:
+        row_id, col_id = get_head_cell_coords_from_merge(merge)
+        return extract_rgb_from_cell_coords(metadata, row_id, col_id, sheet_id)
+    except Exception as e:
+        print(e)
+        return None
 
 
 def get_index_sheet(sheet):
@@ -215,20 +256,23 @@ def get_best_coords_from_delta(start, end, index_sheet, data):
 
 
 def get_merge_semaine(merge):
-    col_start = merge["startColumnIndex"]
-    col_end = merge["endColumnIndex"]
+    try:
+        col_start = merge["startColumnIndex"]
+        col_end = merge["endColumnIndex"]
 
-    if (col_end - col_start) == 2:
+        if (col_end - col_start) == 2:
+            return None
+
+        elif col_start in (1, 3, 6, 8, 11):
+            return "A"
+
+        elif col_start in (2, 4, 7, 9, 12):
+            return "B"
+
+        else:
+            return None
+    except (KeyError, TypeError):
         return None
-
-    elif col_start in (1, 3, 6, 8, 11):
-        return "A"
-
-    elif col_start in (2, 4, 7, 9, 12):
-        return "B"
-
-    else:
-        raise ValueError("Pas de merge trouvé")
 
 
 def calcul_and_display_group_hours():
@@ -265,14 +309,18 @@ def parse_room(text: str) -> str | None:
     Extrait le nom de la salle situé entre crochets et ne conserve
     que les caractères en majuscules (et chiffres).
     """
-    bracket_match = re.search(r"\[([^\]]+)\]", text)
+    try:
+        if not isinstance(text, str):
+            return None
+        bracket_match = re.search(r"\[([^\]]+)\]", text)
 
-    if bracket_match:
-        content = bracket_match.group(1)
-        room_parts = re.findall(r"[A-Z0-9]+", content)
+        if bracket_match:
+            content = bracket_match.group(1)
+            room_parts = re.findall(r"[A-Z0-9]+", content)
 
-        return "".join(room_parts) if room_parts else None
-
+            return "".join(room_parts) if room_parts else None
+    except Exception:
+        pass
     return None
 
 
@@ -281,12 +329,16 @@ def parse_type_cours(text: str) -> str | None:
     Extrait le type de cours (CM, TD, TP, etc.) situé entre guillemets
     et ne conserve que les caractères en majuscules.
     """
-    quote_match = re.search(r"\"([^\"]+)\"", text)
+    try:
+        if not isinstance(text, str):
+            return None
+        quote_match = re.search(r"\"([^\"]+)\"", text)
 
-    if quote_match:
-        content = quote_match.group(1)
-        type_parts = re.findall(r"[A-Z]+", content)
+        if quote_match:
+            content = quote_match.group(1)
+            type_parts = re.findall(r"[A-Z]+", content)
 
-        return "".join(type_parts) if type_parts else None
-
+            return "".join(type_parts) if type_parts else None
+    except Exception:
+        pass
     return None
