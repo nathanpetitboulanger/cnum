@@ -87,11 +87,16 @@ Utiliser une API google sheets en Python, gérer des fichiers Ical.
 
 GIT, GEMINI-CLI
 
+*Pierre Tauzin*
+
+Utilisation générale de python, découverte de l'API google sheet, de git, utilisation des commandes bash, et du logiciel Neovim
+
 1. (individuel) Quelles sont les suites en terme d'apprentissage que
     vous envisagez, en expliquant pourquoi ?
 
 Mathis Nguyen-Duc : Approfondir le code HTML ou Java
 Nathan Petitboulanger : Apprendre JavaScript pour gérer du web
+Pierre Tauzin : Approfondir l'utilisation de python, de git et de bash
 
 #### D) Bilan sur les compétences
 
@@ -125,6 +130,11 @@ donné la capacité à automatiser un flux de données complexe pour aider à
 la décision logistique.
 
 Nathan Petitboulanger
+
+**Communiquer** des connaissance, **Concevoir** un project numérique.
+**Organiser** une code base. Mettre au point une architecture
+
+Pierre Tauzin :
 
 **Communiquer** des connaissance, **Concevoir** un project numérique.
 **Organiser** une code base. Mettre au point une architecture
