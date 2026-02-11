@@ -1,11 +1,12 @@
 import gspread
+from gspread_formatting import *  # Optionnel, pour le style avancé
 import pandas as pd
 from gspread_dataframe import set_with_dataframe
 from oauth2client.service_account import ServiceAccountCredentials
 from config import edt_sheet_index, CREDENTIALS_FILE, SCOPES, DEFAULT_SPREADSHEET_NAME
 from utils.dummies import *
 from utils.functions import *
-from utils.fetch_data import extract_name_from_code, get_mapping_dict_for_group_color
+from utils.fetch_data import extract_name_from_code
 
 """
 parse edt
@@ -20,7 +21,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name(
 
 client = gspread.authorize(creds)  # type: ignore
 spreadsheet = client.open(DEFAULT_SPREADSHEET_NAME)
-sheet = spreadsheet.worksheet("EDT")
+sheet = spreadsheet.get_worksheet(edt_sheet_index)
 data = sheet.get_all_values()
 all_merges = get_all_merges(sheet)
 
@@ -30,9 +31,8 @@ params = {
 metadata = spreadsheet.fetch_sheet_metadata(params=params)  # type: ignore
 
 df = pd.DataFrame(
-    columns=["cours", "start", "end", "prof", "RGB", "semaine", "salle", "type_cours"]  # type: ignore
+    columns=["cours", "start", "end", "prof", "RGB", "semaine", "salle", "type_cours"]
 )
-
 
 for merge in all_merges:
     try:
@@ -60,12 +60,6 @@ df["start"] = pd.to_datetime(df["start"])
 
 df["delta"] = df["end"] - df["start"]
 df["delta"] = df["delta"].dt.total_seconds() / 3600
-
-
-color_mapping = get_mapping_dict_for_group_color(spreadsheet)
-
-
-df["groupe_etudiant"] = df["RGB"].map(color_mapping)  # type: ignore
 
 
 def get_mapping_dict_for_name(spreadsheet):
@@ -116,5 +110,32 @@ set_with_dataframe(new_sheet, df_export)
 
 df.to_csv("finale.csv")
 
+
+df_visual = df.loc[:, ["cours", "start", "end", "prof"]].copy()
+df_visual["jour"] = df_visual["start"].dt.strftime("%A %d %B")
+df_visual["heure_debut"] = df_visual["start"].dt.strftime("%H:%M")
+df_visual["heure_fin"] = df_visual["end"].dt.strftime("%H:%M")
+
+df_final = df_visual[["jour", "heure_debut", "heure_fin", "cours", "prof"]]
+
+new_sheet_title = "Données Propres"
+try:
+    new_sheet_propre = spreadsheet.add_worksheet(
+        title=new_sheet_title, rows="100", cols="20"
+    )
+except gspread.exceptions.APIError:
+    new_sheet_propre = spreadsheet.worksheet(new_sheet_title)
+
+new_sheet_propre.clear()
+
+set_with_dataframe(new_sheet_propre, df_final)
+
+fmt = cellFormat(
+    backgroundColor=color(0.9, 0.9, 0.9),
+    textFormat=textFormat(bold=True),
+    horizontalAlignment="CENTER",
+)
+format_cell_range(new_sheet_propre, "A1:E1", fmt)
+set_frozen(new_sheet_propre, rows=1)
 
 print("Parsing finish")
