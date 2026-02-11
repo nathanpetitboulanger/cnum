@@ -30,7 +30,7 @@ SEABV - remise à niveau SIG,2025-12-05 13:30:00,2025-12-05 17:30:00,[],"(0, 1, 
 "SEABV_Jalon 1
  (SG, LB, ML)",2026-01-29 14:30:00,2026-01-29 17:30:00,"['Séraphine Grellier', 'Laurie Boithias', 'Marc Lang']","(0, 1, 0)",,,,3.0,QEGR
 "terrain lycée agr (8h30-10h
- gpes 2,4,6 avec JPS et gpes 8,10,12,14 avec MG + SG",2026-02-05 08:00:00,2026-02-05 10:00:00,[],"(1, 1, 0)",B,,,2.0,COMMUN
+ gpes 2,4,6 avec JPS et gpes 8,10,12,14 avec (MG , SG, ML)",2026-02-05 08:00:00,2026-02-05 10:00:00,"['Maritxu Guiresse', 'Séraphine Grellier', 'Marc Lang']","(1, 1, 0)",B,,,2.0,COMMUN
 Sol / Modèles,2026-02-05 09:00:00,2026-02-05 12:00:00,[],"(1, 1, 0)",A,,,3.0,COMMUN
 Jalon 2_Restitution Modèles,2026-02-06 09:00:00,2026-02-06 11:00:00,[],"(1, 1, 0)",,,,2.0,COMMUN
 "terrain lycée agr (10h30-12h
