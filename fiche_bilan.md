@@ -91,6 +91,7 @@ GIT, GEMINI-CLI
     vous envisagez, en expliquant pourquoi ?
 
 Mathis Nguyen-Duc : Approfondir le code HTML ou Java
+Nathan Petitboulanger : Apprendre JavaScript pour gérer du web
 
 #### D) Bilan sur les compétences
 
@@ -122,3 +123,8 @@ Mathis Nguyen-Duc :
 Concevoir et mettre en oeuvre une solution numérique. Le projet m'a
 donné la capacité à automatiser un flux de données complexe pour aider à
 la décision logistique.
+
+Nathan Petitboulanger
+
+**Communiquer** des connaissance, **Concevoir** un project numérique.
+**Organiser** une code base. Mettre au point une architecture
