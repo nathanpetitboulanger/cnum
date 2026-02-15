@@ -1,344 +1,175 @@
 import re
-from config import edt_sheet_index
-
+import logging
 from datetime import datetime
-from gspread_formatting import *
 import dateparser
 from babel.dates import format_date, format_time
-from gspread import Worksheet, spreadsheet
-from typing import Mapping
+import pandas as pd
 
+# Configuration du logger spécifique
+logger = logging.getLogger("cnum_parser")
 
-def get_cell_color(spreadsheet, sheet_numbrer: int, row: int, col: int):
-    """
-    Retourne un tuple (R, G, B) entre 0 et 1 pour une cellule donnée.
-    implémenté pour l'instant dans la sheet 1.
-    """
+def get_position_from_params(start, end, week, index_sheet, data):
+    """Trouve les coordonnées de cellule pour un créneau horaire."""
+    date_str = format_date(start, format="full", locale="fr_FR")
+    if date_str not in index_sheet:
+        logger.warning(f"Date non trouvée dans l'index : {date_str}")
+        return None
+    # On prend la première occurrence de la date
+    date_pos = index_sheet[date_str][0]
 
-    params = {
-        "includeGridData": True,
-        "fields": "sheets(data(rowData(values(effectiveFormat(backgroundColorStyle)))))",
-    }
-    metadata = spreadsheet.fetch_sheet_metadata(params=params)
+    times_raw = [row[0] for row in data[date_pos[0] + 1 : date_pos[0] + 9]]
+    t_start = [t.split("\n")[0].strip() for t in times_raw]
+    t_end = [t.split("\n")[1].strip() for t in times_raw]
 
-    try:
-        cell = metadata["sheets"][sheet_numbrer]["data"][0]["rowData"][row]["values"][
-            col
-        ]
-        color = (
-            cell.get("effectiveFormat", {})
-            .get("backgroundColorStyle", {})
-            .get("rgbColor", {})
-        )
+    map_start = {v: k + date_pos[0] for k, v in enumerate(t_start)}
+    map_end = {v: k + date_pos[0] for k, v in enumerate(t_end)}
 
-        red = color.get("red", 0)
-        green = color.get("green", 0)
-        blue = color.get("blue", 0)
+    h_start = start.strftime("%H:%M")
+    h_end = end.strftime("%H:%M")
 
-        return (red, green, blue)
-    except (KeyError, IndexError):
-        # Si la cellule n'existe pas ou n'a aucun format
-        return (1, 1, 1)  # On retourne du blanc par défaut
+    if h_start not in map_start or h_end not in map_end:
+        logger.warning(f"Heures non trouvées : {h_start}-{h_end}")
+        return None
 
+    r_start = map_start[h_start]
+    r_end = map_end[h_end] + 1
 
-def get_all_merges(
-    sheet,
-) -> list:  # type: ignore
-    """
-    return all merged block in a sheet
-    """
+    if not week:
+        c_start, c_end = date_pos[1], date_pos[1] + 2
+    elif week == "A":
+        c_start, c_end = date_pos[1], date_pos[1] + 1
+    else:
+        c_start, c_end = date_pos[1] + 1, date_pos[1] + 2
+
+    return [r_start + 1, r_end + 1, c_start, c_end]
+
+def get_all_merges(sheet) -> list:
     try:
         spreadsheet = sheet.spreadsheet
-        spreadsheet_data = spreadsheet.fetch_sheet_metadata()
-
+        # On récupère les métadonnées spécifiquement pour cette feuille
+        spreadsheet_data = spreadsheet.fetch_sheet_metadata({"fields": "sheets(properties,merges)"})
         for sheet_data in spreadsheet_data.get("sheets", []):
             if sheet_data.get("properties", {}).get("sheetId") == sheet.id:
-                return sheet_data.get("merges") or []
-    except Exception:
-        pass
+                merges = sheet_data.get("merges", [])
+                # S'assurer que le sheetId est bien présent dans chaque merge pour gspread
+                for m in merges:
+                    m["sheetId"] = sheet.id
+                return merges
+    except Exception as e:
+        logger.error(f"Erreur get_all_merges : {e}")
     return []
 
-
 def get_text_from_merged_cell(data, merge):
-    """
-    return le text d'un merge.
-    """
     try:
-        raw = merge["startRowIndex"]
-        col = merge["startColumnIndex"]
-        return data[raw][col]
-    except (KeyError, IndexError):
-        return ""
-
-
-merge = {
-    "sheetId": 739511890,
-    "startRowIndex": 48,
-    "endRowIndex": 50,
-    "startColumnIndex": 9,
-    "endColumnIndex": 10,
-}
-
+        return data[merge["startRowIndex"]][merge["startColumnIndex"]]
+    except: return ""
 
 def get_time_delta_from_merge(data, merge):
+    """Logique robuste de récupération des dates et heures."""
     try:
-        id_col_time = 0
         time_format = "%H:%M"
-
         start_row_id = merge["startRowIndex"]
         end_row_id = merge["endRowIndex"]
         start_col_id = merge["startColumnIndex"]
-
-        ## Récupération id dates
-
+        
         row_dates = start_row_id
-        col = id_col_time
-        actual_time_position = [row_dates, col]
-        actual_time = "date"
-        while actual_time != "" and actual_time_position[0] > 0:
-            actual_time_position[0] = actual_time_position[0] - 1
-            row_dates = actual_time_position[0]
-            actual_time = data[row_dates][col]
+        found_date_line = False
+        days_of_week = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+        
+        while row_dates >= 0:
+            line_content = " ".join(data[row_dates]).lower()
+            if any(day in line_content for day in days_of_week):
+                found_date_line = True
+                break
+            row_dates -= 1
+            
+        if not found_date_line: return (None, None)
+            
+        try:
+            raw_start_str = data[start_row_id][0]
+            raw_end_str = data[end_row_id - 1][0]
+            time_start = [t.strip() for t in raw_start_str.split("\n")][0]
+            time_end_parts = [t.strip() for t in raw_end_str.split("\n")]
+            time_end = time_end_parts[1] if len(time_end_parts) > 1 else time_end_parts[0]
+            
+            time_start_obj = datetime.strptime(time_start, time_format).time()
+            time_end_obj = datetime.strptime(time_end, time_format).time()
+        except: return (None, None)
+        
+        target_cols = [start_col_id, start_col_id - 1]
+        date_obj = None
+        for col in target_cols:
+            if col < 0: continue
+            date_str = data[row_dates][col]
+            parsed = dateparser.parse(date_str)
+            if parsed:
+                date_obj = parsed.date()
+                break
+        
+        if not date_obj: return (None, None)
+        return (datetime.combine(date_obj, time_start_obj), datetime.combine(date_obj, time_end_obj))
+    except: return (None, None)
 
-        raw_start_str = data[start_row_id][id_col_time]
-        raw_end_str = data[end_row_id - 1][id_col_time]
-
-        time_start_parts = [time.strip() for time in raw_start_str.split("\n")]
-        time_end_parts = [time.strip() for time in raw_end_str.split("\n")]
-
-        if len(time_start_parts) < 1 or len(time_end_parts) < 2:
-            return (None, None)
-
-        time_start = time_start_parts[0]
-        time_end = time_end_parts[1]
-
-        start_time_object = datetime.strptime(time_start, time_format).time()
-        end_time_object = datetime.strptime(time_end, time_format).time()
-
-        ##### GET DATE ON LEFT #####
-        col_to_move_left = [2, 4, 7, 9, 12]
-        if start_col_id in col_to_move_left:
-            start_col_id -= 1
-
-        date_str = data[row_dates][start_col_id]
-
-        parsed_date = dateparser.parse(date_str)
-        if parsed_date is None:
-            return (None, None)
-        date_obj = parsed_date.date()
-
-        start_datetime = datetime.combine(date_obj, start_time_object)
-        end_datetime = datetime.combine(date_obj, end_time_object)
-
-        return (start_datetime, end_datetime)
-    except Exception:
-        return (None, None)
-
-
-def parse_profs(text: str) -> list[str]:
-    try:
-        if not isinstance(text, str):
-            return []
-        bracket_match = re.search(r"\(([^a-z]+)\)", text)
-        if bracket_match:
-            content = bracket_match.group(1)
-            initiales = re.findall(r"[A-Z]{2,5}", content)
-            return initiales
-    except Exception:
-        pass
+def parse_profs(text: str) -> list:
+    bracket_match = re.search(r"\(([^a-z]+)\)", str(text))
+    if bracket_match:
+        return re.findall(r"[A-Z]{2,5}", bracket_match.group(1))
     return []
 
-
 def clean_cours_name(cours: str):
-    return cours
+    return str(cours).strip()
+
+def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = 1):
     try:
-        if not isinstance(cours, str):
-            return ""
-        pattern = r"\s*\([A-Z\s-]+\)"
-        cleaned_text = re.sub(pattern, "", cours).strip()
-        return cleaned_text
-    except Exception:
-        return str(cours) if cours is not None else ""
+        # Recherche de l'index de la feuille par son ID ou utilisation de l'index 1 par défaut
+        # Pour simplifier, on cherche dans les feuilles
+        sheet_data = None
+        for s in metadata.get("sheets", []):
+            if s.get("properties", {}).get("index") == sheet_id:
+                sheet_data = s.get("data", [{}])[0]
+                break
+        if not sheet_data: sheet_data = metadata["sheets"][sheet_id]["data"][0]
 
-
-def get_head_cell_coords_from_merge(merge):
-    row_id = merge["startRowIndex"]
-    col_id = merge["startColumnIndex"]
-    return row_id, col_id
-
-
-def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = edt_sheet_index):
-    try:
-        sheet_data = metadata["sheets"][sheet_id]["data"][0]
         row_data = sheet_data.get("rowData", [])
-        if row < len(row_data):
-            values = row_data[row].get("values", [])
-            if col < len(values):
-                cell_values = values[col]
-                rgb = (
-                    cell_values.get("effectiveFormat", {})
-                    .get("backgroundColorStyle", {})
-                    .get("rgbColor", {})
-                )
-                return (rgb.get("red", 0), rgb.get("green", 0), rgb.get("blue", 0))
-    except (KeyError, IndexError) as e:
-        print(e)
-        pass
+        cell = row_data[row]["values"][col]
+        rgb = cell.get("effectiveFormat", {}).get("backgroundColorStyle", {}).get("rgbColor", {})
+        return (rgb.get("red", 0), rgb.get("green", 0), rgb.get("blue", 0))
+    except: return (1, 1, 1)
 
-
-def extract_rgb_form_merge(metadata, merge, sheet_id: int = edt_sheet_index):
-    try:
-        row_id, col_id = get_head_cell_coords_from_merge(merge)
-        return extract_rgb_from_cell_coords(metadata, row_id, col_id, sheet_id)
-    except Exception as e:
-        print(e)
-        return None
-
+def extract_rgb_form_merge(metadata, merge, sheet_id: int = 1):
+    return extract_rgb_from_cell_coords(metadata, merge["startRowIndex"], merge["startColumnIndex"], sheet_id)
 
 def get_index_sheet(sheet):
-    """
-    Return the index of the sheet once for the API rates actual_time_position
-    """
     data = sheet.get_all_values()
-
     index_sheet = {}
     for r, row in enumerate(data):
         for c, val in enumerate(row):
-            if val not in index_sheet:
-                index_sheet[val] = []
+            if val not in index_sheet: index_sheet[val] = []
             index_sheet[val].append((r, c))
     return index_sheet
 
-
-def get_best_coords_from_delta(start, end, index_sheet, data):
-    """
-    Return cours position form start and end. the index_sheet sheet is optainable with the function get_index_sheet
-    Do not loop with get_index_sheet
-    Same with data
-    """
-
-    start_date_str = format_date(start, format="full", locale="fr_FR")
-    end_date_str = format_date(end, format="full", locale="fr_FR")
-
-    start_hour_str = format_time(start, format="full", locale="fr_FR")
-    end_hour_str = format_time(end, format="full", locale="fr_FR")
-
-    index_date = index_sheet.get(end_date_str, [None])[0]
-
-    index_col_date = index_date[1] - 1
-    index_row_date = index_date[0]
-
-    times_rows = data[index_row_date : index_row_date + 8]
-    times_str = [[hour.strip() for hour in time[0].split("\n")] for time in times_rows]
-    times = [
-        [datetime.strptime(t, "%H:%M").time() for t in interval]
-        for interval in times_str
-    ]
-    times = [
-        [datetime.combine(start.date(), time) for time in interval]
-        for interval in times
-    ]
-
-    best_idx_start_relative = min(
-        range(len(times)), key=lambda i: abs(times[i][0] - start)
-    )
-    best_idx_end_relative = min(range(len(times)), key=lambda i: abs(times[i][0] - end))
-
-    best_idx_start_relative = best_idx_start_relative + index_date[0]
-    best_idx_end_relative = best_idx_end_relative + index_date[0]
-
-    return (
-        best_idx_start_relative + 1,
-        best_idx_end_relative + 1,
-        index_col_date,
-        index_col_date + 2,
-    )
-
-
 def get_merge_semaine(merge):
     try:
-        col_start = merge["startColumnIndex"]
-        col_end = merge["endColumnIndex"]
-
-        if (col_end - col_start) == 2:
-            return None
-
-        elif col_start in (1, 3, 6, 8, 11):
-            return "A"
-
-        elif col_start in (2, 4, 7, 9, 12):
-            return "B"
-
-        else:
-            return None
-    except (KeyError, TypeError):
-        return None
-
-
-def calcul_and_display_group_hours():
-    sum_hours_by_class = df.groupby("type_cours")["delta"].sum().reset_index()
-    data_to_send = [
-        sum_hours_by_class.columns.tolist()
-    ] + sum_hours_by_class.values.tolist()
-
-    new_sheet.update(range_name="P1", values=data_to_send)
-
-    header_format = CellFormat(
-        backgroundColor=color(0.2, 0.2, 0.2),  # Gris foncé
-        textFormat=textFormat(
-            bold=True, foregroundColor=color(1, 1, 1)
-        ),  # Blanc et Gras
-        horizontalAlignment="CENTER",
-    )
-
-    body_format = CellFormat(
-        horizontalAlignment="RIGHT",
-        numberFormat=numberFormat(
-            type="NUMBER", pattern='0.00 "h"'
-        ),  # Ajoute "h" automatiquement
-    )
-
-    format_cell_range(new_sheet, "P1:Q1", header_format)
-
-    last_row = len(data_to_send)
-    format_cell_range(new_sheet, f"P2:Q{last_row}", body_format)
-
-
-def parse_room(text: str) -> str | None:
-    """
-    Extrait le nom de la salle situé entre crochets et ne conserve
-    que les caractères en majuscules (et chiffres).
-    """
-    try:
-        if not isinstance(text, str):
-            return None
-        bracket_match = re.search(r"\[([^\]]+)\]", text)
-
-        if bracket_match:
-            content = bracket_match.group(1)
-            room_parts = re.findall(r"[A-Z0-9]+", content)
-
-            return "".join(room_parts) if room_parts else None
-    except Exception:
-        pass
+        s, e = merge["startColumnIndex"], merge["endColumnIndex"]
+        if (e - s) == 2: return None
+        if s in (1, 3, 6, 8, 11): return "A"
+        if s in (2, 4, 7, 9, 12): return "B"
+    except: pass
     return None
 
+def parse_room(text: str) -> str:
+    match = re.search(r"\[([^\]]+)\]", str(text))
+    return "".join(re.findall(r"[A-Z0-9]+", match.group(1))) if match else None
 
-def parse_type_cours(text: str) -> str | None:
-    """
-    Extrait le type de cours (CM, TD, TP, etc.) situé entre guillemets
-    et ne conserve que les caractères en majuscules.
-    """
-    try:
-        if not isinstance(text, str):
-            return None
-        quote_match = re.search(r"\"([^\"]+)\"", text)
+def parse_type_cours(text: str) -> str:
+    match = re.search(r"\"([^\"]+)\"", str(text))
+    return "".join(re.findall(r"[A-Z]+", match.group(1))) if match else None
 
-        if quote_match:
-            content = quote_match.group(1)
-            type_parts = re.findall(r"[A-Z]+", content)
-
-            return "".join(type_parts) if type_parts else None
-    except Exception:
-        pass
-    return None
+def get_dates_positions_from_data(data) -> list:
+    pattern = r"^(\w+)\s+(\d{1,2})\s+(\w+)\s+(\d{4})$"
+    positions = []
+    for row_idx, row in enumerate(data):
+        for col_idx, cell in enumerate(row):
+            if re.match(pattern, str(cell)):
+                positions.append([row_idx, col_idx])
+    return positions

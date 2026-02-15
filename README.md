@@ -16,33 +16,38 @@ CNUM est un outil Python conçu pour automatiser l'extraction, le nettoyage et l
 Ce projet utilise [uv](https://github.com/astral-sh/uv) pour la gestion des dépendances.
 
 1. Clonez le dépôt :
+
    ```bash
    git clone <repository-url>
    cd cnum
    ```
 
 2. Installez les dépendances :
+
    ```bash
    uv sync
    ```
 
 ## ⚙️ Configuration
 
-1. **Accès API Google** : 
+1. **Accès API Google** :
    - Placez votre fichier de credentials Google Cloud (Service Account) nommé `token.json` à la racine du projet.
    - Partagez votre Google Sheet avec l'adresse e-mail du compte de service.
-2. **Paramètres** : 
+2. **Paramètres** :
    - Modifiez `src/config.py` pour ajuster l'index de la feuille (`edt_sheet_index`) à utiliser.
 
 ## 📖 Utilisation
 
 ### Extraction et Analyse
+
 Pour lancer le processus complet (parsing, nettoyage et statistiques) :
+
 ```bash
 uv run demo.py
 ```
 
 ### Scripts Individuels
+
 - **Parsing** : `uv run src/scripts/parse_edt.py` (Génère `finale.csv`)
 - **Conversion iCal** : `uv run src/scripts/ical_conversion.py` (Génère `mon_edt.ics`)
 - **Visualisation** : `uv run src/scripts/draw_df.py`
@@ -58,6 +63,7 @@ uv run demo.py
 ## 🧪 Tests
 
 Lancez les tests avec `pytest` :
+
 ```bash
 uv run pytest
 ```
@@ -69,3 +75,4 @@ Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à
 ## 📄 Licence
 
 Ce projet est sous licence MIT.
+

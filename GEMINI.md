@@ -1,63 +1,68 @@
-# CNUM - ENSAT Timetable Manager
+# CNUM - ENSAT Timetable Manager (Refactored)
 
-CNUM is a Python-based tool designed to automate the extraction, cleaning, and analysis of ENSAT (École Nationale Supérieure Agronomique de Toulouse) timetables from Google Sheets. It transforms complex spreadsheet data into structured formats for teaching hour tracking and digital calendar integration.
+CNUM est un outil Python conçu pour automatiser l'extraction, le nettoyage et l'analyse des emplois du temps de l'ENSAT à partir de Google Sheets. Le projet a été refondu selon une **Architecture Hexagonale** pour garantir modularité, testabilité et maintenabilité.
 
-## 🛠 Project Overview
+## 🛠 Aperçu du Projet
 
-- **Purpose**: Automate timetable management, teacher hour calculations, and calendar synchronization.
-- **Main Technologies**:
-  - **Language**: Python 3.12+
-  - **Dependency Management**: [uv](https://github.com/astral-sh/uv)
-  - **Google Sheets API**: `gspread`, `gspread-dataframe`, `gspread-formatting`
-  - **Data Processing**: `pandas`
-  - **Visualization**: `plotly`
-  - **Calendar Export**: `icalendar`
+- **Objectif** : Automatiser la gestion des EDT, le calcul des heures d'enseignement et la synchronisation des calendriers.
+- **Technologies** : Python 3.12+, `uv`, `gspread`, `pandas`, `icalendar`.
 
-## 🏗 Architecture
+## 🏗 Architecture Hexagonale
 
-The project is structured as follows:
+Le projet est structuré pour isoler la logique métier des détails techniques :
 
-- `src/scripts/`: Primary scripts for core tasks.
-  - `parse_edt.py`: Extracts raw data from Google Sheets, handles merged cells, and normalizes teacher names.
-  - `ical_conversion.py`: Converts parsed data into `.ics` format.
-  - `draw_df.py`: Generates visualizations for statistics.
-- `src/calcul/`: Statistical logic.
-  - `calculate_stat_df.py`: Functions to compute hour totals per teacher and course type.
-  - `function_for_calculat_stats.py`: Core functions for aggregations (Global, Weekly, Course Type).
-  - `draw_stat_sheet.py`: **NEW** - Orchestrates the calculation and "Modern" formatting of the "stats" sheet in Google Sheets.
-- `src/main_functions/`: Orchestration and sheet building.
-  - `build_sheets.py`: Logic to generate individual teacher sheets in Google Sheets.
-- `src/utils/`: Low-level utilities.
-  - `functions.py`, `dummies.py`, `fetch_data.py`: Helpers for data fetching, string parsing, and cell coordinate mapping.
-- `src/config.py`: Centralized configuration for Google API scopes, credentials, and sheet indices.
+### 1. Domaine (`src/domain/`)
+Le cœur du projet, sans dépendance externe.
+- `models.py` : Définition des objets `Session` et `Timetable` (DataClasses).
+- `stats.py` : `StatsService` pour les calculs d'heures (Global, Hebdo, par Prof).
+- `ports.py` : Interfaces (`TimetableRepository`, `TimetableRenderer`) définissant comment le domaine interagit avec l'extérieur.
 
-## 🚀 Building and Running e
+### 2. Adaptateurs (`src/adapters/`)
+Implémentations techniques des ports.
+- **GSheet** (`gsheet/`) :
+  - `client.py` : Client centralisé gérant l'authentification Google API.
+  - `parser.py` : Extraction de l'EDT depuis Google Sheets (implémente `TimetableRepository`).
+  - `drawer.py` : Rendu visuel et correctifs de fusion sur Google Sheets (implémente `TimetableRenderer`).
+- **FS** (`fs/`) : Adaptateurs pour le système de fichiers (ex: CSV).
 
-### Setup
+### 3. Configuration (`src/config_loader/`)
+- `settings.py` : Gestion centralisée de la configuration via la classe `Settings` (Credentials, IDs de feuilles, Scopes).
 
-Ensure you have `uv` installed.
+### 4. Utilitaires (`src/utils/`)
+- `functions.py` : Fonctions bas niveau pour le parsing de texte, calcul de coordonnées et extraction RGB.
+- `fetch_data.py` : Helpers pour récupérer les dictionnaires de correspondance (noms, groupes).
 
+## 🚀 Utilisation
+
+### Installation
 ```bash
 uv sync
 ```
 
-### Configuration
+### Exécution du workflow principal
+Le point d'entrée unique est maintenant `app.py` :
+```bash
+uv run app.py
+```
+Ce script :
+1. Charge la configuration.
+2. Initialise le client GSheet.
+3. Extrait les données (Parser).
+4. Calcule les statistiques (StatsService).
+5. Met à jour l'EDT visuel sur l'onglet `drawing` (Drawer).
 
-1. Place a Google Cloud Service Account credentials file named `token.json` in the project root.
-2. Update `src/config.py` with the correct spreadsheet indices if necessary.
+## 📏 Conventions et Points Clés
 
-### Key Commands
+- **Gestion des fusions** : Le `GSheetDrawer` inclut un algorithme de nettoyage dynamique qui supprime les fusions existantes dans la zone cible avant d'en créer de nouvelles, évitant les erreurs `APIError 400`.
+- **Injection de dépendances** : Les adaptateurs reçoivent le client GSheet et la configuration par leurs constructeurs, facilitant le remplacement par des mocks pour les tests.
+- **Nettoyage des données** : Le parsing des noms de professeurs et des types de cours est centralisé dans `src/utils/functions.py` via des expressions régulières robustes.
 
-- **Full Workflow**: `uv run demo.py` (Parses, visualizes, and builds a teacher sheet).
-- **Generate Stats**: `uv run src/calcul/draw_stat_sheet.py` (Updates the "stats" sheet with Global/Weekly summaries and formatting).
-- **Parse Timetable**: `uv run src/scripts/parse_edt.py` (Generates `finale.csv` and updates Google Sheets).
-- **Export to iCal**: `uv run src/scripts/ical_conversion.py` (Generates `mon_edt.ics`).
-- **Visualize Stats**: `uv run src/scripts/draw_df.py`.
-- **Run Tests**: `uv run pytest`.
-
-## 📏 Development Conventions
-
-- **Data Integrity**: Parsing relies heavily on `get_all_merges` to correctly attribute hours to merged cells in the source sheets.
-- **Naming Normalization**: Teacher initials (e.g., "ML", "BP") are mapped to full names (e.g., "Marc Lang", "Benjamin Pey") via `corr_names` in `parse_edt.py`.
-- **Intermediary Data**: `finale.csv` serves as the primary local data source after parsing.
-- **Testing**: Tests are located in `tests/` and `src/tests/`, focusing on extraction accuracy and statistical calculations.
+## 📂 Structure des Dossiers
+```text
+src/
+├── domain/          # Logique métier pure
+├── adapters/        # Implémentations (GSheet, CSV, etc.)
+├── config_loader/   # Configuration et Settings
+└── utils/           # Fonctions utilitaires partagées
+app.py               # Orchestrateur (Point d'entrée)
+```

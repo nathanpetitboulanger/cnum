@@ -1,0 +1,45 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//CNUM Timetable Manager//mxm.dk//
+X-WR-CALNAME:EDT de Marc Lang
+BEGIN:VEVENT
+SUMMARY:SEABV_Jalon 1\n (SG\, LB\, ML)
+DTSTART:20260129T143000
+DTEND:20260129T173000
+DESCRIPTION:Type: nan\nProfs: Séraphine Grellier\, Laurie Boithias\, Marc
+  Lang\nGroupe: QEGR
+LOCATION:nan
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:terrain lycée agr (8h30-10h\n gpes 2\,4\,6 avec JPS et gpes 8\,10
+ \,12\,14 avec (MG \, SG\, ML)
+DTSTART:20260205T080000
+DTEND:20260205T100000
+DESCRIPTION:Type: nan\nProfs: Maritxu Guiresse\, Séraphine Grellier\, Mar
+ c Lang\nGroupe: COMMUN
+LOCATION:nan
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:SEABV - remise à niveau SIG\n(ML)
+DTSTART:20251126T133000
+DTEND:20251126T173000
+DESCRIPTION:Type: nan\nProfs: Marc Lang\nGroupe: AGREST
+LOCATION:nan
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Presentation UE (MG - ML)
+DTSTART:20260126T100000
+DTEND:20260126T110000
+DESCRIPTION:Type: nan\nProfs: Maritxu Guiresse\, Marc Lang\nGroupe: QEGR
+LOCATION:nan
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Restitution - World café\n (BP\, JPS\, MG\, ML\, SG\, LB)
+DTSTART:20260219T090000
+DTEND:20260219T120000
+DESCRIPTION:Type: nan\nProfs: Benjamin Pey\, Jean-Pierre Sarthou\, Maritxu
+  Guiresse\, Marc Lang\, Séraphine Grellier\, Laurie Boithias\nGroupe: COM
+ MUN
+LOCATION:nan
+END:VEVENT
+END:VCALENDAR
