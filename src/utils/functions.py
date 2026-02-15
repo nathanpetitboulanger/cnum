@@ -117,7 +117,14 @@ def parse_profs(text: str) -> list:
     return []
 
 def clean_cours_name(cours: str):
-    return str(cours).strip()
+    """Supprime les (INIT), [SALLE] et \"TYPE\" du nom du cours pour éviter les doublons."""
+    text = str(cours)
+    # Supprime ce qui est entre parenthèses (profs), crochets (salle) ou guillemets (type)
+    text = re.sub(r"\([^)]*\)", "", text)
+    text = re.sub(r"\[[^\]]*\]", "", text)
+    text = re.sub(r"\"[^\"]*\"", "", text)
+    # Nettoie les espaces multiples restants
+    return re.sub(r"\s+", " ", text).strip()
 
 def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = 1):
     try:

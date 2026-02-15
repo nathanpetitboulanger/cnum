@@ -1,68 +1,59 @@
 # CNUM - ENSAT Timetable Manager (Refactored)
 
-CNUM est un outil Python conçu pour automatiser l'extraction, le nettoyage et l'analyse des emplois du temps de l'ENSAT à partir de Google Sheets. Le projet a été refondu selon une **Architecture Hexagonale** pour garantir modularité, testabilité et maintenabilité.
+CNUM est un outil Python conçu pour automatiser l'extraction, le nettoyage et l'analyse des emplois du temps de l'ENSAT à partir de Google Sheets. Le projet suit une **Architecture Hexagonale** garantissant modularité et maintenabilité.
 
 ## 🛠 Aperçu du Projet
 
-- **Objectif** : Automatiser la gestion des EDT, le calcul des heures d'enseignement et la synchronisation des calendriers.
-- **Technologies** : Python 3.12+, `uv`, `gspread`, `pandas`, `icalendar`.
+- **Objectif** : Automatiser la gestion des EDT, le calcul des heures d'enseignement et la synchronisation visuelle.
+- **Workflow Central** : `EDT (Brut)` ➔ `edt_clean (Tabulaire)` ➔ `drawing (Visuel)`.
+- **Technologies** : Python 3.12+, `uv`, `gspread`, `pandas`.
 
 ## 🏗 Architecture Hexagonale
 
-Le projet est structuré pour isoler la logique métier des détails techniques :
-
 ### 1. Domaine (`src/domain/`)
-Le cœur du projet, sans dépendance externe.
-- `models.py` : Définition des objets `Session` et `Timetable` (DataClasses).
-- `stats.py` : `StatsService` pour les calculs d'heures (Global, Hebdo, par Prof).
-- `ports.py` : Interfaces (`TimetableRepository`, `TimetableRenderer`) définissant comment le domaine interagit avec l'extérieur.
+Logique métier pure, sans dépendances externes.
+- `models.py` : Objets `Session` et `Timetable`.
+- `stats.py` : `StatsService` pour les calculs d'heures par prof, semaine et type.
+- `ports.py` : Interfaces (`TimetableRepository`, `TimetableRenderer`) définissant les contrats d'entrée/sortie.
 
 ### 2. Adaptateurs (`src/adapters/`)
 Implémentations techniques des ports.
 - **GSheet** (`gsheet/`) :
-  - `client.py` : Client centralisé gérant l'authentification Google API.
-  - `parser.py` : Extraction de l'EDT depuis Google Sheets (implémente `TimetableRepository`).
-  - `drawer.py` : Rendu visuel et correctifs de fusion sur Google Sheets (implémente `TimetableRenderer`).
-- **FS** (`fs/`) : Adaptateurs pour le système de fichiers (ex: CSV).
+  - `client.py` : Client centralisé (Singleton) pour l'authentification Google API.
+  - `parser.py` : Extraction de l'EDT complexe (fusions, couleurs).
+  - `clean_parser.py` : Lecture du format tabulaire simplifié depuis `edt_clean`.
+  - `exporter.py` : Synchronisation des données extraites vers `edt_clean`.
+  - `drawer.py` : Rendu visuel complexe (fusions, couleurs, grisé pour les previews).
 
-### 3. Configuration (`src/config_loader/`)
-- `settings.py` : Gestion centralisée de la configuration via la classe `Settings` (Credentials, IDs de feuilles, Scopes).
+### 3. Configuration & Utils
+- `config_loader/settings.py` : Gestion des credentials et IDs de feuilles via une classe `Settings`.
+- `utils/functions.py` : Parsing regex, détection de fusions et conversion RGB.
+- `utils/fetch_data.py` : Récupération des dictionnaires de correspondance (Initiales ➔ Noms).
 
-### 4. Utilitaires (`src/utils/`)
-- `functions.py` : Fonctions bas niveau pour le parsing de texte, calcul de coordonnées et extraction RGB.
-- `fetch_data.py` : Helpers pour récupérer les dictionnaires de correspondance (noms, groupes).
+## 🚀 Utilisation (Streamlit)
 
-## 🚀 Utilisation
+L'application est pilotée par `app.py` avec trois étapes clés :
 
-### Installation
-```bash
-uv sync
-```
+1. **Extraction & Sync** : 
+   - `Parser l'EDT Brut & Sync` : Extrait depuis l'onglet `EDT`, nettoie les titres, et remplit l'onglet `edt_clean`.
+   - `Charger depuis 'edt_clean'` : Charge les données tabulaires (utile après modifications manuelles dans le tableur).
+2. **Statistiques** : Calcul immédiat des totaux d'heures.
+3. **Rendu Visuel** :
+   - `Générer la feuille 'drawing'` : Crée un emploi du temps visuel complet.
+   - `Prévisu Professeur` : Génère une feuille spécifique où seuls les cours de l'enseignant sélectionné sont colorés (le reste est grisé).
 
-### Exécution du workflow principal
-Le point d'entrée unique est maintenant `app.py` :
-```bash
-uv run app.py
-```
-Ce script :
-1. Charge la configuration.
-2. Initialise le client GSheet.
-3. Extrait les données (Parser).
-4. Calcule les statistiques (StatsService).
-5. Met à jour l'EDT visuel sur l'onglet `drawing` (Drawer).
+## 📏 Règles de Formatage et Conventions
 
-## 📏 Conventions et Points Clés
-
-- **Gestion des fusions** : Le `GSheetDrawer` inclut un algorithme de nettoyage dynamique qui supprime les fusions existantes dans la zone cible avant d'en créer de nouvelles, évitant les erreurs `APIError 400`.
-- **Injection de dépendances** : Les adaptateurs reçoivent le client GSheet et la configuration par leurs constructeurs, facilitant le remplacement par des mocks pour les tests.
-- **Nettoyage des données** : Le parsing des noms de professeurs et des types de cours est centralisé dans `src/utils/functions.py` via des expressions régulières robustes.
+- **Syntaxe des cellules** : Le dessin génère automatiquement le format : `Nom du Cours \n (INITIALES) [SALLE] "TYPE"`.
+- **Gestion des conflits** : Le `GSheetDrawer` intègre une grille d'occupation cellule par cellule pour éviter toute erreur de chevauchement lors des fusions groupées.
+- **Couleurs** : Les couleurs sont extraites dynamiquement et normalisées pour l'API Google (0-1).
 
 ## 📂 Structure des Dossiers
 ```text
 src/
-├── domain/          # Logique métier pure
-├── adapters/        # Implémentations (GSheet, CSV, etc.)
-├── config_loader/   # Configuration et Settings
-└── utils/           # Fonctions utilitaires partagées
-app.py               # Orchestrateur (Point d'entrée)
+├── domain/          # Modèles et Logique de calcul
+├── adapters/        # Adaptateurs GSheet (Parser, Drawer, Exporter)
+├── config_loader/   # Configuration Settings
+└── utils/           # Fonctions de parsing et helpers
+app.py               # Orchestrateur Streamlit
 ```

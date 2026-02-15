@@ -125,6 +125,16 @@ class GSheetDrawer(TimetableRenderer):
             self.gs_client.open_spreadsheet().batch_update({"requests": requests})
 
     def _draw_timetable(self, target_sheet, ref_sheet, timetable: Timetable):
+        spreadsheet = self.gs_client.open_spreadsheet()
+        from src.utils.fetch_data import get_mapping_dict_for_name
+        
+        # On récupère le mapping pour pouvoir transformer Nom Complet -> Initiales
+        # On utilise try/except au cas où l'onglet Paramètres serait inaccessible
+        try:
+            name_to_init = {v: k for k, v in get_mapping_dict_for_name(spreadsheet).items()}
+        except:
+            name_to_init = {}
+
         data_ref = ref_sheet.get_all_values()
         index_sheet = get_index_sheet(ref_sheet)
         requests = []
@@ -177,6 +187,15 @@ class GSheetDrawer(TimetableRenderer):
                 except Exception:
                     rgb = {"red": 1, "green": 1, "blue": 1}
 
+                # Composition du texte selon les règles : (INIT) [SALLE] "TYPE"
+                # On repasse des noms complets aux initiales pour le visuel
+                inits = [name_to_init.get(p, p) for p in s.professors]
+                prof_str = f"({ '/'.join(inits) })" if inits else ""
+                salle_str = f"[{s.room}]" if s.room else ""
+                type_str = f'"{s.course_type}"' if s.course_type else ""
+                
+                display_text = f"{s.course_name}\n{prof_str} {salle_str} {type_str}".strip()
+
                 requests.append({
                     "repeatCell": {
                         "range": {
@@ -188,8 +207,9 @@ class GSheetDrawer(TimetableRenderer):
                             "userEnteredFormat": {
                                 "backgroundColor": rgb,
                                 "horizontalAlignment": "CENTER", "verticalAlignment": "MIDDLE", "wrapStrategy": "WRAP",
+                                "textFormat": {"fontSize": 9}
                             },
-                            "userEnteredValue": {"stringValue": s.course_name}
+                            "userEnteredValue": {"stringValue": display_text}
                         },
                         "fields": "userEnteredFormat,userEnteredValue",
                     }
