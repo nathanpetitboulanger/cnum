@@ -40,8 +40,19 @@ class GSheetTimetableParser(TimetableRepository):
         data = sheet.get_all_values()
         all_merges = get_all_merges(sheet)
         
-        params = {"fields": "sheets(data(rowData(values(effectiveFormat(backgroundColorStyle)))))"}
+        # Correction : il faut inclure les données de la grille pour avoir les formats (couleurs)
+        params = {
+            "includeGridData": True,
+            "fields": "sheets(properties,data(rowData(values(effectiveFormat(backgroundColorStyle)))))"
+        }
         metadata = spreadsheet.fetch_sheet_metadata(params=params)
+        
+        # On identifie l'index de la feuille EDT dans les métadonnées pour être précis
+        edt_sheet_index = 0
+        for i, s in enumerate(metadata.get("sheets", [])):
+            if s.get("properties", {}).get("title") == "EDT":
+                edt_sheet_index = i
+                break
         
         timetable = Timetable()
         
@@ -57,7 +68,8 @@ class GSheetTimetableParser(TimetableRepository):
                 prof_initials = parse_profs(raw_text)
                 prof_names = [self._name_mapping.get(init, init) for init in prof_initials]
                 
-                rgb = extract_rgb_form_merge(metadata, merge)
+                # On passe l'index précis de la feuille
+                rgb = extract_rgb_form_merge(metadata, merge, sheet_id=edt_sheet_index)
                 group = self._group_mapping.get(str(rgb))
                 
                 session = Session(

@@ -121,8 +121,6 @@ def clean_cours_name(cours: str):
 
 def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = 1):
     try:
-        # Recherche de l'index de la feuille par son ID ou utilisation de l'index 1 par défaut
-        # Pour simplifier, on cherche dans les feuilles
         sheet_data = None
         for s in metadata.get("sheets", []):
             if s.get("properties", {}).get("index") == sheet_id:
@@ -133,8 +131,9 @@ def extract_rgb_from_cell_coords(metadata, row, col, sheet_id: int = 1):
         row_data = sheet_data.get("rowData", [])
         cell = row_data[row]["values"][col]
         rgb = cell.get("effectiveFormat", {}).get("backgroundColorStyle", {}).get("rgbColor", {})
-        return (rgb.get("red", 0), rgb.get("green", 0), rgb.get("blue", 0))
-    except: return (1, 1, 1)
+        # On retourne un tuple simple de floats
+        return (float(rgb.get("red", 0)), float(rgb.get("green", 0)), float(rgb.get("blue", 0)))
+    except: return (1.0, 1.0, 1.0)
 
 def extract_rgb_form_merge(metadata, merge, sheet_id: int = 1):
     return extract_rgb_from_cell_coords(metadata, merge["startRowIndex"], merge["startColumnIndex"], sheet_id)

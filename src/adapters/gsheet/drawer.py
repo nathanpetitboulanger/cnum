@@ -42,6 +42,57 @@ class GSheetDrawer(TimetableRenderer):
         self._draw_timetable(draw_sheet, edt_sheet, timetable)
         print("[SUCCESS] Feuille 'drawing' générée.")
 
+    def create_professor_preview(self, timetable: Timetable, prof_name: str):
+        """Génère une feuille où seuls les cours du prof sont en couleur, le reste est grisé."""
+        spreadsheet = self.gs_client.open_spreadsheet()
+        edt_sheet = spreadsheet.worksheet("EDT")
+        
+        sheet_name = f"Preview {prof_name}"
+        try:
+            prof_sheet = spreadsheet.worksheet(sheet_name)
+            spreadsheet.del_worksheet(prof_sheet)
+        except gspread.WorksheetNotFound:
+            pass
+
+        prof_sheet = spreadsheet.duplicate_sheet(edt_sheet.id, new_sheet_name=sheet_name)
+        
+        # 1. On nettoie les fusions existantes
+        all_merges = get_all_merges(prof_sheet)
+        self._clear_all_merges(prof_sheet, all_merges)
+        
+        # 2. On grise toute la zone de l'EDT
+        self._grey_out_area(prof_sheet)
+        
+        # 3. On dessine uniquement les cours du prof
+        prof_timetable = timetable.filter_by_teacher(prof_name)
+        self._draw_timetable(prof_sheet, edt_sheet, prof_timetable)
+        print(f"[SUCCESS] Feuille '{sheet_name}' générée.")
+
+    def _grey_out_area(self, sheet):
+        """Applique un fond gris clair sur toutes les zones de cours."""
+        data = sheet.get_all_values()
+        date_positions = get_dates_positions_from_data(data)
+        requests = []
+        for pos in date_positions:
+            r, c = pos[0] + 1, pos[1]
+            requests.append({
+                "repeatCell": {
+                    "range": {
+                        "sheetId": sheet.id,
+                        "startRowIndex": r, "endRowIndex": r + 8,
+                        "startColumnIndex": c, "endColumnIndex": c + 2,
+                    },
+                    "cell": {
+                        "userEnteredFormat": {
+                            "backgroundColor": {"red": 0.9, "green": 0.9, "blue": 0.9}
+                        }
+                    },
+                    "fields": "userEnteredFormat.backgroundColor",
+                }
+            })
+        if requests:
+            self.gs_client.open_spreadsheet().batch_update({"requests": requests})
+
     def _clear_all_merges(self, sheet, merges):
         """Supprime absolument toutes les fusions et blanchit les zones de cours."""
         requests = []
@@ -88,7 +139,6 @@ class GSheetDrawer(TimetableRenderer):
                 if not pos: continue
                 
                 # Vérification de chevauchement cellule par cellule
-                # pos = [start_row, end_row, start_col, end_col]
                 current_session_cells = set()
                 conflict = False
                 for r in range(pos[0], pos[1]):
@@ -103,7 +153,6 @@ class GSheetDrawer(TimetableRenderer):
                     print(f"[DEBUG] Session ignorée car chevauchement partiel détecté : {s.course_name} @ {pos}")
                     continue
                 
-                # Marquer les cellules comme occupées
                 occupied_cells.update(current_session_cells)
 
                 requests.append({
@@ -117,17 +166,27 @@ class GSheetDrawer(TimetableRenderer):
                     }
                 })
 
-                rgb = ast.literal_eval(s.color_rgb) if s.color_rgb else [1, 1, 1]
+                # Gestion robuste de la couleur
+                try:
+                    if s.color_rgb and isinstance(s.color_rgb, str):
+                        clean_color = s.color_rgb.replace("(", "").replace(")", "")
+                        rgb_values = [float(x.strip()) for x in clean_color.split(",")]
+                        rgb = {"red": rgb_values[0], "green": rgb_values[1], "blue": rgb_values[2]}
+                    else:
+                        rgb = {"red": 1, "green": 1, "blue": 1}
+                except Exception:
+                    rgb = {"red": 1, "green": 1, "blue": 1}
+
                 requests.append({
                     "repeatCell": {
                         "range": {
                             "sheetId": target_sheet.id,
-                            "startRowIndex": pos[0], "endRowIndex": pos[0] + 1,
-                            "startColumnIndex": pos[2], "endColumnIndex": pos[2] + 1,
+                            "startRowIndex": pos[0], "endRowIndex": pos[1],
+                            "startColumnIndex": pos[2], "endColumnIndex": pos[3],
                         },
                         "cell": {
                             "userEnteredFormat": {
-                                "backgroundColor": {"red": rgb[0], "green": rgb[1], "blue": rgb[2]},
+                                "backgroundColor": rgb,
                                 "horizontalAlignment": "CENTER", "verticalAlignment": "MIDDLE", "wrapStrategy": "WRAP",
                             },
                             "userEnteredValue": {"stringValue": s.course_name}
